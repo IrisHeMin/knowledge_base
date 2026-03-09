@@ -1,0 +1,22 @@
+---
+layout: default
+---
+<h2>All Case Summaries</h2>
+<ul class="post-list">
+  {% for post in site.posts %}
+  <li class="post-list-item">
+    <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+    <div class="post-list-meta">
+      📅 {{ post.date | date: "%Y-%m-%d" }}
+      {% if post.case_number %} &middot; 🏷️ Case: {{ post.case_number }}{% endif %}
+      {% if post.categories.size > 0 %}
+        &middot; 📁 {{ post.categories | join: ", " }}
+      {% endif %}
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+
+{% if site.posts.size == 0 %}
+<p>No case summaries yet. Add your first post to <code>_posts/</code> folder!</p>
+{% endif %}

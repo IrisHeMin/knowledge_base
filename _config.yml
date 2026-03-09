@@ -1,0 +1,22 @@
+title: Case Knowledge Base
+description: Support case summaries, troubleshooting notes, and lessons learned.
+url: "https://minh_microsoft.github.io"
+baseurl: "/case-knowledge-base"
+markdown: kramdown
+highlighter: rouge
+permalink: /:categories/:year/:month/:day/:title/
+
+collections:
+  posts:
+    output: true
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
