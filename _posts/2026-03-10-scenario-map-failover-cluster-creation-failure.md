@@ -422,15 +422,16 @@ flowchart TD
 |------|------|------|
 | 135 | TCP | RPC Endpoint Mapper |
 | 445 | TCP | SMB（管理共享、CSV 重定向 I/O） |
-| 3343 | UDP | Cluster Network Driver（心跳） |
+| 3343 | UDP | Cluster Network Driver（节点间心跳通信） |
+| 3343 | TCP | Cluster creation 初始化通信（创建集群时节点间协商使用） |
 | 5985 | TCP | WinRM / PowerShell Remoting |
 | 49152-65535 | TCP | RPC Dynamic Ports |
 | ICMP | - | Cluster network detection |
 
 **💡 Tips：**
 - **Tip 1：** 安装 Failover Clustering Feature 时会自动创建 Windows Firewall 规则，但 GPO 可能会覆盖
-- **Tip 2：** **Port 3343 UDP** 是集群心跳端口，经常被忽略——它必须在所有节点之间双向放行
-- **⚠️ 常见误区：** 只测试了 TCP 端口忘记了 UDP 3343；或者只测试了单向忘记了双向
+- **Tip 2：** **Port 3343 UDP** 是集群心跳端口，**TCP 3343** 在集群创建过程中用于节点间初始化通信——两者都必须在所有节点之间双向放行
+- **⚠️ 常见误区：** 只测试了 TCP 端口忘记了 UDP 3343；或者只开放了 UDP 3343 忘了 TCP 3343（创建集群时会失败）；或者只测试了单向忘记了双向
 
 **解决方案摘要：**
 
@@ -540,12 +541,12 @@ flowchart TD
 ```mermaid
 flowchart TD
     Start["Cluster Name resource\nfails to come online\nDNS registration error"] --> Check1{"DNS zone allows\ndynamic updates?"}
-    Check1 -->|"No or Nonsecure only"| Fix1["Enable Secure Dynamic\nUpdates on DNS zone"]
-    Check1 -->|"Secure only"| Check2{"CNO has permission\nto update DNS?"}
-    Check2 -->|"No"| Fix2["Grant CNO permission\nto modify DNS records\nor create A record manually"]
-    Check2 -->|"Yes"| Check3{"DNS server reachable\nfrom cluster nodes?"}
+    Check1 -->|"No"| Fix1["Enable Dynamic Updates\non DNS zone\n(Secure recommended)"]
+    Check1 -->|"Yes"| Check2{"CNO has permission\nto update DNS record?"}
+    Check2 -->|"No"| Fix2["Grant CNO permission\nto modify the A record\nor create A record manually\nand assign CNO Full Control"]
+    Check2 -->|"Yes, has permission"| Check3{"DNS server reachable\nfrom cluster nodes?"}
     Check3 -->|"No"| Fix3["Fix DNS connectivity\ncheck NIC DNS config"]
-    Check3 -->|"Yes"| Escalate["Check DNS scavenging\nor DHCP DNS update proxy"]
+    Check3 -->|"Yes"| Escalate["DNS update still fails\nCapture network trace\nor enable DNS Debug Logging\nto identify root cause"]
 ```
 
 **关键诊断命令：**
@@ -559,14 +560,16 @@ flowchart TD
 **💡 Tips：**
 - **Tip 1：** 对于 Secure Dynamic Updates，实际执行 DNS 注册的是 **CNO 的计算机账户**，不是运行集群创建的用户账户
 - **Tip 2：** 如果 DNS 区域所有者是另一个账户，可能需要手动在 DNS 中创建 A 记录并授权 CNO 修改
+- **Tip 3：** 如果 CNO 有权限但更新仍然失败，需要抓取**网络包**（如 Wireshark/netsh trace）或启用 **DNS Server Debug Logging** 来查看具体失败原因
 - **⚠️ 常见误区：** DNS 手动注册 A 记录后忘了设置权限 → 集群后续 IP 变更时无法更新
 
 **解决方案摘要：**
 
 | 根因 | 修复方法 | 验证方式 |
 |------|---------|---------|
-| 动态更新未启用 | 在 DNS zone 属性中启用 Secure Dynamic Update | Zone 属性显示 "Secure only" |
+| 动态更新未启用 | 在 DNS zone 属性中启用 Dynamic Update（推荐 Secure） | Zone 属性显示 "Secure only" |
 | CNO 无 DNS 更新权限 | 手动创建 A 记录并授予 CNO Full Control | Cluster Name resource 上线成功 |
+| 有权限但更新仍失败 | 抓网络包或启用 DNS Debug Logging 分析失败原因 | 根据日志定位具体问题 |
 
 ---
 
@@ -917,7 +920,7 @@ mindmap
 **Symptom:** Validation says no common subnet. **Fix:** Place nodes on same subnet, or configure multi-subnet cluster with proper routing.
 
 ### S8: Firewall Blocking Cluster Ports
-**Symptom:** RPC unavailable, creation hangs. **Key ports:** TCP 135, 445, 5985, 49152-65535; **UDP 3343** (heartbeat). **Fix:** Enable Failover Cluster firewall rules or add exceptions.
+**Symptom:** RPC unavailable, creation hangs. **Key ports:** TCP 135, 445, 5985, 49152-65535; **UDP 3343** (heartbeat); **TCP 3343** (used during cluster creation for initial node-to-node negotiation). **Fix:** Enable Failover Cluster firewall rules or add exceptions. Both TCP and UDP 3343 must be open bidirectionally.
 
 ### S9: Network Validation Failure
 **Symptom:** Test-Cluster Network tests fail. **Fix:** Update NIC drivers, align NIC Teaming/vSwitch configuration across all nodes.
@@ -926,7 +929,7 @@ mindmap
 **Symptom:** "Name already in use." **Fix:** Delete stale DNS A record from DNS Manager, then `ipconfig /flushdns`.
 
 ### S11: DNS Dynamic Update Failure
-**Symptom:** Cluster created but Name resource won't online. **Fix:** Enable Secure Dynamic Updates on DNS zone; ensure CNO has permission to update DNS.
+**Symptom:** Cluster created but Name resource won't online. **Fix:** Enable Dynamic Updates on DNS zone; ensure CNO has permission to update DNS. If CNO has permission but update still fails, capture a network trace or enable DNS Debug Logging to identify the root cause.
 
 ### S12: Cluster IP Address Conflict
 **Symptom:** "Address already in use." **Fix:** Choose an unused static IP outside DHCP scope.
