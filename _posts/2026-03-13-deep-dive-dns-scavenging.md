@@ -171,7 +171,63 @@ Day 28: DNS 服务器执行 Scavenging
        使用默认设置时，可能需要 14~21 天
 ```
 
-### 3.3 Scavenging 执行时的检查清单
+### 3.3 Eligible 之后、删除之前 — 客户端还能"续命"吗？
+
+这是一个非常关键但容易被忽视的场景：**当记录已经变为 Eligible（可清理），但 Scavenging 还没执行时，客户端突然回来注册了，会怎样？**
+
+答案是：**可以刷新！记录会被"救回来"，整个周期重新开始。**
+
+```
+时间线 (假设全部 7 天间隔)
+═════════════════════════════════════════════════════
+
+Day 0:  时间戳 = 3月1日
+        ├── No-Refresh 开始 (Day 0-7)
+        │
+Day 7:  No-Refresh 结束
+        ├── Refresh 窗口开始 (Day 7-14)
+        │   客户端可以刷新，但没来...
+        │
+Day 14: Refresh 窗口结束
+        ├── 记录变为 "Eligible"（可清理）
+        │   但还没被删！等 Scavenging 执行
+        │
+Day 14-21: 等待 Scavenging 执行（最多7天）
+        │
+        │  ★ Day 17: 客户端突然回来了！发送 DDNS 注册
+        │  ├── 服务器检查：当前处于 No-Refresh 吗？
+        │  ├── No-Refresh 是基于旧时间戳(3/1) + 7天 = 3/8
+        │  ├── 现在是 Day 17 (3/18)，早就过了 No-Refresh
+        │  ├── → 刷新被接受！✅
+        │  └── 时间戳更新为：3月18日 ← 全新的时间戳！
+        │
+        │  接下来会怎样？
+        │  ┌──────────────────────────────┐
+        │  │ 新时间戳 = 3月18日            │
+        │  │ + No-Refresh 7天 = 3月25日    │
+        │  │ + Refresh 7天 = 4月1日        │
+        │  │                              │
+        │  │ 记录不再 Eligible！            │
+        │  │ 整个周期重新开始 🔄            │
+        │  └──────────────────────────────┘
+        │
+Day 21: Scavenging 执行时
+        ├── 检查该记录：时间戳 = 3/18（已被刷新）
+        ├── 3/18 + 14天 = 4/1，还没过期
+        └── 跳过！记录存活 ✅
+```
+
+**Eligible 期间不同操作的结果：**
+
+| 情况 | 结果 |
+|------|------|
+| Eligible 期间客户端**回来刷新（Refresh）** | ✅ 时间戳更新，周期重启，记录被救 |
+| Eligible 期间客户端**更换了 IP（Update）** | ✅ 这是 Update，任何时候都允许，时间戳也更新 |
+| Eligible 期间**没人来** → Scavenging 执行 | 🗑️ 记录被删除 |
+
+> 💡 **设计思想**：Scavenging 不是"一旦 Eligible 就立刻删"，而是有一个缓冲期（等待 Scavenging 周期到来）。在这段缓冲期内，客户端仍有机会"续命"。这也是为什么 No-Refresh 的判断是**基于记录当前时间戳**而非区域的固定时间窗口 — 旧时间戳的 No-Refresh 早已过期，所以刷新请求会被接受。
+
+### 3.4 Scavenging 执行时的检查清单
 
 当 DNS 服务器启动一次 Scavenging 时，它按以下顺序检查：
 
@@ -218,7 +274,7 @@ Scavenging 执行流程
   - Event ID 2502: 没有记录被清理
 ```
 
-### 3.4 一个具体的时间计算例子
+### 3.5 一个具体的时间计算例子
 
 让我们用一个更具体的数字来做计算：
 
@@ -562,7 +618,63 @@ Day 28: DNS Server executes Scavenging
 Total time: At least 14 days + up to 7 days = 14-21 days after last refresh
 ```
 
-### 3.3 Concrete Calculation Example
+### 3.3 After Eligible, Before Deletion — Can the Client Still "Save" the Record?
+
+This is a critical but often overlooked scenario: **When a record has become Eligible for scavenging, but the scavenging cycle hasn't run yet, what happens if the client comes back and registers?**
+
+The answer is: **Yes, the refresh is accepted! The record is "saved" and the entire cycle restarts.**
+
+```
+Timeline (assuming all 7-day intervals)
+═════════════════════════════════════════════════════
+
+Day 0:  Timestamp = March 1
+        ├── No-Refresh begins (Day 0-7)
+        │
+Day 7:  No-Refresh ends
+        ├── Refresh window begins (Day 7-14)
+        │   Client can refresh, but doesn't come...
+        │
+Day 14: Refresh window expires
+        ├── Record becomes "Eligible" for scavenging
+        │   But NOT deleted yet — waiting for scavenging cycle
+        │
+Day 14-21: Waiting for Scavenging to execute (up to 7 days)
+        │
+        │  ★ Day 17: Client suddenly comes back! Sends DDNS registration
+        │  ├── Server checks: Are we in No-Refresh?
+        │  ├── No-Refresh = old timestamp (3/1) + 7 days = 3/8
+        │  ├── Current date is Day 17 (3/18), well past No-Refresh
+        │  ├── → Refresh accepted! ✅
+        │  └── Timestamp updated to: March 18 ← brand new timestamp!
+        │
+        │  What happens next?
+        │  ┌──────────────────────────────────┐
+        │  │ New timestamp = March 18          │
+        │  │ + No-Refresh 7 days = March 25    │
+        │  │ + Refresh 7 days = April 1        │
+        │  │                                   │
+        │  │ Record is NO LONGER Eligible!      │
+        │  │ Entire cycle restarts 🔄           │
+        │  └──────────────────────────────────┘
+        │
+Day 21: When Scavenging executes
+        ├── Checks this record: Timestamp = 3/18 (refreshed!)
+        ├── 3/18 + 14 days = 4/1, not yet expired
+        └── Skipped! Record survives ✅
+```
+
+**Results of different actions during the Eligible period:**
+
+| Scenario | Result |
+|----------|--------|
+| Client **comes back and refreshes** during Eligible period | ✅ Timestamp updated, cycle restarts, record saved |
+| Client **changes IP (Update)** during Eligible period | ✅ Updates are always allowed, timestamp also updated |
+| **No one comes** → Scavenging executes | 🗑️ Record deleted |
+
+> 💡 **Design philosophy**: Scavenging doesn't delete immediately upon Eligible status — there's a buffer period (waiting for the scavenging cycle). During this buffer, clients still have a chance to "save" their records. This is why the No-Refresh check is based on the **record's current timestamp** rather than a fixed zone-wide window — the old timestamp's No-Refresh has long expired, so refresh requests are accepted.
+
+### 3.4 Concrete Calculation Example
 
 **Environment**:
 - No-Refresh Interval: **3 days**
