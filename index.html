@@ -68,8 +68,9 @@ title: Home
 
 <section class="recent-posts">
   <h2>📝 Recent Update</h2>
+  {% assign sorted_posts = site.posts | sort: "date" | reverse %}
   <ul class="post-list">
-    {% for post in site.posts limit:1 %}
+    {% for post in sorted_posts limit:1 %}
     <li class="post-list-item">
       <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
       <div class="post-list-meta">
