@@ -20,3 +20,13 @@ defaults:
 plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
+
+# Firebase Realtime Database for view counts and likes
+# Setup: https://console.firebase.google.com
+# 1. Create project → 2. Build > Realtime Database > Create Database
+# 3. Set rules to: { "rules": { ".read": true, ".write": true } }
+# 4. Fill in the values below from Project Settings > General > Your apps > Web app
+firebase:
+  apiKey: ""
+  databaseURL: ""
+  projectId: ""

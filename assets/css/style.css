@@ -267,3 +267,43 @@ body {
   font-size: 0.9rem;
   line-height: 1.4;
 }
+
+/* Engagement bar (views + likes) */
+.engagement-bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin: 28px 0 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.engagement-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #656d76;
+  font-size: 0.95rem;
+}
+.engagement-icon { font-size: 1.15rem; }
+.like-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+  color: #656d76;
+}
+.like-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
+}
+.like-btn.liked {
+  background: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--accent);
+  cursor: default;
+}

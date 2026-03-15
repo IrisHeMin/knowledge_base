@@ -28,6 +28,51 @@ layout: default
   <div class="post-content">
     {{ content }}
   </div>
+  <div class="engagement-bar">
+    <span class="engagement-item">
+      <span class="engagement-icon">👁️</span>
+      <span id="view-count">0</span> views
+    </span>
+    <button id="like-btn" class="engagement-item like-btn" aria-label="Like this post">
+      <span class="engagement-icon">👍</span>
+      <span id="like-count">0</span>
+    </button>
+  </div>
+  <script>
+  (function() {
+    if (typeof firebase === 'undefined' || !firebase.database) return;
+    var pageId = location.pathname.replace(/[^a-zA-Z0-9]/g, '_');
+    var db = firebase.database();
+    var viewRef = db.ref('views/' + pageId);
+    var likeRef = db.ref('likes/' + pageId);
+    var viewedKey = 'viewed_' + pageId;
+    var likedKey = 'liked_' + pageId;
+
+    // View count
+    viewRef.on('value', function(s) {
+      document.getElementById('view-count').textContent = s.val() || 0;
+    });
+    if (!sessionStorage.getItem(viewedKey)) {
+      viewRef.transaction(function(c) { return (c || 0) + 1; });
+      sessionStorage.setItem(viewedKey, '1');
+    }
+
+    // Like count
+    likeRef.on('value', function(s) {
+      document.getElementById('like-count').textContent = s.val() || 0;
+    });
+    if (localStorage.getItem(likedKey)) {
+      document.getElementById('like-btn').classList.add('liked');
+    }
+    document.getElementById('like-btn').addEventListener('click', function() {
+      if (!localStorage.getItem(likedKey)) {
+        likeRef.transaction(function(c) { return (c || 0) + 1; });
+        localStorage.setItem(likedKey, '1');
+        this.classList.add('liked');
+      }
+    });
+  })();
+  </script>
   <footer class="post-footer">
     <a href="{{ '/' | relative_url }}">&larr; Back to Home</a>
   </footer>

@@ -47,5 +47,16 @@
       mermaid.run();
     });
   </script>
+  {% if site.firebase.databaseURL and site.firebase.databaseURL != "" %}
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    firebase.initializeApp({
+      apiKey: "{{ site.firebase.apiKey }}",
+      databaseURL: "{{ site.firebase.databaseURL }}",
+      projectId: "{{ site.firebase.projectId }}"
+    });
+  </script>
+  {% endif %}
 </body>
 </html>
