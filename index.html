@@ -1,11 +1,11 @@
 ---
 layout: default
-title: 首页
+title: Home
 ---
 
 <section class="dashboard-intro">
-  <h2>👋 欢迎来到知识库</h2>
-  <p>这里汇集了故障排查案例、技术深度解析、场景导航图、AI 学习笔记、数学教育资源和排查指南。选择一个分类开始探索吧！</p>
+  <h2>👋 Welcome to the Knowledge Base</h2>
+  <p>A collection of troubleshooting case studies, technical deep dives, scenario navigation maps, AI learning notes, math education resources, and troubleshooting guides. Pick a category to start exploring!</p>
 </section>
 
 {% comment %}Count posts per category{% endcomment %}
@@ -30,44 +30,44 @@ title: 首页
 <section class="category-cards">
   <a href="{{ '/case-summaries/' | relative_url }}" class="category-card">
     <div class="card-icon">🔧</div>
-    <h3>故障排查案例</h3>
-    <p>真实 Support Case 的结构化总结，涵盖 DNS、DHCP、SMB、SDN 等场景</p>
-    <span class="card-count">{{ case_count }} 篇文章</span>
+    <h3>Case Studies</h3>
+    <p>Structured summaries of real support cases covering DNS, DHCP, SMB, SDN, and more</p>
+    <span class="card-count">{{ case_count }} posts</span>
   </a>
   <a href="{{ '/deep-dive/' | relative_url }}" class="category-card">
     <div class="card-icon">📖</div>
-    <h3>知识深潜</h3>
-    <p>技术原理深度解析，包括网络协议、集群架构、性能分析等</p>
-    <span class="card-count">{{ deep_count }} 篇文章</span>
+    <h3>Deep Dive</h3>
+    <p>In-depth technical analysis of network protocols, cluster architecture, and performance</p>
+    <span class="card-count">{{ deep_count }} posts</span>
   </a>
   <a href="{{ '/scenario-maps/' | relative_url }}" class="category-card">
     <div class="card-icon">🗺️</div>
-    <h3>场景导航</h3>
-    <p>可视化排查导航图，用 Mermaid 流程图呈现排查路径</p>
-    <span class="card-count">{{ scenario_count }} 篇文章</span>
+    <h3>Scenario Maps</h3>
+    <p>Visual troubleshooting navigation with Mermaid flowcharts for fault diagnosis</p>
+    <span class="card-count">{{ scenario_count }} posts</span>
   </a>
   <a href="{{ '/ai-learning/' | relative_url }}" class="category-card">
     <div class="card-icon">🤖</div>
-    <h3>AI 学习</h3>
-    <p>从零开始的 AI 学习系列，涵盖机器学习、深度学习、LLM 等</p>
-    <span class="card-count">{{ ai_count }} 篇文章</span>
+    <h3>AI Learning</h3>
+    <p>AI learning series from scratch: ML fundamentals, deep learning, LLMs, and more</p>
+    <span class="card-count">{{ ai_count }} posts</span>
   </a>
   <a href="{{ '/math-education/' | relative_url }}" class="category-card">
     <div class="card-icon">📐</div>
-    <h3>数学教育</h3>
-    <p>上海小学数学知识点整理，按年级学期分类</p>
-    <span class="card-count">{{ math_count }} 篇文章</span>
+    <h3>Math Education</h3>
+    <p>Shanghai elementary math curriculum organized by grade and semester</p>
+    <span class="card-count">{{ math_count }} posts</span>
   </a>
   <a href="{{ '/tsg/' | relative_url }}" class="category-card">
     <div class="card-icon">🛠️</div>
-    <h3>排查指南</h3>
-    <p>常见问题的通用排查步骤与解决方案</p>
-    <span class="card-count">{{ tsg_count }} 篇文章</span>
+    <h3>Troubleshooting Guides</h3>
+    <p>General troubleshooting steps and solutions for common issues</p>
+    <span class="card-count">{{ tsg_count }} posts</span>
   </a>
 </section>
 
 <section class="recent-posts">
-  <h2>📝 最近更新</h2>
+  <h2>📝 Recent Updates</h2>
   <ul class="post-list">
     {% for post in site.posts limit:20 %}
     <li class="post-list-item">

@@ -1,11 +1,11 @@
 ---
 layout: default
-title: AI 学习
+title: AI Learning
 permalink: /ai-learning/
 ---
 
-<h2>🤖 AI 学习</h2>
-<p class="page-description">从零开始的 AI 学习系列，涵盖机器学习基础、深度学习、大语言模型、Prompt Engineering、AI Agent 开发等。</p>
+<h2>🤖 AI Learning</h2>
+<p class="page-description">AI learning series from scratch, covering machine learning fundamentals, deep learning, large language models, Prompt Engineering, AI Agent development, and more.</p>
 
 <ul class="post-list">
   {% for post in site.posts %}

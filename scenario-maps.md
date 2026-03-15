@@ -1,11 +1,11 @@
 ---
 layout: default
-title: 场景导航
+title: Scenario Maps
 permalink: /scenario-maps/
 ---
 
-<h2>🗺️ 场景导航</h2>
-<p class="page-description">可视化排查导航图，使用 Mermaid 流程图呈现故障排查路径，帮助快速定位问题。</p>
+<h2>🗺️ Scenario Maps</h2>
+<p class="page-description">Visual troubleshooting navigation maps using Mermaid flowcharts to illustrate fault diagnosis paths for quick problem identification.</p>
 
 <ul class="post-list">
   {% for post in site.posts %}

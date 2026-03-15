@@ -1,11 +1,11 @@
 ---
 layout: default
-title: 排查指南
+title: Troubleshooting Guides
 permalink: /tsg/
 ---
 
-<h2>🛠️ 排查指南</h2>
-<p class="page-description">常见问题的通用排查步骤与解决方案 (Troubleshooting Guide)。</p>
+<h2>🛠️ Troubleshooting Guides (TSG)</h2>
+<p class="page-description">General troubleshooting steps and solutions for common issues.</p>
 
 <ul class="post-list">
   {% for post in site.posts %}

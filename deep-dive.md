@@ -1,11 +1,11 @@
 ---
 layout: default
-title: 知识深潜
+title: Deep Dive
 permalink: /deep-dive/
 ---
 
-<h2>📖 知识深潜</h2>
-<p class="page-description">技术原理深度解析，包括网络协议、Windows 集群架构、性能分析方法论等系统性知识整理。</p>
+<h2>📖 Deep Dive</h2>
+<p class="page-description">In-depth technical analysis covering network protocols, Windows cluster architecture, performance methodology, and systematic knowledge consolidation.</p>
 
 <ul class="post-list">
   {% for post in site.posts %}

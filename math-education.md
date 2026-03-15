@@ -1,11 +1,11 @@
 ---
 layout: default
-title: 数学教育
+title: Math Education
 permalink: /math-education/
 ---
 
-<h2>📐 数学教育</h2>
-<p class="page-description">上海小学数学知识点整理，按年级和学期分类，适合课后复习与查漏补缺。</p>
+<h2>📐 Math Education</h2>
+<p class="page-description">Shanghai elementary math curriculum (Grades 1–6) organized by grade and semester, ideal for review and gap identification.</p>
 
 <ul class="post-list">
   {% for post in site.posts %}

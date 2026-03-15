@@ -239,3 +239,13 @@ body {
   color: #656d76;
   border-top: 1px solid var(--border);
 }
+
+/* Topic headings for case studies */
+.topic-heading {
+  margin-top: 32px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--accent);
+  color: var(--fg);
+  font-size: 1.2rem;
+}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,13 +15,13 @@
       </div>
       <button class="nav-toggle" aria-label="Toggle navigation" onclick="document.querySelector('.site-nav').classList.toggle('open')">☰</button>
       <nav class="site-nav">
-        <a href="{{ '/' | relative_url }}" {% if page.url == '/' %}class="active"{% endif %}>🏠 首页</a>
-        <a href="{{ '/case-summaries/' | relative_url }}" {% if page.url == '/case-summaries/' %}class="active"{% endif %}>🔧 故障案例</a>
-        <a href="{{ '/deep-dive/' | relative_url }}" {% if page.url == '/deep-dive/' %}class="active"{% endif %}>📖 知识深潜</a>
-        <a href="{{ '/scenario-maps/' | relative_url }}" {% if page.url == '/scenario-maps/' %}class="active"{% endif %}>🗺️ 场景导航</a>
-        <a href="{{ '/ai-learning/' | relative_url }}" {% if page.url == '/ai-learning/' %}class="active"{% endif %}>🤖 AI 学习</a>
-        <a href="{{ '/math-education/' | relative_url }}" {% if page.url == '/math-education/' %}class="active"{% endif %}>📐 数学教育</a>
-        <a href="{{ '/tsg/' | relative_url }}" {% if page.url == '/tsg/' %}class="active"{% endif %}>🛠️ 排查指南</a>
+        <a href="{{ '/' | relative_url }}" {% if page.url == '/' %}class="active"{% endif %}>🏠 Home</a>
+        <a href="{{ '/case-summaries/' | relative_url }}" {% if page.url == '/case-summaries/' %}class="active"{% endif %}>🔧 Case Studies</a>
+        <a href="{{ '/deep-dive/' | relative_url }}" {% if page.url == '/deep-dive/' %}class="active"{% endif %}>📖 Deep Dive</a>
+        <a href="{{ '/scenario-maps/' | relative_url }}" {% if page.url == '/scenario-maps/' %}class="active"{% endif %}>🗺️ Scenario Maps</a>
+        <a href="{{ '/ai-learning/' | relative_url }}" {% if page.url == '/ai-learning/' %}class="active"{% endif %}>🤖 AI Learning</a>
+        <a href="{{ '/math-education/' | relative_url }}" {% if page.url == '/math-education/' %}class="active"{% endif %}>📐 Math Education</a>
+        <a href="{{ '/tsg/' | relative_url }}" {% if page.url == '/tsg/' %}class="active"{% endif %}>🛠️ TSG</a>
       </nav>
     </div>
   </header>
