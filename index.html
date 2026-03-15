@@ -67,9 +67,9 @@ title: Home
 </section>
 
 <section class="recent-posts">
-  <h2>📝 Recent Updates</h2>
+  <h2>📝 Recent Update</h2>
   <ul class="post-list">
-    {% for post in site.posts limit:20 %}
+    {% for post in site.posts limit:1 %}
     <li class="post-list-item">
       <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
       <div class="post-list-meta">
