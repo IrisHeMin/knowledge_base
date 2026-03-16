@@ -22,6 +22,9 @@
         <a href="{{ '/ai-learning/' | relative_url }}" {% if page.url == '/ai-learning/' %}class="active"{% endif %}>🤖 AI Learning</a>
         <a href="{{ '/education/' | relative_url }}" {% if page.url == '/education/' %}class="active"{% endif %}>📐 Education</a>
         <a href="{{ '/tsg/' | relative_url }}" {% if page.url == '/tsg/' %}class="active"{% endif %}>🛠️ TSG</a>
+        <form class="nav-search" action="{{ '/search/' | relative_url }}" method="get">
+          <input type="text" name="q" placeholder="🔍 Search..." aria-label="Search" class="nav-search-input">
+        </form>
       </nav>
     </div>
   </header>
