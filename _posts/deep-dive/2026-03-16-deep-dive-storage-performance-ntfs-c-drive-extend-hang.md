@@ -30,7 +30,7 @@ type: "deep-dive"
 
 ### 2.1 卷 (Volume) 与 C 盘
 
-- **卷 (Volume)**：逻辑上的存储单元，可以对应一个物理磁盘、一个分区，或多个物理磁盘组合。Windows 中我们看到的 `C:\`、`D:\` 就是不同的卷。
+- **卷 (Volume)**：逻辑上的存储单元，可以对应一个物理磁盘、一个分区，或多个物理磁盘组合。Windows 中我们看到的 `C:\\`、`D:\\` 就是不同的卷。
 - **扩展卷 (Extend Volume)**：在不破坏现有数据的前提下，增加卷所使用的物理空间。例如，把 C 盘从 50 GB 扩到 100 GB。
 - **系统盘 C 盘**：通常承载操作系统、系统文件和部分应用，是最敏感的卷；任何在 C 盘上的长时间挂起，往往被用户感知为“整个系统卡死”。
 
@@ -145,7 +145,7 @@ type: "deep-dive"
 - `NtfsLockSystemFilePages` / `NtfsLockUnlockSystemFilePages`：
   - 用于在某些内部流程（如 checkpoint）中，锁定系统文件（例如 `$Bitmap`）的页面，避免在关键窗口期被换出或被其他操作干扰。
 - 注册表键：
-  - 路径：`HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem\NtfsLockSystemFilePages`
+  - 路径：`HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\FileSystem\\NtfsLockSystemFilePages`
   - 含义：是否启用对系统文件页面的这类锁定机制。
 - 在本案例中：
   - 开启该机制会走“锁系统文件页面”这条路径，从而参与到上述死锁链条；
@@ -225,7 +225,7 @@ type: "deep-dive"
 
 - **在已知问题版本上的规避策略**：
   - 对于确认存在该 NTFS 死锁问题的 OS 版本，可在受控范围内启用注册表 workaround：
-    - `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem\NtfsLockSystemFilePages = 0`；
+    - `HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\FileSystem\\NtfsLockSystemFilePages = 0`；
   - 先在测试/预发环境验证：
     - 扩展 C 盘操作是否稳定完成；
     - System 日志中是否出现新的 NTFS/volmgr 错误事件；
@@ -293,7 +293,7 @@ From a support perspective, this problem touches multiple storage-related topics
 
 ### 2.1 Volume and C Drive
 
-- **Volume**: A logical storage unit that may correspond to a physical disk, a partition, or a combination of disks. In Windows, `C:\`, `D:\` etc. are different volumes.
+- **Volume**: A logical storage unit that may correspond to a physical disk, a partition, or a combination of disks. In Windows, `C:\\`, `D:\\` etc. are different volumes.
 - **Extend Volume**: Increasing the amount of physical space used by a volume without destroying existing data, e.g., extending C: from 50 GB to 100 GB.
 - **System Drive (C:)**: Typically holds the operating system, system files, and some applications. Any long hang on C: is often perceived as "the whole system is frozen".
 
@@ -408,7 +408,7 @@ For "extending the C: drive", a simplified core flow is:
 - `NtfsLockSystemFilePages` / `NtfsLockUnlockSystemFilePages`:
   - Used in internal flows such as checkpoint to lock system file pages (e.g., `$Bitmap`) during sensitive operations.
 - Registry Key:
-  - Path: `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem\NtfsLockSystemFilePages`;
+  - Path: `HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\FileSystem\\NtfsLockSystemFilePages`;
   - Meaning: enables or disables this additional locking mechanism for system file pages.
 - In this case:
   - When enabled, the checkpoint path participates in the deadlock chain described above;
@@ -430,8 +430,7 @@ For "extending the C: drive", a simplified core flow is:
 
 ## 5. Common Issues & Troubleshooting (EN)
 
-### Issue A: System Hangs While Extending C:
-
+### Issue A: System Hangs While Extending C:\n
 - **Symptoms**:
   - System becomes unresponsive for a long time during C: volume extension;
   - The extension operation does not complete and may require a reboot;
@@ -483,7 +482,7 @@ For "extending the C: drive", a simplified core flow is:
 
 - **Mitigation on Affected OS Versions**:
   - For OS versions confirmed to have this NTFS deadlock issue, consider enabling the registry-based workaround in a controlled manner:
-    - `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem\NtfsLockSystemFilePages = 0`;
+    - `HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\FileSystem\\NtfsLockSystemFilePages = 0`;
   - Validate in test/staging environments first:
     - Confirm that C: extension completes reliably;
     - Check that there are no new critical NTFS/volmgr errors in the System log;
