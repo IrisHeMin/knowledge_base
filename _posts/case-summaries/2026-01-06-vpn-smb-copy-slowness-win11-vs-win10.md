@@ -38,117 +38,7 @@ tags: [smb, vpn, windows-11, tcp, packet-loss, cubic-tcp, f5-vpn, cisco-anyconne
 
 ⚠️ **关键发现**: 两台机器使用**完全不同的 VPN 客户端**，这是一个重大变量。
 
-## 3. Troubleshooting 过程 (Investigation & Troubleshooting)
-
-### 阶段 1: 收集网络抓包 (Packet Capture)
-
-1. **收集三组 pcapng 抓包进行对比分析**：
-   - Win10 VPN 抓包（Cisco AnyConnect）
-   - Win11 通过主机名访问 (`\\filesrv01.contoso.corp\`) 抓包
-   - Win11 通过 IP 地址访问 (`\\10.2.20.98\`) 抓包
-   
-2. **使用 Wireshark/tshark 分析三组抓包**，发现：
-
-   | 指标 | Win10 VPN | Win11 (主机名) | Win11 (IP 地址) |
-   |------|-----------|---------------|----------------|
-   | 吞吐量 | **25.85 Mbps** | 16.51 Mbps | 19.51 Mbps |
-   | 传输时长 | 36.66s | 78.04s | 75.05s |
-   | TCP MSS | **1,350 bytes** | 1,240 bytes | 1,240 bytes |
-   | 平均 RTT | 0.28ms | 0.48ms | 0.46ms |
-   | TCP 重传 | 1,122 | 425 | 177 |
-   | Duplicate ACK | 82 | **6,430 (2.56%)** 🔴 | **5,060 (2.04%)** 🔴 |
-   | 乱序包 | N/A | 786 | 440 |
-   | SMB Read 平均响应 | 1.65s | **2.97s** 🔴 | **2.84s** 🔴 |
-   | SMB 签名 | Enabled | Not Enabled | Enabled |
-   | IP 分片 | 无 | 无 | **全部分片** 🔴 |
-
-3. **得出关键结论**：
-   - 三组抓包均显示严重的 TCP 传输问题（Duplicate ACK 率 2-2.5%）
-   - VPN 链路存在持续的**丢包和乱序**
-   - Win11 通过 IP 访问时 SMB 降级到 2.1（Kerberos SPN 不匹配导致回退 NTLM）
-   - Win11 IP 访问场景下所有 247,586 个包均被分片
-
-### 阶段 2: ProcMon 深度分析
-
-4. **收集 ProcMon 日志对比**：
-   - Win11 完整未过滤 ProcMon: **14.7M 行 (2.5 GB)**
-   - Win10 完整未过滤 ProcMon: **5.7M 行 (1 GB)**
-   - 另有两份过滤后的 CSV 用于初步分析
-
-5. **发现 1: 文件被复制了两次 — Explorer.EXE 删除了首次复制的文件**
-   ```
-   # Win11 证据:
-   Explorer.EXE | IRP_MJ_CREATE | SUCCESS
-     Path: C:\New folder\AppPackage_v54 - Copy.zip
-     Detail: Desired Access: Delete, Disposition: Open, 
-             Options: Non-Directory File, Delete On Close
-   
-   # 随后 Robocopy 发现文件消失:
-   Robocopy.exe | IRP_MJ_DIRECTORY_CONTROL | NO SUCH FILE
-   Robocopy.exe | IRP_MJ_CREATE | NAME NOT FOUND
-   ```
-   **两台机器都存在此问题** — 数据传输量直接翻倍。
-
-6. **发现 2: Win11 存在 109 秒启动延迟 + 36 秒静默期**
-   ```
-   Win11: Robocopy 首次出现前有 109 秒无 I/O 记录
-   Win10: 同一阶段仅需 5.5 秒
-   Win11: 首次复制完成后，36 秒内无任何 I/O
-   Win10: 同一阶段仅 4.7 秒
-   ```
-
-7. **发现 3: VPN 客户端完全不同**
-   
-   | 指标 | Win10 | Win11 |
-   |------|-------|-------|
-   | VPN 产品 | **Cisco AnyConnect** | **F5 VPN** |
-   | VPN 进程事件数 | vpnagent.exe (502K) | F5VpnPluginApp.exe (1,030K) |
-
-8. **发现 4: Cybereason EDR 在 Win11 上活跃度高 14.3 倍**
-
-   | 指标 | Win10 | Win11 |
-   |------|-------|-------|
-   | minionhost.exe 事件数 | 58,878 | **840,652** |
-   | 扫描行为 | 仅操作本地数据库 | **全盘扫描每个 DLL/EXE** |
-   | 访问目标文件路径 | 0 次 | 10 次 |
-
-9. **发现 5: 安全产品总 I/O 负载 Win11 是 Win10 的 5 倍**
-
-   | 安全产品 | Win10 事件数 | Win11 事件数 |
-   |---------|------------|------------|
-   | Cybereason (minionhost.exe) | 58,878 | **840,652** (14.3x) |
-   | Symantec SEP | 136,476 | 131,471 (~1x) |
-   | BeyondTrust ExecutionPrevention | 94,315 | 141,484 (1.5x) |
-   | BeyondTrust Avecto IC3 | **0** | **285,927** (Win11 only) |
-   | BeyondTrust Defendpoint | **0** | **54,758** (Win11 only) |
-   | **合计** | **~290K** | **~1,454K (5x)** |
-
-10. **发现 6: SMB 签名排除 — 两台机器配置完全相同**
-    ```
-    # 两台机器的 LanmanWorkstation.reg:
-    "EnableSecuritySignature"=dword:00000001
-    "RequireSecuritySignature"=dword:00000001
-    ```
-    SMB 签名**不是**造成速度差异的原因。
-
-### 阶段 3: 根因分析汇总
-
-11. **综合所有数据，构建根因链**：
-    - 🔴 **70%** — VPN 链路丢包/乱序（三组抓包均确认）
-    - 🔴 **20%** — Win11 Cubic TCP 对丢包更敏感（vs Win10 Compound TCP）
-    - 🟡 **5%** — Win11 TCP MSS 更小 (1,240 vs 1,350)，IP 分片
-    - 🟡 **5%** — IP 访问导致 SMB 降级到 2.1
-
-## 4. Blockers 与解决 (Blockers & How They Were Resolved)
-
-| Blocker | 影响 | 如何解决 |
-|---------|------|---------|
-| 初始假设两台机器使用相同 VPN | 错误方向：把问题聚焦在 OS 差异而非 VPN 差异 | 分析完整 ProcMon 后发现 Win10=Cisco AnyConnect, Win11=F5 VPN |
-| 初始假设 Cybereason 仅存在于 Win11 | 基于过滤 CSV 得出错误结论 | 分析完整未过滤 ProcMon (5.7M 行) 后发现 Win10 也有 Cybereason，但 Win11 活跃度高 14.3 倍 |
-| ProcMon 日志巨大 (Win11: 14.7M 行, 2.5GB) | 无法人工检阅，过滤 CSV 遗漏关键信息 | 使用脚本批量解析和统计进程事件分布 |
-| 需要确认 TCP 拥塞控制算法差异 | 抓包中无法直接看到拥塞控制算法 | 基于 OS 默认配置推断 + 行为特征佐证（Win10 重传更多但吞吐更高） |
-
-## 5. 根因与解决方案 (Root Cause & Resolution)
+## 3. 根因与解决方案 (Root Cause & Resolution)
 
 ### Root Cause
 
@@ -217,7 +107,7 @@ Get-NetTCPSetting | Select-Object SettingName, CongestionProvider, AutoTuningLev
   ```
 - 考虑使用 HTTPS 文件传输替代 SMB（绕过 SMB over VPN 的限制）
 
-## 6. 经验教训 (Lessons Learned)
+## 4. 经验教训 (Lessons Learned)
 
 ### 技术知识
 
@@ -265,7 +155,7 @@ Test-Connection -ComputerName <target_ip> -Count 100 -BufferSize 1200
 - 安全产品在 OS 升级后需要重新评估其行为和 I/O 影响
 - SMB 共享访问统一使用主机名，避免 IP 地址（保持 Kerberos + SMB 3.x）
 
-## 7. 参考文档 (References)
+## 5. 参考文档 (References)
 
 - [Troubleshoot slow SMB file transfer](https://learn.microsoft.com/en-us/windows-server/storage/file-server/troubleshoot/slow-file-transfer) — Official Microsoft guide for troubleshooting slow SMB transfers
 - [Set-NetTCPSetting](https://learn.microsoft.com/en-us/powershell/module/nettcpip/set-nettcpsetting) — PowerShell cmdlet for modifying TCP settings including CongestionProvider
@@ -306,85 +196,7 @@ Customer reported:
 
 ⚠️ **Critical Finding**: The two machines used **entirely different VPN clients** — a major uncontrolled variable.
 
-## 3. Investigation & Troubleshooting
-
-### Phase 1: Network Packet Capture Analysis
-
-1. **Collected three pcapng captures for comparison**:
-   - Win10 VPN capture (Cisco AnyConnect)
-   - Win11 accessing by hostname (`\\filesrv01.contoso.corp\`)
-   - Win11 accessing by IP address (`\\10.2.20.98\`)
-
-2. **Analyzed with Wireshark/tshark** — Key findings:
-
-   | Metric | Win10 VPN | Win11 (Hostname) | Win11 (IP Address) |
-   |--------|-----------|-------------------|---------------------|
-   | Throughput | **25.85 Mbps** | 16.51 Mbps | 19.51 Mbps |
-   | Duration | 36.66s | 78.04s | 75.05s |
-   | TCP MSS | **1,350 bytes** | 1,240 bytes | 1,240 bytes |
-   | Avg RTT | 0.28ms | 0.48ms | 0.46ms |
-   | Retransmissions | 1,122 | 425 | 177 |
-   | Duplicate ACKs | 82 | **6,430 (2.56%)** 🔴 | **5,060 (2.04%)** 🔴 |
-   | Out-of-Order | N/A | 786 | 440 |
-   | SMB Read Avg | 1.65s | **2.97s** 🔴 | **2.84s** 🔴 |
-   | IP Fragmentation | None | None | **All packets** 🔴 |
-
-3. **Key conclusions**:
-   - All three captures show severe TCP transmission issues (2-2.5% Dup ACK rate)
-   - VPN link has persistent **packet loss and reordering**
-   - IP access causes Kerberos SPN mismatch → NTLM fallback → SMB 2.1 downgrade
-   - All 247,586 packets fragmented in Win11 IP scenario
-
-### Phase 2: ProcMon Deep Analysis
-
-4. **Collected and compared ProcMon logs**:
-   - Win11 full unfiltered: **14.7M rows (2.5 GB)**
-   - Win10 full unfiltered: **5.7M rows (1 GB)**
-
-5. **Finding 1: File copied TWICE — Explorer.EXE deletes the first copy**
-   ```
-   Explorer.EXE | IRP_MJ_CREATE | Desired Access: Delete, Delete On Close
-   → Robocopy.exe | IRP_MJ_CREATE | NAME NOT FOUND (file gone)
-   → Robocopy re-copies the entire file
-   ```
-   Both machines affected — data transfer volume **doubled**.
-
-6. **Finding 2: Win11 has 109-second startup delay + 36-second silent period**
-   - Win11: 109 seconds of no I/O before Robocopy starts (Win10: 5.5s)
-   - Win11: 36-second gap between first and second copy (Win10: 4.7s)
-
-7. **Finding 3: Completely different VPN clients**
-   - Win10: Cisco AnyConnect (`vpnagent.exe`: 502K events)
-   - Win11: F5 VPN (`F5VpnPluginApp.exe`: 1,030K events)
-
-8. **Finding 4: Cybereason EDR 14.3x more active on Win11**
-   - Win10: 58,878 events (mostly local database operations)
-   - Win11: **840,652 events** (aggressive full-disk scanning of every DLL/EXE)
-
-9. **Finding 5: Total security product I/O is 5x higher on Win11**
-   - Win10 total: ~290K events
-   - Win11 total: **~1,454K events** (includes BeyondTrust components only on Win11)
-
-10. **Finding 6: SMB signing ruled out** — identical configuration on both machines.
-
-### Phase 3: Root Cause Synthesis
-
-11. **Root cause contribution breakdown**:
-    - 🔴 **70%** — VPN link packet loss/reordering
-    - 🔴 **20%** — Win11 Cubic TCP more sensitive to loss than Win10 CTCP
-    - 🟡 **5%** — Win11 smaller TCP MSS + IP fragmentation
-    - 🟡 **5%** — IP access causes SMB downgrade to 2.1
-
-## 4. Blockers & How They Were Resolved
-
-| Blocker | Impact | Resolution |
-|---------|--------|------------|
-| Initial assumption both machines use same VPN | Misdirected investigation toward OS differences only | Full ProcMon analysis revealed Win10=Cisco, Win11=F5 |
-| Initial assumption Cybereason only on Win11 | Incorrect conclusion from filtered CSV | Full unfiltered ProcMon (5.7M rows) showed Cybereason on both, but 14.3x more active on Win11 |
-| ProcMon logs too large for manual review (14.7M rows) | Filtered CSV missed critical information | Scripted bulk analysis of process event distribution |
-| TCP congestion algorithm not visible in captures | Could not directly confirm Cubic vs CTCP | Inferred from OS defaults + behavioral evidence (Win10: more retransmissions yet higher throughput) |
-
-## 5. Root Cause & Resolution
+## 3. Root Cause & Resolution
 
 ### Root Cause
 
@@ -431,7 +243,7 @@ Get-NetTCPSetting | Select-Object SettingName, CongestionProvider, AutoTuningLev
 robocopy "\\filesrv01.contoso.corp\App-Deployment\AppPackage_v54" "C:\local" /MT:8 /Z
 ```
 
-## 6. Lessons Learned
+## 4. Lessons Learned
 
 ### Technical Knowledge
 - **Windows 11 defaults to Cubic TCP** vs Windows 10's Compound TCP — significant performance difference under packet loss. Cubic is designed for high-bandwidth WANs but is more sensitive to loss
@@ -468,7 +280,7 @@ Test-Connection -ComputerName <target> -Count 100 -BufferSize 1200
 - Re-evaluate security product behavior and I/O impact after OS upgrades
 - Standardize SMB share access using hostnames (not IP) to maintain Kerberos + SMB 3.x
 
-## 7. References
+## 5. References
 
 - [Troubleshoot slow SMB file transfer](https://learn.microsoft.com/en-us/windows-server/storage/file-server/troubleshoot/slow-file-transfer) — Official Microsoft guide for troubleshooting slow SMB transfers
 - [Set-NetTCPSetting](https://learn.microsoft.com/en-us/powershell/module/nettcpip/set-nettcpsetting) — PowerShell cmdlet for modifying TCP settings including CongestionProvider
