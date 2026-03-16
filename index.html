@@ -5,8 +5,78 @@ title: Home
 
 <section class="dashboard-intro">
   <h2>👋 Welcome to the Knowledge Base</h2>
-  <p>A collection of troubleshooting case studies, technical deep dives, scenario navigation maps, AI learning notes, math education resources, and troubleshooting guides. Pick a category to start exploring!</p>
+  <p>A collection of troubleshooting case studies, technical deep dives, scenario navigation maps, AI learning notes, education resources, and troubleshooting guides.</p>
 </section>
+
+<section class="home-search">
+  <input type="text" id="home-search-input" class="search-input-large" placeholder="🔍 Search posts by keyword...">
+  <div id="home-search-results"></div>
+</section>
+
+<script>
+(function() {
+  var posts = [], loaded = false;
+  var input = document.getElementById('home-search-input');
+  var resultsDiv = document.getElementById('home-search-results');
+
+  input.addEventListener('focus', function() {
+    if (!loaded) {
+      loaded = true;
+      fetch('{{ "/search.json" | relative_url }}')
+        .then(function(r) { return r.json(); })
+        .then(function(d) { posts = d; if (input.value.trim().length >= 2) doSearch(input.value.trim()); });
+    }
+  });
+
+  input.addEventListener('input', function() {
+    var q = this.value.trim();
+    if (q.length < 2) { resultsDiv.innerHTML = ''; return; }
+    if (posts.length) doSearch(q);
+  });
+
+  function doSearch(query) {
+    var terms = query.toLowerCase().split(/\s+/);
+    var titleHits = [], contentHits = [];
+    posts.forEach(function(p) {
+      var titleStr = (p.title + ' ' + p.tags.join(' ') + ' ' + p.categories.join(' ')).toLowerCase();
+      var contentStr = (p.content || '').toLowerCase();
+      var inTitle = terms.every(function(t) { return titleStr.indexOf(t) !== -1; });
+      var inContent = terms.every(function(t) { return (titleStr + ' ' + contentStr).indexOf(t) !== -1; });
+      if (inTitle) titleHits.push(p);
+      else if (inContent) contentHits.push(p);
+    });
+
+    if (!titleHits.length && !contentHits.length) {
+      resultsDiv.innerHTML = '<p class="search-no-results">No results for "<strong>' + esc(query) + '</strong>"</p>';
+      return;
+    }
+
+    var html = '<p class="search-count">' + (titleHits.length + contentHits.length) + ' result(s)</p>';
+    if (titleHits.length) {
+      html += '<h3 class="search-section">Title Matches</h3><ul class="post-list">';
+      titleHits.forEach(function(p) { html += renderPost(p); });
+      html += '</ul>';
+    }
+    if (contentHits.length) {
+      html += '<h3 class="search-section">Content Matches</h3><ul class="post-list">';
+      contentHits.forEach(function(p) { html += renderPost(p); });
+      html += '</ul>';
+    }
+    resultsDiv.innerHTML = html;
+  }
+
+  function renderPost(p) {
+    var h = '<li class="post-list-item"><h2><a href="' + p.url + '">' + esc(p.title) + '</a></h2>';
+    h += '<div class="post-list-meta">📅 ' + p.date;
+    if (p.categories.length) h += ' &middot; 📁 ' + esc(p.categories.join(', '));
+    h += '</div>';
+    if (p.excerpt) h += '<p class="post-excerpt">' + esc(p.excerpt) + '</p>';
+    return h + '</li>';
+  }
+
+  function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+})();
+</script>
 
 {% comment %}Count posts per category{% endcomment %}
 {% assign case_count = 0 %}

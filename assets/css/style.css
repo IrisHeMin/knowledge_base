@@ -356,6 +356,17 @@ body {
 }
 .search-hint, .search-no-results { color: #656d76; font-size: 0.95rem; }
 .search-count { color: #656d76; font-size: 0.95rem; margin-bottom: 16px; }
+.search-section {
+  font-size: 1rem;
+  color: var(--accent);
+  margin: 20px 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Home search */
+.home-search { margin-bottom: 28px; }
+.home-search .search-input-large { margin-bottom: 0; }
 
 @media (max-width: 768px) {
   .nav-search-input { width: 120px; }
