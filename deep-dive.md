@@ -13,6 +13,7 @@ permalink: /deep-dive/
 {% assign perf_count = 0 %}
 {% assign debug_count = 0 %}
 {% assign ai_count = 0 %}
+{% assign other_count = 0 %}
 {% for post in site.posts %}
   {% if post.path contains "deep-dive/" %}
     {% if post.path contains "tcpip-" %}{% assign tcpip_count = tcpip_count | plus: 1 %}
@@ -21,6 +22,7 @@ permalink: /deep-dive/
     {% elsif post.path contains "performance" or post.path contains "wpa-" %}{% assign perf_count = perf_count | plus: 1 %}
     {% elsif post.path contains "dump-" or post.path contains "windbg-" %}{% assign debug_count = debug_count | plus: 1 %}
     {% elsif post.path contains "ai-102" %}{% assign ai_count = ai_count | plus: 1 %}
+    {% else %}{% assign other_count = other_count | plus: 1 %}
     {% endif %}
   {% endif %}
 {% endfor %}
@@ -62,4 +64,12 @@ permalink: /deep-dive/
     <p>AI-102 certification guide, Azure AI services, and generative AI fundamentals</p>
     <span class="card-count">{{ ai_count }} posts</span>
   </a>
+  {% if other_count > 0 %}
+  <a href="{{ '/deep-dive/other/' | relative_url }}" class="category-card">
+    <div class="card-icon">📦</div>
+    <h3>Other</h3>
+    <p>Other deep dive topics not yet categorized</p>
+    <span class="card-count">{{ other_count }} posts</span>
+  </a>
+  {% endif %}
 </section>

@@ -11,12 +11,14 @@ permalink: /scenario-maps/
 {% assign packet_count = 0 %}
 {% assign port_count = 0 %}
 {% assign cluster_count = 0 %}
+{% assign other_count = 0 %}
 {% for post in site.posts %}
   {% if post.path contains "scenario-maps/" %}
     {% if post.path contains "tcpip-adapter" or post.path contains "tcpip-ip-missing" or post.path contains "tcpip-default-gw" %}{% assign config_count = config_count | plus: 1 %}
     {% elsif post.path contains "tcpip-connection" or post.path contains "tcpip-packet" %}{% assign packet_count = packet_count | plus: 1 %}
     {% elsif post.path contains "tcpip-port" %}{% assign port_count = port_count | plus: 1 %}
     {% elsif post.path contains "cluster-" %}{% assign cluster_count = cluster_count | plus: 1 %}
+    {% else %}{% assign other_count = other_count | plus: 1 %}
     {% endif %}
   {% endif %}
 {% endfor %}
@@ -46,4 +48,12 @@ permalink: /scenario-maps/
     <p>Cluster creation failures and CNO repair troubleshooting</p>
     <span class="card-count">{{ cluster_count }} posts</span>
   </a>
+  {% if other_count > 0 %}
+  <a href="{{ '/scenario-maps/other/' | relative_url }}" class="category-card">
+    <div class="card-icon">📦</div>
+    <h3>Other</h3>
+    <p>Other scenario maps not yet categorized</p>
+    <span class="card-count">{{ other_count }} posts</span>
+  </a>
+  {% endif %}
 </section>
