@@ -13,6 +13,8 @@ permalink: /deep-dive/
 {% assign perf_count = 0 %}
 {% assign debug_count = 0 %}
 {% assign ai_count = 0 %}
+{% assign dhcp_count = 0 %}
+{% assign auth_count = 0 %}
 {% assign other_count = 0 %}
 {% for post in site.posts %}
   {% if post.path contains "deep-dive/" %}
@@ -22,6 +24,8 @@ permalink: /deep-dive/
     {% elsif post.path contains "performance" or post.path contains "wpa-" %}{% assign perf_count = perf_count | plus: 1 %}
     {% elsif post.path contains "dump-" or post.path contains "windbg-" %}{% assign debug_count = debug_count | plus: 1 %}
     {% elsif post.path contains "ai-102" %}{% assign ai_count = ai_count | plus: 1 %}
+    {% elsif post.path contains "dhcp-" %}{% assign dhcp_count = dhcp_count | plus: 1 %}
+    {% elsif post.path contains "certificate-" or post.path contains "8021x" or post.path contains "eap-" or post.path contains "kerberos-" or post.path contains "nps-" or post.path contains "auth-" %}{% assign auth_count = auth_count | plus: 1 %}
     {% else %}{% assign other_count = other_count | plus: 1 %}
     {% endif %}
   {% endif %}
@@ -63,6 +67,18 @@ permalink: /deep-dive/
     <h3>Azure AI</h3>
     <p>AI-102 certification guide, Azure AI services, and generative AI fundamentals</p>
     <span class="card-count">{{ ai_count }} posts</span>
+  </a>
+  <a href="{{ '/deep-dive/dhcp/' | relative_url }}" class="category-card">
+    <div class="card-icon">🔄</div>
+    <h3>DHCP</h3>
+    <p>DHCP server architecture, relay agent mechanisms, failover configurations, and lease management</p>
+    <span class="card-count">{{ dhcp_count }} posts</span>
+  </a>
+  <a href="{{ '/deep-dive/auth/' | relative_url }}" class="category-card">
+    <div class="card-icon">🔐</div>
+    <h3>Authentication & PKI</h3>
+    <p>Certificate-based authentication, Kerberos strong mapping, 802.1X / EAP-TLS, ADCS, and NPS</p>
+    <span class="card-count">{{ auth_count }} posts</span>
   </a>
   {% if other_count > 0 %}
   <a href="{{ '/deep-dive/other/' | relative_url }}" class="category-card">
