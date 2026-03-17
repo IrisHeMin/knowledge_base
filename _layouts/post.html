@@ -43,9 +43,55 @@ layout: default
     </div>
     {% endif %}
   </header>
+  <nav class="post-toc" id="post-toc">
+    <div class="toc-header" onclick="this.parentElement.classList.toggle('collapsed')">
+      <span class="toc-title">📑 Table of Contents</span>
+      <span class="toc-toggle">▾</span>
+    </div>
+    <ul class="toc-list" id="toc-list"></ul>
+  </nav>
   <div class="post-content">
     {{ content }}
   </div>
+  <script>
+  (function() {
+    var content = document.querySelector('.post-content');
+    var tocList = document.getElementById('toc-list');
+    var tocNav = document.getElementById('post-toc');
+    if (!content || !tocList) return;
+    var headings = content.querySelectorAll('h1, h2');
+    if (headings.length < 3) { tocNav.style.display = 'none'; return; }
+    var items = [];
+    headings.forEach(function(h, i) {
+      if (!h.id) h.id = 'heading-' + i;
+      var li = document.createElement('li');
+      li.className = 'toc-item toc-' + h.tagName.toLowerCase();
+      var a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      li.appendChild(a);
+      tocList.appendChild(li);
+      items.push({ el: h, link: a, li: li });
+    });
+    // Highlight current section on scroll
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          var scrollPos = window.scrollY + 100;
+          var current = null;
+          items.forEach(function(item) {
+            if (item.el.offsetTop <= scrollPos) current = item;
+          });
+          items.forEach(function(item) { item.li.classList.remove('active'); });
+          if (current) current.li.classList.add('active');
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+  })();
+  </script>
   <div class="engagement-bar">
     <span class="engagement-item">
       <span class="engagement-icon">👁️</span>
