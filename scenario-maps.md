@@ -11,6 +11,7 @@ permalink: /scenario-maps/
 {% assign packet_count = 0 %}
 {% assign port_count = 0 %}
 {% assign cluster_count = 0 %}
+{% assign storage_count = 0 %}
 {% assign other_count = 0 %}
 {% for post in site.posts %}
   {% if post.path contains "scenario-maps/" %}
@@ -18,6 +19,7 @@ permalink: /scenario-maps/
     {% elsif post.path contains "tcpip-connection" or post.path contains "tcpip-packet" %}{% assign packet_count = packet_count | plus: 1 %}
     {% elsif post.path contains "tcpip-port" %}{% assign port_count = port_count | plus: 1 %}
     {% elsif post.path contains "cluster-" %}{% assign cluster_count = cluster_count | plus: 1 %}
+    {% elsif post.path contains "storage-" or post.path contains "cluster-storage-" %}{% assign storage_count = storage_count | plus: 1 %}
     {% else %}{% assign other_count = other_count | plus: 1 %}
     {% endif %}
   {% endif %}
@@ -47,6 +49,12 @@ permalink: /scenario-maps/
     <h3>Windows Clustering</h3>
     <p>Cluster creation failures and CNO repair troubleshooting</p>
     <span class="card-count">{{ cluster_count }} posts</span>
+  </a>
+  <a href="{{ '/scenario-maps/storage/' | relative_url }}" class="category-card">
+    <div class="card-icon">💾</div>
+    <h3>Storage</h3>
+    <p>Windows storage stack, CSV, and Storage Spaces Direct troubleshooting scenarios</p>
+    <span class="card-count">{{ storage_count }} posts</span>
   </a>
   {% if other_count > 0 %}
   <a href="{{ '/scenario-maps/other/' | relative_url }}" class="category-card">

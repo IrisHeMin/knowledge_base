@@ -12,7 +12,7 @@ permalink: /deep-dive/other/
 <ul class="post-list">
   {% for post in site.posts %}
     {% if post.path contains "deep-dive/" %}
-      {% unless post.path contains "tcpip-" or post.path contains "dns-" or post.path contains "smb-" or post.path contains "failover-clustering" or post.path contains "performance" or post.path contains "wpa-" or post.path contains "dump-" or post.path contains "windbg-" or post.path contains "ai-102" or post.path contains "dhcp-" or post.path contains "certificate-" or post.path contains "8021x" or post.path contains "eap-" or post.path contains "kerberos-" or post.path contains "nps-" or post.path contains "auth-" %}
+      {% unless post.path contains "tcpip-" or post.path contains "dns-" or post.path contains "smb-" or post.path contains "failover-clustering" or post.path contains "performance" or post.path contains "wpa-" or post.path contains "dump-" or post.path contains "windbg-" or post.path contains "ai-102" or post.path contains "dhcp-" or post.path contains "certificate-" or post.path contains "8021x" or post.path contains "eap-" or post.path contains "kerberos-" or post.path contains "nps-" or post.path contains "auth-" or post.path contains "storage-foundations-" or post.path contains "storage-stack-" or post.path contains "storage-advanced-" or post.path contains "cluster-storage-csv-" or post.path contains "storage-spaces-direct-" %}
       <li class="post-list-item">
         <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
         <div class="post-list-meta">

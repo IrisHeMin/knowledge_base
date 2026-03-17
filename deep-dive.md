@@ -15,6 +15,7 @@ permalink: /deep-dive/
 {% assign ai_count = 0 %}
 {% assign dhcp_count = 0 %}
 {% assign auth_count = 0 %}
+{% assign storage_count = 0 %}
 {% assign other_count = 0 %}
 {% for post in site.posts %}
   {% if post.path contains "deep-dive/" %}
@@ -26,6 +27,7 @@ permalink: /deep-dive/
     {% elsif post.path contains "ai-102" %}{% assign ai_count = ai_count | plus: 1 %}
     {% elsif post.path contains "dhcp-" %}{% assign dhcp_count = dhcp_count | plus: 1 %}
     {% elsif post.path contains "certificate-" or post.path contains "8021x" or post.path contains "eap-" or post.path contains "kerberos-" or post.path contains "nps-" or post.path contains "auth-" %}{% assign auth_count = auth_count | plus: 1 %}
+    {% elsif post.path contains "storage-foundations-" or post.path contains "storage-stack-" or post.path contains "storage-advanced-" or post.path contains "cluster-storage-csv-" or post.path contains "storage-spaces-direct-" %}{% assign storage_count = storage_count | plus: 1 %}
     {% else %}{% assign other_count = other_count | plus: 1 %}
     {% endif %}
   {% endif %}
@@ -79,6 +81,12 @@ permalink: /deep-dive/
     <h3>Authentication & PKI</h3>
     <p>Certificate-based authentication, Kerberos strong mapping, 802.1X / EAP-TLS, ADCS, and NPS</p>
     <span class="card-count">{{ auth_count }} posts</span>
+  </a>
+  <a href="{{ '/deep-dive/storage/' | relative_url }}" class="category-card">
+    <div class="card-icon">💾</div>
+    <h3>Storage</h3>
+    <p>Storage stack architecture, hardware types, Storage Spaces, CSV, S2D, MPIO, dedup, and replica</p>
+    <span class="card-count">{{ storage_count }} posts</span>
   </a>
   {% if other_count > 0 %}
   <a href="{{ '/deep-dive/other/' | relative_url }}" class="category-card">
