@@ -24,7 +24,7 @@ permalink: /deep-dive/
     {% elsif post.path contains "failover-clustering" %}{% assign cluster_count = cluster_count | plus: 1 %}
     {% elsif post.path contains "performance" or post.path contains "wpa-" %}{% assign perf_count = perf_count | plus: 1 %}
     {% elsif post.path contains "dump-" or post.path contains "windbg-" %}{% assign debug_count = debug_count | plus: 1 %}
-    {% elsif post.path contains "ai-102" %}{% assign ai_count = ai_count | plus: 1 %}
+    {% elsif post.path contains "ai-102" or post.path contains "ai-learning/" %}{% assign ai_count = ai_count | plus: 1 %}
     {% elsif post.path contains "dhcp-" %}{% assign dhcp_count = dhcp_count | plus: 1 %}
     {% elsif post.path contains "certificate-" or post.path contains "8021x" or post.path contains "eap-" or post.path contains "kerberos-" or post.path contains "nps-" or post.path contains "auth-" %}{% assign auth_count = auth_count | plus: 1 %}
     {% elsif post.path contains "storage-foundations-" or post.path contains "storage-stack-" or post.path contains "storage-advanced-" or post.path contains "cluster-storage-csv-" or post.path contains "storage-spaces-direct-" %}{% assign storage_count = storage_count | plus: 1 %}
@@ -66,8 +66,8 @@ permalink: /deep-dive/
   </a>
   <a href="{{ '/deep-dive/ai/' | relative_url }}" class="category-card">
     <div class="card-icon">🤖</div>
-    <h3>Azure AI</h3>
-    <p>AI-102 certification guide, Azure AI services, and generative AI fundamentals</p>
+    <h3>AI</h3>
+    <p>AI fundamentals, machine learning, LLMs, prompt engineering, AI agents, and Azure AI-102 certification</p>
     <span class="card-count">{{ ai_count }} posts</span>
   </a>
   <a href="{{ '/deep-dive/dhcp/' | relative_url }}" class="category-card">
