@@ -37,68 +37,335 @@ tags: [cluster, gpo, group-policy, clussvc, scm, sysmon, windows-server-2022, sq
 
 ### 3. Troubleshooting 过程 (Investigation & Troubleshooting)
 
-1. **初始日志分析（7/26）**
-   - **做了什么**：检查客户上传的集群验证报告和集群日志。
-   - **发现了什么**：
-     - 未配置 Quorum Witness。
-     - 集群日志显示 "The cluster service has been stopped and set as disabled as part of cluster node cleanup" 反复出现。
-     - 节点间存在 port 3343 连接错误（error 10060）。
-     - 心跳丢失达 40%。
-   - **得出了什么结论**：缺少 Quorum Witness 加上网络连接问题，可能导致集群服务停止。建议先配置 Cloud Witness 并检查防火墙。
+#### Phase 1：初始日志分析（7/26）
 
-2. **配置 Cloud Witness 后仍有问题（8/8 - 8/9）**
-   - **做了什么**：客户配置了 Cloud Quorum Witness，工程师重新分析日志。
-   - **发现了什么**：集群日志仍然显示节点间 3343 端口连接失败（error 10060），最终导致 cluster service graceful shutdown。
-   - **得出了什么结论**：Cloud Witness 已配置但问题依旧，3343 端口连接是关键问题，但需要进一步排查根因。
+**Action Plan：** 检查客户上传的集群验证报告、集群日志和事件日志。要求客户额外收集：
+```powershell
+# 收集防火墙和网络配置
+Get-NetFirewallProfile > C:\temp\fwprofile.txt
+Get-NetFirewallRule > C:\temp\FWRule.txt
+ipconfig /all > C:\temp\ip.txt
+```
 
-3. **缩小范围 — 单节点测试（8/12）**
-   - **做了什么**：建议客户禁用一个节点的集群服务，只保留单节点运行，并将集群日志级别提升到 5。
-   - **发现了什么**：即使只有一个节点，集群服务仍然间歇性停止。
-   - **得出了什么结论**：问题**不在集群层面**（非节点间通信问题），而是 OS 层面有其他进程/应用在停止集群服务。
+**日志分析 — 集群验证报告（无 Quorum Witness）：**
+```
+Start: 24/07/2024 5:44:23 PM.
+Validating cluster quorum settings.
+Witness Type: No Witness Configured
+Witness Resource: No Witness Configured
+The cluster is not configured with a quorum witness. As a best practice, configure a 
+quorum witness to help achieve the highest availability of the cluster.
+```
 
-4. **检查计划任务（8/12 - 8/13）**
-   - **做了什么**：从集群日志发现 restart task 调度记录，要求客户导出所有计划任务（`schtasks /query`）。
-   - **发现了什么**：计划任务输出不够清晰，无法明确定位。
-   - **得出了什么结论**：需要更详细的 OS 层面日志来追踪是谁停止了集群服务。
+**日志分析 — 集群日志（clussvc 反复被停止并设为 disabled）：**
+```
+360329 [Operational] 000036ec.000019ac::2024/07/07-12:16:59.868 INFO  The cluster service has been stopped and set as disabled as part of cluster node cleanup.
+360338 [Operational] 00001b50.000035c8::2024/07/09-04:32:31.105 INFO  The cluster service has been stopped and set as disabled as part of cluster node cleanup.
+360347 [Operational] 00002418.00000ea4::2024/07/10-03:36:28.779 INFO  The cluster service has been stopped and set as disabled as part of cluster node cleanup.
+360356 [Operational] 0000141c.0000427c::2024/07/10-03:43:59.926 INFO  The cluster service has been stopped and set as disabled as part of cluster node cleanup.
+360365 [Operational] 00003544.000042f4::2024/07/10-03:54:05.214 INFO  The cluster service has been stopped and set as disabled as part of cluster node cleanup.
+360690 [Operational] 000040d4.00003778::2024/07/16-02:38:39.674 INFO  The cluster service has been stopped and set as disabled as part of cluster node cleanup.
+```
 
-5. **部署 SCM + Sysmon 增强日志（8/13）**
-   - **做了什么**：制定详细的日志收集方案：
-     - 安装 Sysmon 监控所有进程创建/终止
-     - 启用 SCM (Service Control Manager) ETL 日志
-     - 配置 Task Scheduler 每 5 分钟检查 clussvc 状态，自动停止日志收集
-   - **发现了什么**：客户在执行步骤时遇到困难，需要 Teams 会议协助。
-   - **得出了什么结论**：需要远程协助客户完成日志收集配置。
+**日志分析 — 集群日志（节点间 3343 端口连接错误 + 心跳丢失）：**
 
-6. **分析 SCM + Sysmon 日志 — 关键发现（8/14 - 8/15）**
-   - **做了什么**：分析客户上传的 SCM ETL 日志和 Sysmon 事件日志。
-   - **发现了什么**：
-     - SCM ETL 日志显示 **services.exe (PID 980)** 停止了 clussvc 服务。
-     - 同时 services.exe 创建了 VSSVC.exe 进程。
-     - 从 Sysmon 日志确认 clussvc.exe 在 `2024-08-14 06:25:40.787` 被终止。
-     - SCM 日志关键条目：
-       ```
-       ScSendControl: Service ClusSvc, control 1, user S-1-5-18, caller PID 0x000003d4
-       ```
-       0x3D4 = 980（即 services.exe）
-   - **得出了什么结论**：是 SCM (services.exe) 自身在停止集群服务，可能与 VSS 服务有关联。
+sqlnode01 → sqlnode02 连接失败：
+```
+495454 00001320.00002da0::2024/07/24-07:35:14.032 INFO  [NETWORK] Error when processing connection to node sqlnode02, error (10060)
+495457 00001320.0000292c::2024/07/24-07:35:15.037 INFO  [NETWORK] Error when processing connection to node sqlnode02, error (10060)
+...
+495590 00001320.00002da0::2024/07/24-07:35:40.790 INFO  [NETWORK] Processing initial connection to node sqlnode02
+495969 00001320.00002cf8::2024/07/24-07:35:41.115 INFO  [NETWORK] Connected and authenticated to node sqlnode02, now considering for cluster participation
+496115 00001320.000022ec::2024/07/24-07:35:42.041 INFO  [NETWORK] Full mesh connectivity with nodes sqlnode01, sqlnode02
+497896 00001320.00001724::2024/07/24-07:47:30.789 WARN  [NETWORK] Missed 40% of the heart beats with node 'sqlnode02' (2) on route 10.10.20.18:~3343~->10.10.148.18:~3343~
+498334 00001320.00002cf8::2024/07/24-07:56:35.251 WARN  [NETWORK] Lost connection to node sqlnode02
+```
 
-7. **排除 VSS 因素（8/15）**
-   - **做了什么**：建议客户临时禁用并停止 VSS 服务。
-   - **发现了什么**：禁用 VSS 后，问题依然存在。
-   - **得出了什么结论**：VSS 不是根因，只是在同一时间点被 SCM 启动的巧合。需要继续追查 SCM 为什么设置 clussvc 为 disabled。
+最终导致 graceful shutdown：
+```
+498701 00001320.00000964::2024/07/24-08:00:29.857 INFO  [NETWORK] Local node is shutting down, disconnecting from other nodes
+498708 0000264c.00000738::2024/07/24-08:00:29.973 WARN  [RHS] Cluster service has terminated. Cluster.Service.Running.Event got signaled.
+```
 
-8. **TSS 工具数据收集遇阻（8/15 - 8/16）**
-   - **做了什么**：要求客户使用 TSS 工具收集更详细的日志。
-   - **发现了什么**：客户执行 TSS 命令时遇到参数错误和脚本路径问题。
-   - **得出了什么结论**：需要通过 Teams 会议实时协助。
+**结论**：缺少 Quorum Witness + 节点间 3343 连接不稳定，导致集群服务频繁停止。
 
-9. **Teams 会议实时排查 — 根因发现（8/16）**
-   - **做了什么**：通过 Teams 会议远程协助，使用 `gpresult /SCOPE computer /H GPRESULT.HTML` 和 `GPRESULT /R` 比较两个节点的 GPO 配置。
-   - **发现了什么**：
-     - **正常工作的节点**：应用了 **"Enable cluster service"** GPO → 集群服务启动类型 = **Automatic**
-     - **不正常的节点**：应用了 **"Default group policy"** → 集群服务启动类型 = **Disabled**
-     - 两个节点所在的 OU 不同，导致应用了不同的 GPO。
-   - **得出了什么结论**：**根因确认** — GPO 配置不一致导致集群服务被周期性设置为 Disabled。
+**Action Plan（给客户）：**
+1. 配置 Quorum Witness（Cloud Witness / File Share Witness / Disk Witness）
+2. 确保两节点网络配置一致，防火墙 Public Profile 允许入站和出站
+
+> 配置 Cloud Witness 步骤：
+> - 打开 Failover Cluster Manager → 右键集群名 → More Actions → Configure Cluster Quorum Settings
+> - 选择 Select the quorum witness → Configure a cloud witness
+> - 输入 Azure Storage Account Name、Access Key 和 Endpoint URL
+
+---
+
+#### Phase 2：配置 Cloud Witness 后仍有问题（8/8 - 8/9）
+
+客户配置了 Cloud Witness 后，集群仍然间歇性失败。
+
+**日志分析 — sqlnode01 集群日志（连接失败 → 服务关闭）：**
+```
+445773 00003948.00003a38::2024/08/08-06:50:05.236 INFO  ---+ LOG BEGIN +---
+446134 00003948.00003338::2024/08/08-06:50:26.487 INFO  [NETWORK] Error when processing connection to node sqlnode02, error (10060)
+446137 00003948.000037e8::2024/08/08-06:50:27.487 INFO  [NETWORK] Error when processing connection to node sqlnode02, error (10060)
+446185 00003948.00003338::2024/08/08-06:51:27.487 INFO  [NETWORK] Error when processing connection to node sqlnode02, error (10060)
+...
+446552 00003948.00003338::2024/08/08-06:56:08.842 INFO  [NETWORK] Processing initial connection to node sqlnode02
+446940 00003948.00003f6c::2024/08/08-06:56:09.165 INFO  [NETWORK] Connected and authenticated to node sqlnode02
+447099 00003948.000037e8::2024/08/08-06:56:10.088 INFO  [NETWORK] Full mesh connectivity with nodes sqlnode01, sqlnode02
+449570 00003948.000022bc::2024/08/08-07:31:58.449 INFO  [NETWORK] Local node is shutting down, disconnecting from other nodes
+449577 00003818.000021c4::2024/08/08-07:31:58.569 WARN  [RHS] Cluster service has terminated.
+```
+
+**日志分析 — sqlnode02 集群日志（连接失败 → Cloud Witness offline → 服务关闭）：**
+```
+124064 000033dc.00003078::2024/08/08-07:55:41.151 INFO  [NODE] Node 2: New join with n1: stage: 'Attempt Initial Connection' status (10060) reason: 'Failed to connect to remote endpoint 10.10.20.18:~3343~'
+124096 000033dc.000023d4::2024/08/08-07:56:57.095 INFO  [CS] Service Stopping...
+124098 000033dc.000023d4::2024/08/08-07:56:57.095 INFO  [NODE] Node 2: Farthest reported progress joining with node sqlnode01 (id 1) is: Attempt Initial Connection at time 2024/08/08-07:56:41.153: status 10060 Failed to connect to remote endpoint 10.10.20.18:~3343~
+124100 000033dc.00001e68::2024/08/08-07:56:57.095 INFO  [CORE] Graceful shutdown reported by node sqlnode02, reason ServiceStopReason::ServiceShutdown, nodeIsUp false (payload 327682)
+```
+
+Cloud Witness 也随之 offline：
+```
+124193 000033dc.00002e2c::2024/08/08-07:56:57.301 INFO  [RCM] HandleMonitorReply: OFFLINERESOURCE for 'Cloud Witness'
+124203 000033dc.00003288::2024/08/08-07:56:57.301 WARN  [QUORUM] Node 2: One off quorum (2)
+124209 000033dc.00003288::2024/08/08-07:56:57.301 INFO  [QUORUM] Node 2: death timer is already running, 90 seconds left.
+```
+
+**结论**：Cloud Witness 已配置但集群服务仍然停止。3343 连接失败是节点间的问题，但需要更深层排查。
+
+---
+
+#### Phase 3：缩小范围 — 单节点测试（8/12）
+
+**Action Plan：** 通过隔离单节点来排除集群交互层面的问题。
+
+```powershell
+# Step 1: 提升集群日志级别到 5
+Set-ClusterLog –Level 5
+
+# Step 2: 禁用并停止另一个节点的集群服务（只保留一个节点运行）
+# 在另一个节点上执行：
+Stop-Service clussvc
+Set-Service clussvc -StartupType Disabled
+```
+
+**排查逻辑：**
+- 如果单节点集群服务**不再停止** → 问题与节点间通信相关（网络/节点加入重试）
+- 如果单节点集群服务**仍然停止** → 问题在 OS 层面，有其他进程在停止集群服务
+
+**结果**：即使只有一个节点，集群服务仍然间歇性停止。
+
+**结论**：问题**不在集群层面**，而是 OS 层面有其他进程/应用在停止集群服务。
+
+---
+
+#### Phase 4：检查计划任务（8/12 - 8/13）
+
+**日志分析 — 集群日志发现 restart task 调度记录：**
+```
+518370 00002f48.000014e0::2024/08/12-17:26:38.404 DBG   [RCM] scheduling next RunRestartTasks task...
+518371 00002f48.0000360c::2024/08/12-17:26:46.688 DBG   [CORE] Service Alive, Checking Core Lock
+518378 00002f48.0000360c::2024/08/12-17:26:48.405 DBG   [RCM] scheduling next RunRestartTasks task...
+518380 00002f48.0000364c::2024/08/12-17:26:53.682 DBG   [NODE] Node 1: eating message sent to the dead node 2
+518381 00002f48.0000364c::2024/08/12-17:26:53.682 INFO  [CS] Service Stopping...
+518383 00002f48.00002c9c::2024/08/12-17:26:53.682 INFO  [CORE] Graceful shutdown reported by node sqlnode01, reason ServiceStopReason::ServiceShutdown, nodeIsUp false (payload 327681)
+```
+
+**Action Plan：** 导出计划任务列表检查
+```cmd
+schtasks /query > C:\task.txt
+```
+
+**结果**：计划任务输出不够清晰，无法明确定位根因。
+
+**结论**：需要更深层 OS 级别的日志来追踪是谁在停止集群服务。
+
+---
+
+#### Phase 5：部署 SCM + Sysmon 增强日志收集（8/13）
+
+**Action Plan（完整步骤）：**
+
+**Step 1：安装 Sysmon 监控所有进程创建/终止**
+```cmd
+:: 1. 下载 Sysmon: https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon
+:: 2. 解压到 C:\temp
+:: 3. 以管理员权限打开 CMD，导航到 Sysmon 路径，执行安装：
+sysmon -I -accepteula
+
+:: 4. 验证安装成功：
+fltmc
+
+:: 5. 启用进程监控模式：
+sysmon -m
+
+:: 安装后 Sysmon 事件位于：
+:: Event Viewer → Application and Services Logs → Microsoft → Windows → Sysmon → Operational
+```
+
+**Step 2：启用 SCM (Service Control Manager) ETL 日志**
+```cmd
+:: 6. 以管理员权限打开另一个 CMD，执行以下命令启动 SCM 日志收集：
+logman create trace "base_screg" -ow -o c:\base_screg.etl -p "Service Control Manager" 0xffffffffffffffff 0xff -nb 16 16 -bs 1024 -mode Circular -f bincirc -max 4096 -ets
+logman update trace "base_screg" -p "Microsoft-Windows-Services" 0xffffffffffffffff 0xff -ets
+logman update trace "base_screg" -p {EBCCA1C2-AB46-4A1D-8C2A-906C2FF25F39} 0xffffffffffffffff 0xff -ets
+```
+
+**Step 3：配置自动停止日志（Task Scheduler + 脚本）**
+
+创建 `C:\temp\StopLogging.bat`：
+```bat
+logman stop "base_screg" -ets
+```
+
+创建 `C:\temp\SCMLoggingCapture.ps1`：
+```powershell
+$serviceName = "clussvc"
+$serviceStatus = Get-Service -Name $serviceName | Select-Object -ExpandProperty Status
+if ($serviceStatus -ne "Running") {
+    Start-Process -FilePath "C:\Temp\StopLogging.bat"
+}
+```
+
+配置 Task Scheduler：
+1. 打开 Task Scheduler → Create Task
+2. Triggers 选项卡 → New → On a schedule → 间隔 5 分钟
+3. Actions 选项卡 → New → Start a program → PowerShell.exe → 参数填 `C:\temp\SCMLoggingCapture.ps1`
+
+**需要收集的日志清单：**
+- Sysmon 事件日志
+- 全部事件日志：`%SystemRoot%\System32\Winevt\Logs`
+- SCM ETL 日志：`C:\base_screg.etl`
+- 集群日志
+- 进程列表：`tasklist /svc > C:\tasklist.txt`
+
+---
+
+#### Phase 6：分析 SCM + Sysmon 日志 — 关键发现（8/14 - 8/15）
+
+这是整个排查过程中最关键的一步。通过三层日志的交叉关联，定位到了停止集群服务的确切进程。
+
+**日志分析 — 第 1 层：SCM ETL 日志（谁停止了 clussvc）**
+
+SCM ETL 日志记录了 clussvc 被停止的完整过程：
+```
+427637 [2] 03D4.2B8C::08/14/24-14:25:40.4517713 [SCM] CWin32ServiceRecord::SetStatus: Service Record updated with new status for service ClusSvc
+427638 [2]03D4.2B8C::08/14/24-14:25:40.4517754 [Microsoft-Windows-Services/Diagnostic] CurrentState=3, StartType=2, PID=15144, ServiceName=ClusSvc
+427639 [6] 03D4.46C0::08/14/24-14:25:40.4519111 [SCM] ScSendControl: Service ClusSvc, control 1, user S-1-5-18, caller PID 0x000003d4
+427681 [6] 03D4.46C0::08/14/24-14:25:40.4841063 [SCM] ScSendControl: Sending control 0x00000051 to service/module VSS, caller PID 0x00000474, channel 0x0000019DA5713160
+427692 [4] 03D4.46C0::08/14/24-14:25:40.4843767 [SCM] ScSendControl: Successfully sent start control to service VSS, user S-1-5-18
+427729 [0] 03D4.46C0::08/14/24-14:25:40.6130898 [SCM] RSetServiceStatus: service ClusSvc, state 0x00000003(SERVICE_STOP_PENDING)
+427732 [0] 03D4.46C0::08/14/24-14:25:40.7958679 [SCM] RSetServiceStatus: service ClusSvc, state 0x00000001(SERVICE_STOPPED)
+```
+
+**关键分析：**
+- `caller PID 0x000003d4` → **0x3D4 十六进制转十进制 = 980**
+- PID 980 是谁？ → 需要从 Sysmon 确认
+
+**日志分析 — 第 2 层：Sysmon 日志（确认 PID 980 = services.exe + clussvc 终止）**
+
+clussvc.exe 进程终止记录：
+```
+Process terminated:
+RuleName: -
+UtcTime: 2024-08-14 06:25:40.787
+ProcessGuid: {3a33b69e-4081-66bc-4246-000000001700}
+ProcessId: 15144
+Image: C:\Windows\Cluster\clussvc.exe
+User: NT AUTHORITY\SYSTEM
+```
+
+**日志分析 — 第 3 层：Sysmon 日志（PID 980 = services.exe，同时创建了 VSSVC.exe）**
+
+用 PID 980 过滤 Sysmon 日志，发现 services.exe 在停止 clussvc 的同时创建了 VSSVC.exe 进程：
+```
+Process Create:
+RuleName: -
+UtcTime: 2024-08-14 06:25:40.446
+ProcessGuid: {3a33b69e-4de4-66bc-e946-000000001700}
+ProcessId: 17080
+Image: C:\Windows\System32\VSSVC.exe
+FileVersion: 10.0.20348.2520
+Description: Microsoft® Volume Shadow Copy Service
+CommandLine: C:\Windows\system32\vssvc.exe
+User: NT AUTHORITY\SYSTEM
+ParentProcessId: 980
+ParentImage: C:\Windows\System32\services.exe
+ParentCommandLine: C:\Windows\system32\services.exe
+```
+
+**三层日志关联分析总结：**
+
+| 时间戳 | 事件 | 来源 |
+|--------|------|------|
+| 14:25:40.451 | SCM 更新 ClusSvc 状态，caller PID 0x3D4 (980) | SCM ETL |
+| 14:25:40.446 | services.exe (PID 980) 创建 VSSVC.exe (PID 17080) | Sysmon |
+| 14:25:40.484 | SCM 发送启动控制到 VSS 服务 | SCM ETL |
+| 14:25:40.613 | ClusSvc 状态变为 SERVICE_STOP_PENDING | SCM ETL |
+| 14:25:40.787 | clussvc.exe (PID 15144) 进程终止 | Sysmon |
+| 14:25:40.795 | ClusSvc 状态变为 SERVICE_STOPPED | SCM ETL |
+
+**结论**：是 **SCM (services.exe)** 自身在停止集群服务。VSS 在同一时间被创建，可能是相关联或巧合。
+
+---
+
+#### Phase 7：排除 VSS 因素（8/15）
+
+**Action Plan：** 临时禁用并停止 VSS 服务，观察集群服务是否仍然停止。
+
+**结果**：禁用 VSS 后，问题依然存在。
+
+**结论**：VSS 不是根因，只是在同一时间点被 SCM 启动的巧合。需要继续追查 **SCM 为什么将 clussvc 设为 disabled**。
+
+---
+
+#### Phase 8：TSS 工具数据收集遇阻（8/15 - 8/16）
+
+**Action Plan：** 使用 MS TSS 工具收集更详细的集群诊断日志。
+
+```powershell
+# 1. 下载 TSS: https://aka.ms/getTSS
+# 2. 解压到 C:\temp\TSS
+# 3. 以管理员 PowerShell 执行：
+Set-ExecutionPolicy -ExecutionPolicy Bypass -force -Scope Process
+.\TSS.ps1 -SHA_MsCluster -Procmon -WPR General -WaitEvent Process:clussvc
+```
+
+**客户遇到的问题：**
+- 参数错误：`-WPR General-WaitEvent` 被当作一个参数（缺少空格）
+- 脚本路径错误：未切换到 TSS 目录
+
+**结论**：需要通过 Teams 会议实时协助。
+
+---
+
+#### Phase 9：Teams 会议实时排查 — 根因发现（8/16） 🎯
+
+**Action Plan：** 远程协助，使用 GPO 诊断工具比较两个节点的配置差异。
+
+```cmd
+:: 生成 HTML 格式的 GPO 报告
+gpresult /SCOPE computer /H GPRESULT.HTML
+
+:: 列出所有应用的 GPO
+GPRESULT /R
+```
+
+**GPO 比较结果 — 正常节点 vs 异常节点：**
+
+| 比较项 | 正常工作的节点 (sqlnode01) | 不正常的节点 (sqlnode02) |
+|--------|--------------------------|--------------------------|
+| Winning GPO | **"Enable cluster service"** | **"Default group policy"** |
+| Cluster Service 启动类型 | **Automatic** | **Disabled** |
+| OU 位置 | 包含集群策略的 OU | 未包含集群策略的默认 OU |
+
+**GPRESULT /R 输出对比：**
+- 正常节点的 Applied Group Policy Objects 列表中包含 **"Enable cluster service"**
+- 异常节点的 Applied Group Policy Objects 列表中**不包含**此策略，只有 "Default group policy"
+
+**根因确认**：两个节点位于不同 AD OU，应用了不同 GPO。异常节点的 GPO 将集群服务启动类型设为 Disabled，导致每次 GPO 刷新时（~90 分钟）集群服务被重新设置为 Disabled 并停止。
 
 ### 4. Blockers 与解决 (Blockers & How They Were Resolved)
 
@@ -183,68 +450,290 @@ tags: [cluster, gpo, group-policy, clussvc, scm, sysmon, windows-server-2022, sq
 
 ### 3. Investigation & Troubleshooting
 
-1. **Initial Log Analysis (7/26)**
-   - **Action**: Reviewed cluster validation report and cluster logs uploaded by customer.
-   - **Finding**:
-     - No Quorum Witness configured.
-     - Cluster log showed repeated "The cluster service has been stopped and set as disabled as part of cluster node cleanup."
-     - Port 3343 connectivity errors (error 10060) between nodes.
-     - 40% heartbeat misses between nodes.
-   - **Conclusion**: Missing Quorum Witness combined with network connectivity issues likely caused cluster service to stop. Recommended configuring Cloud Witness and checking firewall.
+#### Phase 1: Initial Log Analysis (7/26)
 
-2. **Cloud Witness Configured but Issue Persists (8/8 - 8/9)**
-   - **Action**: Customer configured Cloud Quorum Witness; engineer re-analyzed logs.
-   - **Finding**: Cluster logs still showed port 3343 connection failures (error 10060) between nodes, resulting in cluster service graceful shutdown.
-   - **Conclusion**: Cloud Witness configured but issue persisted. Port 3343 connectivity was a key concern but deeper root cause needed investigation.
+**Action Plan:** Review cluster validation report, cluster logs, and event logs. Request additional data:
+```powershell
+# Collect firewall and network configuration
+Get-NetFirewallProfile > C:\temp\fwprofile.txt
+Get-NetFirewallRule > C:\temp\FWRule.txt
+ipconfig /all > C:\temp\ip.txt
+```
 
-3. **Narrowing Down — Single Node Test (8/12)**
-   - **Action**: Suggested disabling cluster service on one node (leaving only single node running) and increasing cluster log level to 5.
-   - **Finding**: Even with only one node, cluster service still intermittently stopped.
-   - **Conclusion**: Issue was **not at the cluster level** (not inter-node communication). Something at the OS level was stopping the cluster service.
+**Log Analysis — Cluster Validation Report (No Quorum Witness):**
+```
+Start: 24/07/2024 5:44:23 PM.
+Validating cluster quorum settings.
+Witness Type: No Witness Configured
+Witness Resource: No Witness Configured
+The cluster is not configured with a quorum witness. As a best practice, configure a 
+quorum witness to help achieve the highest availability of the cluster.
+```
 
-4. **Checking Scheduled Tasks (8/12 - 8/13)**
-   - **Action**: Found restart task scheduling entries in cluster log; asked customer to export all scheduled tasks (`schtasks /query`).
-   - **Finding**: Scheduled tasks output was not clear enough to pinpoint the cause.
-   - **Conclusion**: Needed more detailed OS-level logging to trace what was stopping the cluster service.
+**Log Analysis — Cluster Log (clussvc repeatedly stopped and disabled):**
+```
+360329 [Operational] 000036ec.000019ac::2024/07/07-12:16:59.868 INFO  The cluster service has been stopped and set as disabled as part of cluster node cleanup.
+360338 [Operational] 00001b50.000035c8::2024/07/09-04:32:31.105 INFO  The cluster service has been stopped and set as disabled as part of cluster node cleanup.
+360347 [Operational] 00002418.00000ea4::2024/07/10-03:36:28.779 INFO  The cluster service has been stopped and set as disabled as part of cluster node cleanup.
+360356 [Operational] 0000141c.0000427c::2024/07/10-03:43:59.926 INFO  The cluster service has been stopped and set as disabled as part of cluster node cleanup.
+360365 [Operational] 00003544.000042f4::2024/07/10-03:54:05.214 INFO  The cluster service has been stopped and set as disabled as part of cluster node cleanup.
+360690 [Operational] 000040d4.00003778::2024/07/16-02:38:39.674 INFO  The cluster service has been stopped and set as disabled as part of cluster node cleanup.
+```
 
-5. **Deploying SCM + Sysmon Enhanced Logging (8/13)**
-   - **Action**: Designed a detailed log collection plan:
-     - Install Sysmon to monitor all process creation/termination
-     - Enable SCM (Service Control Manager) ETL logging
-     - Configure Task Scheduler to check clussvc status every 5 minutes and auto-stop logging
-   - **Finding**: Customer had difficulty executing the steps and needed a Teams meeting for assistance.
-   - **Conclusion**: Remote assistance needed to complete log collection setup.
+**Log Analysis — Cluster Log (Port 3343 connectivity errors + heartbeat misses):**
 
-6. **Analyzing SCM + Sysmon Logs — Key Discovery (8/14 - 8/15)**
-   - **Action**: Analyzed SCM ETL logs and Sysmon event logs uploaded by customer.
-   - **Finding**:
-     - SCM ETL log showed **services.exe (PID 980)** stopped the clussvc service.
-     - Simultaneously, services.exe created the VSSVC.exe process.
-     - Sysmon logs confirmed clussvc.exe terminated at `2024-08-14 06:25:40.787`.
-     - Key SCM log entry:
-       ```
-       ScSendControl: Service ClusSvc, control 1, user S-1-5-18, caller PID 0x000003d4
-       ```
-       0x3D4 = 980 (services.exe)
-   - **Conclusion**: SCM (services.exe) itself was stopping the cluster service. VSS appeared to be a correlated but potentially unrelated event.
+sqlnode01 → sqlnode02 connection failures:
+```
+495454 00001320.00002da0::2024/07/24-07:35:14.032 INFO  [NETWORK] Error when processing connection to node sqlnode02, error (10060)
+...
+495590 00001320.00002da0::2024/07/24-07:35:40.790 INFO  [NETWORK] Processing initial connection to node sqlnode02
+495969 00001320.00002cf8::2024/07/24-07:35:41.115 INFO  [NETWORK] Connected and authenticated to node sqlnode02
+496115 00001320.000022ec::2024/07/24-07:35:42.041 INFO  [NETWORK] Full mesh connectivity with nodes sqlnode01, sqlnode02
+497896 00001320.00001724::2024/07/24-07:47:30.789 WARN  [NETWORK] Missed 40% of the heart beats with node 'sqlnode02' (2) on route 10.10.20.18:~3343~->10.10.148.18:~3343~
+498334 00001320.00002cf8::2024/07/24-07:56:35.251 WARN  [NETWORK] Lost connection to node sqlnode02
+498701 00001320.00000964::2024/07/24-08:00:29.857 INFO  [NETWORK] Local node is shutting down, disconnecting from other nodes
+498708 0000264c.00000738::2024/07/24-08:00:29.973 WARN  [RHS] Cluster service has terminated.
+```
 
-7. **Ruling Out VSS (8/15)**
-   - **Action**: Asked customer to temporarily disable and stop VSS service.
-   - **Finding**: After disabling VSS, the issue persisted.
-   - **Conclusion**: VSS was not the root cause — it was coincidentally started by SCM at the same time. Needed to continue investigating why SCM was setting clussvc to disabled.
+**Conclusion:** Missing Quorum Witness + unstable port 3343 connectivity between nodes caused cluster service to repeatedly stop.
 
-8. **TSS Tool Collection Issues (8/15 - 8/16)**
-   - **Action**: Asked customer to use TSS tool for more detailed data collection.
-   - **Finding**: Customer encountered parameter errors and script path issues when running TSS commands.
-   - **Conclusion**: Required live Teams meeting to assist.
+**Action Plan (to customer):**
+1. Configure Quorum Witness (Cloud Witness / File Share Witness / Disk Witness)
+2. Ensure both nodes have consistent network configurations and firewall Public Profile allows inbound/outbound
 
-9. **Live Teams Session — Root Cause Found (8/16)**
-   - **Action**: Conducted live troubleshooting via Teams meeting. Compared GPO configuration between nodes using `gpresult /SCOPE computer /H GPRESULT.HTML` and `GPRESULT /R`.
-   - **Finding**:
-     - **Working node**: Had **"Enable cluster service"** GPO applied → cluster service startup type = **Automatic**
-     - **Non-working node**: Had **"Default group policy"** applied → cluster service startup type = **Disabled**
-     - The two nodes were in different OUs, resulting in different GPOs being applied.
-   - **Conclusion**: **Root cause confirmed** — GPO inconsistency was causing the cluster service to be periodically set to Disabled.
+---
+
+#### Phase 2: Cloud Witness Configured but Issue Persists (8/8 - 8/9)
+
+**Log Analysis — sqlnode01 cluster log (connection failures → service shutdown):**
+```
+446134 00003948.00003338::2024/08/08-06:50:26.487 INFO  [NETWORK] Error when processing connection to node sqlnode02, error (10060)
+...
+446552 00003948.00003338::2024/08/08-06:56:08.842 INFO  [NETWORK] Processing initial connection to node sqlnode02
+446940 00003948.00003f6c::2024/08/08-06:56:09.165 INFO  [NETWORK] Connected and authenticated to node sqlnode02
+449570 00003948.000022bc::2024/08/08-07:31:58.449 INFO  [NETWORK] Local node is shutting down, disconnecting from other nodes
+```
+
+**Log Analysis — sqlnode02 cluster log (connection failure → Cloud Witness offline → shutdown):**
+```
+124064 000033dc.00003078::2024/08/08-07:55:41.151 INFO  [NODE] Node 2: stage: 'Attempt Initial Connection' status (10060) reason: 'Failed to connect to remote endpoint 10.10.20.18:~3343~'
+124096 000033dc.000023d4::2024/08/08-07:56:57.095 INFO  [CS] Service Stopping...
+124100 000033dc.00001e68::2024/08/08-07:56:57.095 INFO  [CORE] Graceful shutdown reported by node sqlnode02, reason ServiceStopReason::ServiceShutdown
+124193 000033dc.00002e2c::2024/08/08-07:56:57.301 INFO  [RCM] HandleMonitorReply: OFFLINERESOURCE for 'Cloud Witness'
+124203 000033dc.00003288::2024/08/08-07:56:57.301 WARN  [QUORUM] Node 2: One off quorum (2)
+```
+
+**Conclusion:** Cloud Witness configured but cluster service still stops. Port 3343 connectivity was a concern but deeper investigation needed.
+
+---
+
+#### Phase 3: Narrowing Down — Single Node Test (8/12)
+
+**Action Plan:**
+```powershell
+# Step 1: Increase cluster log level to 5
+Set-ClusterLog –Level 5
+
+# Step 2: Disable and stop cluster service on the other node
+Stop-Service clussvc
+Set-Service clussvc -StartupType Disabled
+```
+
+**Diagnostic Logic:**
+- If single-node cluster service **stops running** → issue is at the OS level (another process stopping it)
+- If single-node cluster service **stays running** → issue relates to inter-node communication
+
+**Result:** Even with only one node, cluster service still intermittently stopped.
+
+**Conclusion:** Issue was **not at the cluster level**. Something at the OS level was stopping the cluster service.
+
+---
+
+#### Phase 4: Checking Scheduled Tasks (8/12 - 8/13)
+
+**Log Analysis — Cluster log showing restart task scheduling:**
+```
+518370 00002f48.000014e0::2024/08/12-17:26:38.404 DBG   [RCM] scheduling next RunRestartTasks task...
+518380 00002f48.0000364c::2024/08/12-17:26:53.682 DBG   [NODE] Node 1: eating message sent to the dead node 2
+518381 00002f48.0000364c::2024/08/12-17:26:53.682 INFO  [CS] Service Stopping...
+518383 00002f48.00002c9c::2024/08/12-17:26:53.682 INFO  [CORE] Graceful shutdown reported by node sqlnode01, reason ServiceStopReason::ServiceShutdown
+```
+
+**Action Plan:**
+```cmd
+schtasks /query > C:\task.txt
+```
+
+**Result:** Scheduled tasks output not clear enough to pinpoint the cause. Need deeper OS-level logging.
+
+---
+
+#### Phase 5: Deploying SCM + Sysmon Enhanced Logging (8/13)
+
+**Action Plan (Complete Steps):**
+
+**Step 1: Install Sysmon to monitor all process creation/termination**
+```cmd
+:: 1. Download Sysmon: https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon
+:: 2. Unzip to C:\temp
+:: 3. Open CMD as admin, navigate to Sysmon path, install:
+sysmon -I -accepteula
+
+:: 4. Verify installation:
+fltmc
+
+:: 5. Enable process monitoring mode:
+sysmon -m
+
+:: After installation, Sysmon events appear at:
+:: Event Viewer → Application and Services Logs → Microsoft → Windows → Sysmon → Operational
+```
+
+**Step 2: Enable SCM (Service Control Manager) ETL logging**
+```cmd
+:: Open another CMD as admin and run:
+logman create trace "base_screg" -ow -o c:\base_screg.etl -p "Service Control Manager" 0xffffffffffffffff 0xff -nb 16 16 -bs 1024 -mode Circular -f bincirc -max 4096 -ets
+logman update trace "base_screg" -p "Microsoft-Windows-Services" 0xffffffffffffffff 0xff -ets
+logman update trace "base_screg" -p {EBCCA1C2-AB46-4A1D-8C2A-906C2FF25F39} 0xffffffffffffffff 0xff -ets
+```
+
+**Step 3: Configure auto-stop logging (Task Scheduler + scripts)**
+
+Create `C:\temp\StopLogging.bat`:
+```bat
+logman stop "base_screg" -ets
+```
+
+Create `C:\temp\SCMLoggingCapture.ps1`:
+```powershell
+$serviceName = "clussvc"
+$serviceStatus = Get-Service -Name $serviceName | Select-Object -ExpandProperty Status
+if ($serviceStatus -ne "Running") {
+    Start-Process -FilePath "C:\Temp\StopLogging.bat"
+}
+```
+
+Configure Task Scheduler:
+1. Open Task Scheduler → Create Task
+2. Triggers tab → New → On a schedule → Repeat every 5 minutes
+3. Actions tab → New → Start a program → PowerShell.exe → Arguments: `C:\temp\SCMLoggingCapture.ps1`
+
+**Logs to collect:**
+- Sysmon event log
+- All event logs: `%SystemRoot%\System32\Winevt\Logs`
+- SCM ETL log: `C:\base_screg.etl`
+- Cluster log
+- Process list: `tasklist /svc > C:\tasklist.txt`
+
+---
+
+#### Phase 6: Analyzing SCM + Sysmon Logs — Key Discovery (8/14 - 8/15) 🔍
+
+This was the most critical step. Cross-correlating three layers of logs pinpointed the exact process stopping the cluster service.
+
+**Log Analysis — Layer 1: SCM ETL Log (Who stopped clussvc)**
+```
+427637 [2] 03D4.2B8C::08/14/24-14:25:40.4517713 [SCM] CWin32ServiceRecord::SetStatus: Service Record updated with new status for service ClusSvc
+427639 [6] 03D4.46C0::08/14/24-14:25:40.4519111 [SCM] ScSendControl: Service ClusSvc, control 1, user S-1-5-18, caller PID 0x000003d4
+427681 [6] 03D4.46C0::08/14/24-14:25:40.4841063 [SCM] ScSendControl: Sending control 0x00000051 to service/module VSS, caller PID 0x00000474
+427692 [4] 03D4.46C0::08/14/24-14:25:40.4843767 [SCM] ScSendControl: Successfully sent start control to service VSS, user S-1-5-18
+427729 [0] 03D4.46C0::08/14/24-14:25:40.6130898 [SCM] RSetServiceStatus: service ClusSvc, state 0x00000003(SERVICE_STOP_PENDING)
+427732 [0] 03D4.46C0::08/14/24-14:25:40.7958679 [SCM] RSetServiceStatus: service ClusSvc, state 0x00000001(SERVICE_STOPPED)
+```
+
+**Key Analysis:**
+- `caller PID 0x000003d4` → **0x3D4 hex = 980 decimal**
+- Who is PID 980? → Need Sysmon to confirm.
+
+**Log Analysis — Layer 2: Sysmon Log (Confirm PID 980 = services.exe + clussvc termination)**
+
+clussvc.exe process termination:
+```
+Process terminated:
+UtcTime: 2024-08-14 06:25:40.787
+ProcessId: 15144
+Image: C:\Windows\Cluster\clussvc.exe
+User: NT AUTHORITY\SYSTEM
+```
+
+**Log Analysis — Layer 3: Sysmon Log (PID 980 = services.exe, simultaneously created VSSVC.exe)**
+```
+Process Create:
+UtcTime: 2024-08-14 06:25:40.446
+ProcessId: 17080
+Image: C:\Windows\System32\VSSVC.exe
+Description: Microsoft® Volume Shadow Copy Service
+CommandLine: C:\Windows\system32\vssvc.exe
+User: NT AUTHORITY\SYSTEM
+ParentProcessId: 980
+ParentImage: C:\Windows\System32\services.exe
+ParentCommandLine: C:\Windows\system32\services.exe
+```
+
+**Three-Layer Log Correlation Summary:**
+
+| Timestamp | Event | Source |
+|-----------|-------|--------|
+| 14:25:40.451 | SCM updates ClusSvc status, caller PID 0x3D4 (980) | SCM ETL |
+| 14:25:40.446 | services.exe (PID 980) creates VSSVC.exe (PID 17080) | Sysmon |
+| 14:25:40.484 | SCM sends start control to VSS service | SCM ETL |
+| 14:25:40.613 | ClusSvc state → SERVICE_STOP_PENDING | SCM ETL |
+| 14:25:40.787 | clussvc.exe (PID 15144) process terminated | Sysmon |
+| 14:25:40.795 | ClusSvc state → SERVICE_STOPPED | SCM ETL |
+
+**Conclusion:** **SCM (services.exe)** itself was stopping the cluster service. VSS was created at the same time — possibly related or coincidental.
+
+---
+
+#### Phase 7: Ruling Out VSS (8/15)
+
+**Action Plan:** Temporarily disable and stop VSS service, then observe if cluster service still stops.
+
+**Result:** After disabling VSS, the issue persisted.
+
+**Conclusion:** VSS was not the root cause — coincidental timing. Need to investigate why SCM was setting clussvc to disabled.
+
+---
+
+#### Phase 8: TSS Tool Collection Issues (8/15 - 8/16)
+
+**Action Plan:**
+```powershell
+# 1. Download TSS: https://aka.ms/getTSS
+# 2. Unzip to C:\temp\TSS
+# 3. Open admin PowerShell:
+Set-ExecutionPolicy -ExecutionPolicy Bypass -force -Scope Process
+.\TSS.ps1 -SHA_MsCluster -Procmon -WPR General -WaitEvent Process:clussvc
+```
+
+**Customer Issues:**
+- Parameter error: `-WPR General-WaitEvent` treated as single argument (missing space)
+- Script not found: didn't navigate to TSS directory first
+
+**Conclusion:** Live Teams meeting needed for assistance.
+
+---
+
+#### Phase 9: Live Teams Session — Root Cause Found (8/16) 🎯
+
+**Action Plan:** Compare GPO configuration between nodes using GPO diagnostic tools.
+```cmd
+:: Generate HTML-format GPO report
+gpresult /SCOPE computer /H GPRESULT.HTML
+
+:: List all applied GPOs
+GPRESULT /R
+```
+
+**GPO Comparison Results — Working vs Non-Working Node:**
+
+| Comparison | Working Node (sqlnode01) | Non-Working Node (sqlnode02) |
+|------------|------------------------|------------------------------|
+| Winning GPO | **"Enable cluster service"** | **"Default group policy"** |
+| Cluster Service Startup Type | **Automatic** | **Disabled** |
+| OU Location | OU with cluster policy | Default OU without cluster policy |
+
+**Root Cause Confirmed:** The two nodes were in different AD OUs with different GPOs applied. The non-working node's GPO set the cluster service startup type to Disabled, causing it to be periodically reset to Disabled on every GPO refresh (~90 minutes).
 
 ### 4. Blockers & How They Were Resolved
 
