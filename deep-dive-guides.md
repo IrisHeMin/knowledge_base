@@ -1,18 +1,18 @@
 ---
 layout: default
-title: "Deep Dive: DNS & SMB"
-permalink: /deep-dive/protocols/
+title: "Deep Dive: Technology Guides"
+permalink: /deep-dive/guides/
 ---
 
-<h2>📡 DNS, SMB & DFS</h2>
-<p class="page-description">DNS server architecture, scavenging mechanisms, SMB protocol internals, and DFS Namespace deep dives.</p>
+<h2>📚 Technology Guides</h2>
+<p class="page-description">Comprehensive Windows technology navigation guides and ecosystem overviews covering networking, storage, security, virtualization, and more.</p>
 
 <a href="{{ '/deep-dive/' | relative_url }}" class="back-link">&larr; Back to Deep Dive</a>
 
 <ul class="post-list">
   {% for post in site.posts %}
     {% if post.path contains "deep-dive/" %}
-      {% if post.path contains "dns-" or post.path contains "smb-" or post.path contains "dfs-" %}
+      {% if post.path contains "-guide" or post.path contains "navigation-map" %}
       <li class="post-list-item">
         <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
         <div class="post-list-meta">

@@ -86,6 +86,7 @@ title: Home
 {% assign math_count = 0 %}
 {% assign tsg_count = 0 %}
 {% assign econ_count = 0 %}
+{% assign tutorial_count = 0 %}
 {% for post in site.posts %}
   {% if post.path contains "case-summaries/" %}{% assign case_count = case_count | plus: 1 %}
   {% elsif post.path contains "deep-dive/" %}{% assign deep_count = deep_count | plus: 1 %}
@@ -94,8 +95,7 @@ title: Home
   {% elsif post.path contains "math-education/" %}{% assign math_count = math_count | plus: 1 %}
   {% elsif post.path contains "economics-education/" %}{% assign econ_count = econ_count | plus: 1 %}
   {% elsif post.path contains "tsg/" %}{% assign tsg_count = tsg_count | plus: 1 %}
-  {% else %}
-    {% if post.title contains "AI" or post.path contains "ai-102" %}{% assign ai_count = ai_count | plus: 1 %}{% endif %}
+  {% elsif post.path contains "tutorials/" %}{% assign tutorial_count = tutorial_count | plus: 1 %}
   {% endif %}
 {% endfor %}
 
@@ -142,6 +142,14 @@ title: Home
     <p>General troubleshooting steps and solutions for common issues</p>
     <span class="card-count">{{ tsg_count }} posts</span>
   </a>
+  {% if tutorial_count > 0 %}
+  <a href="{{ '/tutorials/' | relative_url }}" class="category-card">
+    <div class="card-icon">📖</div>
+    <h3>Tutorials</h3>
+    <p>Step-by-step tutorials for building projects from scratch with detailed explanations</p>
+    <span class="card-count">{{ tutorial_count }} posts</span>
+  </a>
+  {% endif %}
 </section>
 
 <section class="recent-posts">

@@ -12,7 +12,7 @@ permalink: /deep-dive/storage/
 <ul class="post-list">
   {% for post in site.posts %}
     {% if post.path contains "deep-dive/" %}
-      {% if post.path contains "storage-foundations-" or post.path contains "storage-stack-" or post.path contains "storage-advanced-" or post.path contains "cluster-storage-csv-" or post.path contains "storage-spaces-direct-" %}
+      {% if post.path contains "storage-foundations-" or post.path contains "storage-stack-" or post.path contains "storage-advanced-" or post.path contains "cluster-storage-csv-" or post.path contains "storage-spaces-direct-" or post.path contains "storage-performance-" %}
       <li class="post-list-item">
         <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
         <div class="post-list-meta">

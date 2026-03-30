@@ -51,34 +51,45 @@ permalink: /search/
 
   function doSearch(query) {
     var terms = query.toLowerCase().split(/\s+/);
-    var results = posts.filter(function(post) {
-      var haystack = (
-        post.title + ' ' +
-        post.categories.join(' ') + ' ' +
-        post.tags.join(' ') + ' ' +
-        post.excerpt
-      ).toLowerCase();
-      return terms.every(function(t) { return haystack.indexOf(t) !== -1; });
+    var titleHits = [], contentHits = [];
+    posts.forEach(function(post) {
+      var titleStr = (post.title + ' ' + post.categories.join(' ') + ' ' + post.tags.join(' ') + ' ' + post.excerpt).toLowerCase();
+      var contentStr = (post.content || '').toLowerCase();
+      var inTitle = terms.every(function(t) { return titleStr.indexOf(t) !== -1; });
+      var inContent = terms.every(function(t) { return (titleStr + ' ' + contentStr).indexOf(t) !== -1; });
+      if (inTitle) titleHits.push(post);
+      else if (inContent) contentHits.push(post);
     });
 
-    if (results.length === 0) {
+    if (!titleHits.length && !contentHits.length) {
       resultsDiv.innerHTML = '<p class="search-no-results">No results found for "<strong>' + escHtml(query) + '</strong>"</p>';
       return;
     }
 
-    var html = '<p class="search-count">' + results.length + ' result' + (results.length > 1 ? 's' : '') + ' for "<strong>' + escHtml(query) + '</strong>"</p>';
-    html += '<ul class="post-list">';
-    results.forEach(function(p) {
-      html += '<li class="post-list-item">';
-      html += '<h2><a href="' + p.url + '">' + escHtml(p.title) + '</a></h2>';
-      html += '<div class="post-list-meta">📅 ' + p.date;
-      if (p.categories.length) html += ' &middot; 📁 ' + escHtml(p.categories.join(', '));
-      html += '</div>';
-      if (p.excerpt) html += '<p class="post-excerpt">' + escHtml(p.excerpt) + '</p>';
-      html += '</li>';
-    });
-    html += '</ul>';
+    var total = titleHits.length + contentHits.length;
+    var html = '<p class="search-count">' + total + ' result' + (total > 1 ? 's' : '') + ' for "<strong>' + escHtml(query) + '</strong>"</p>';
+    if (titleHits.length) {
+      html += '<h3 class="search-section">Title Matches</h3><ul class="post-list">';
+      titleHits.forEach(function(p) { html += renderResult(p); });
+      html += '</ul>';
+    }
+    if (contentHits.length) {
+      html += '<h3 class="search-section">Content Matches</h3><ul class="post-list">';
+      contentHits.forEach(function(p) { html += renderResult(p); });
+      html += '</ul>';
+    }
     resultsDiv.innerHTML = html;
+  }
+
+  function renderResult(p) {
+    var h = '<li class="post-list-item">';
+    h += '<h2><a href="' + p.url + '">' + escHtml(p.title) + '</a></h2>';
+    h += '<div class="post-list-meta">📅 ' + p.date;
+    if (p.categories.length) h += ' &middot; 📁 ' + escHtml(p.categories.join(', '));
+    h += '</div>';
+    if (p.excerpt) h += '<p class="post-excerpt">' + escHtml(p.excerpt) + '</p>';
+    h += '</li>';
+    return h;
   }
 
   function escHtml(s) {
