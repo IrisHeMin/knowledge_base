@@ -25,6 +25,7 @@
         <a href="{{ '/tsg/' | relative_url }}" {% if page.url == '/tsg/' %}class="active"{% endif %}>🛠️ TSG</a>
         <a href="{{ '/tutorials/' | relative_url }}" {% if page.url == '/tutorials/' %}class="active"{% endif %}>📖 Tutorials</a>
         <a href="{{ '/video-courses/' | relative_url }}" {% if page.url == '/video-courses/' %}class="active"{% endif %}>🎬 Video Courses</a>
+        <a href="{{ '/ai-podcast/' | relative_url }}" {% if page.url == '/ai-podcast/' %}class="active"{% endif %}>🎙️ AI Podcast</a>
         {% unless page.layout == 'post' %}
         <form class="nav-search" action="{{ '/search/' | relative_url }}" method="get">
           <input type="text" name="q" placeholder="🔍 Search..." aria-label="Search" class="nav-search-input">
