@@ -11,7 +11,7 @@ type: "deep-dive"
 
 > 📊 Windows 提供了从实时监控到事后分析的完整性能诊断工具链。
 >
-> 🔗 返回主导航图：[Windows 技术生态导航图](/case-knowledge-base/knowledge/windows/2026/03/25/windows-technology-ecosystem-navigation-map/)
+> 🔗 返回主导航图：[Windows 技术生态导航图](/knowledge_base/knowledge/windows/2026/03/25/windows-technology-ecosystem-navigation-map/)
 
 ---
 

@@ -11,7 +11,7 @@ type: "deep-dive"
 
 > ⚙️ Failover Clustering + Hyper-V + Storage Spaces Direct 构成了 Windows 高可用的三大支柱。
 >
-> 🔗 返回主导航图：[Windows 技术生态导航图](/case-knowledge-base/knowledge/windows/2026/03/25/windows-technology-ecosystem-navigation-map/)
+> 🔗 返回主导航图：[Windows 技术生态导航图](/knowledge_base/knowledge/windows/2026/03/25/windows-technology-ecosystem-navigation-map/)
 
 ---
 

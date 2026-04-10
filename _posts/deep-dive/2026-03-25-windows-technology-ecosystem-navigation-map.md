@@ -29,12 +29,12 @@ Windows 平台是微软最核心的技术基座。围绕 Windows Server 和 Wind
 本文以**可视化关系图**为核心，建立 Windows 技术全景的认知框架，并链接到各分区的详细介绍。
 
 > 📖 **分区详细帖导航：**
-> - [目录服务 (Directory Services)](/case-knowledge-base/knowledge/windows/2026/03/25/windows-directory-services-guide/)
-> - [网络技术 (Networking)](/case-knowledge-base/knowledge/windows/2026/03/25/windows-networking-technologies-guide/)
-> - [高可用与虚拟化 (HA & Virtualization)](/case-knowledge-base/knowledge/windows/2026/03/25/windows-high-availability-virtualization-guide/)
-> - [用户体验 / UEX (User Experience)](/case-knowledge-base/knowledge/windows/2026/03/25/windows-user-experience-guide/)
-> - [性能与诊断 (Performance & Diagnostics)](/case-knowledge-base/knowledge/windows/2026/03/25/windows-performance-diagnostics-guide/)
-> - [安全、存储与部署 (Security, Storage & Deployment)](/case-knowledge-base/knowledge/windows/2026/03/25/windows-security-storage-deployment-guide/)
+> - [目录服务 (Directory Services)](/knowledge_base/knowledge/windows/2026/03/25/windows-directory-services-guide/)
+> - [网络技术 (Networking)](/knowledge_base/knowledge/windows/2026/03/25/windows-networking-technologies-guide/)
+> - [高可用与虚拟化 (HA & Virtualization)](/knowledge_base/knowledge/windows/2026/03/25/windows-high-availability-virtualization-guide/)
+> - [用户体验 / UEX (User Experience)](/knowledge_base/knowledge/windows/2026/03/25/windows-user-experience-guide/)
+> - [性能与诊断 (Performance & Diagnostics)](/knowledge_base/knowledge/windows/2026/03/25/windows-performance-diagnostics-guide/)
+> - [安全、存储与部署 (Security, Storage & Deployment)](/knowledge_base/knowledge/windows/2026/03/25/windows-security-storage-deployment-guide/)
 
 ---
 
@@ -208,7 +208,7 @@ graph TB
     style ADDS fill:#ffd700,stroke:#b8860b,stroke-width:3px
 ```
 
-> 📖 **详细介绍：** [目录服务分区详细帖](/case-knowledge-base/knowledge/windows/2026/03/25/windows-directory-services-guide/)
+> 📖 **详细介绍：** [目录服务分区详细帖](/knowledge_base/knowledge/windows/2026/03/25/windows-directory-services-guide/)
 
 ---
 
@@ -263,7 +263,7 @@ graph TB
     style TCPIP fill:#ffd700,stroke:#b8860b,stroke-width:3px
 ```
 
-> 📖 **详细介绍：** [网络技术分区详细帖](/case-knowledge-base/knowledge/windows/2026/03/25/windows-networking-technologies-guide/)
+> 📖 **详细介绍：** [网络技术分区详细帖](/knowledge_base/knowledge/windows/2026/03/25/windows-networking-technologies-guide/)
 
 ---
 
@@ -321,7 +321,7 @@ graph TB
     style S2D fill:#f9d5f5,stroke:#8e2d85,stroke-width:2px
 ```
 
-> 📖 **详细介绍：** [高可用与虚拟化分区详细帖](/case-knowledge-base/knowledge/windows/2026/03/25/windows-high-availability-virtualization-guide/)
+> 📖 **详细介绍：** [高可用与虚拟化分区详细帖](/knowledge_base/knowledge/windows/2026/03/25/windows-high-availability-virtualization-guide/)
 
 ---
 
@@ -380,7 +380,7 @@ graph TB
     style RDS fill:#d5e8f5,stroke:#2d6b8e,stroke-width:2px
 ```
 
-> 📖 **详细介绍：** [用户体验 UEX 分区详细帖](/case-knowledge-base/knowledge/windows/2026/03/25/windows-user-experience-guide/)
+> 📖 **详细介绍：** [用户体验 UEX 分区详细帖](/knowledge_base/knowledge/windows/2026/03/25/windows-user-experience-guide/)
 
 ---
 
@@ -444,7 +444,7 @@ graph TB
     style WinDbg fill:#f5d5d5,stroke:#8e2d2d,stroke-width:2px
 ```
 
-> 📖 **详细介绍：** [性能与诊断分区详细帖](/case-knowledge-base/knowledge/windows/2026/03/25/windows-performance-diagnostics-guide/)
+> 📖 **详细介绍：** [性能与诊断分区详细帖](/knowledge_base/knowledge/windows/2026/03/25/windows-performance-diagnostics-guide/)
 
 ---
 
@@ -519,7 +519,7 @@ graph TB
     style DEPLOY fill:#d5f5e8,stroke:#2d8e6b
 ```
 
-> 📖 **详细介绍：** [安全、存储与部署分区详细帖](/case-knowledge-base/knowledge/windows/2026/03/25/windows-security-storage-deployment-guide/)
+> 📖 **详细介绍：** [安全、存储与部署分区详细帖](/knowledge_base/knowledge/windows/2026/03/25/windows-security-storage-deployment-guide/)
 
 ---
 
@@ -613,12 +613,12 @@ These technologies have **deep interdependencies**. For example:
 This article focuses on **visual relationship diagrams** to establish a cognitive framework of the Windows technology landscape, linking to detailed guides for each area.
 
 > 📖 **Detail Post Navigation:**
-> - [Directory Services](/case-knowledge-base/knowledge/windows/2026/03/25/windows-directory-services-guide/)
-> - [Networking Technologies](/case-knowledge-base/knowledge/windows/2026/03/25/windows-networking-technologies-guide/)
-> - [HA & Virtualization](/case-knowledge-base/knowledge/windows/2026/03/25/windows-high-availability-virtualization-guide/)
-> - [User Experience / UEX](/case-knowledge-base/knowledge/windows/2026/03/25/windows-user-experience-guide/)
-> - [Performance & Diagnostics](/case-knowledge-base/knowledge/windows/2026/03/25/windows-performance-diagnostics-guide/)
-> - [Security, Storage & Deployment](/case-knowledge-base/knowledge/windows/2026/03/25/windows-security-storage-deployment-guide/)
+> - [Directory Services](/knowledge_base/knowledge/windows/2026/03/25/windows-directory-services-guide/)
+> - [Networking Technologies](/knowledge_base/knowledge/windows/2026/03/25/windows-networking-technologies-guide/)
+> - [HA & Virtualization](/knowledge_base/knowledge/windows/2026/03/25/windows-high-availability-virtualization-guide/)
+> - [User Experience / UEX](/knowledge_base/knowledge/windows/2026/03/25/windows-user-experience-guide/)
+> - [Performance & Diagnostics](/knowledge_base/knowledge/windows/2026/03/25/windows-performance-diagnostics-guide/)
+> - [Security, Storage & Deployment](/knowledge_base/knowledge/windows/2026/03/25/windows-security-storage-deployment-guide/)
 
 ---
 

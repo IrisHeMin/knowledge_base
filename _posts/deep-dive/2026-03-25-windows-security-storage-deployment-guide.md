@@ -11,7 +11,7 @@ type: "deep-dive"
 
 > 🛡️ 安全、存储、部署是 Windows 平台的基础保障层。
 >
-> 🔗 返回主导航图：[Windows 技术生态导航图](/case-knowledge-base/knowledge/windows/2026/03/25/windows-technology-ecosystem-navigation-map/)
+> 🔗 返回主导航图：[Windows 技术生态导航图](/knowledge_base/knowledge/windows/2026/03/25/windows-technology-ecosystem-navigation-map/)
 
 ---
 

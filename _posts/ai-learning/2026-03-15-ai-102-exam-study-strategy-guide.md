@@ -398,7 +398,7 @@ AI Search 管道:
 | **Practice Assessment** | 免费官方模拟题 | [Practice Test](https://learn.microsoft.com/credentials/certifications/exams/ai-102/practice/assessment?assessment-type=practice&assessmentId=61) |
 | **Study Guide** | 考试技能清单 | [Study Guide](https://learn.microsoft.com/credentials/certifications/resources/study-guides/ai-102) |
 | **Exam Sandbox** | 考试界面体验 | [Exam Demo](https://aka.ms/examdemo) |
-| **AI-102 知识结构** | 本站完整知识地图 | [Knowledge Map](/case-knowledge-base/knowledge/ai/2026/03/15/deep-dive-ai-102-azure-ai-engineer-complete-guide.html) |
+| **AI-102 知识结构** | 本站完整知识地图 | [Knowledge Map](/knowledge_base/knowledge/ai/2026/03/15/deep-dive-ai-102-azure-ai-engineer-complete-guide.html) |
 
 ---
 

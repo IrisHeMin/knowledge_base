@@ -11,7 +11,7 @@ type: "deep-dive"
 
 > 🌐 Windows 网络从 TCP/IP 协议栈出发，构建了完整的企业网络基础设施。
 >
-> 🔗 返回主导航图：[Windows 技术生态导航图](/case-knowledge-base/knowledge/windows/2026/03/25/windows-technology-ecosystem-navigation-map/)
+> 🔗 返回主导航图：[Windows 技术生态导航图](/knowledge_base/knowledge/windows/2026/03/25/windows-technology-ecosystem-navigation-map/)
 
 ---
 

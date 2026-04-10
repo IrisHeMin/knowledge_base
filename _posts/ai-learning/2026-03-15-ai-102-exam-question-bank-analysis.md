@@ -418,6 +418,6 @@ D3-Agentic         █                                                  8 ( 1.1%
 
 - [AI-102 Official Study Guide](https://learn.microsoft.com/credentials/certifications/resources/study-guides/ai-102)
 - [Free Practice Assessment](https://learn.microsoft.com/credentials/certifications/exams/ai-102/practice/assessment?assessment-type=practice&assessmentId=61)
-- [AI-102 知识结构完整指南](/case-knowledge-base/knowledge/ai/2026/03/15/deep-dive-ai-102-azure-ai-engineer-complete-guide/) — 本站 AI-102 知识地图
-- [AI-102 考试通关策略](/case-knowledge-base/knowledge/ai/2026/03/15/ai-102-exam-study-strategy-guide/) — 本站备考策略指南
-- 分类数据集：[ai102-questions-classified.json](https://github.com/IrisHeMin/case-knowledge-base/blob/master/files/ai102-questions-classified.json)
+- [AI-102 知识结构完整指南](/knowledge_base/knowledge/ai/2026/03/15/deep-dive-ai-102-azure-ai-engineer-complete-guide/) — 本站 AI-102 知识地图
+- [AI-102 考试通关策略](/knowledge_base/knowledge/ai/2026/03/15/ai-102-exam-study-strategy-guide/) — 本站备考策略指南
+- 分类数据集：[ai102-questions-classified.json](https://github.com/IrisHeMin/knowledge_base/blob/master/files/ai102-questions-classified.json)

@@ -11,7 +11,7 @@ type: "deep-dive"
 
 > 🖥️ UEX 涵盖了远程桌面、打印、Shell、WMI 等面向用户和管理员的交互技术。
 >
-> 🔗 返回主导航图：[Windows 技术生态导航图](/case-knowledge-base/knowledge/windows/2026/03/25/windows-technology-ecosystem-navigation-map/)
+> 🔗 返回主导航图：[Windows 技术生态导航图](/knowledge_base/knowledge/windows/2026/03/25/windows-technology-ecosystem-navigation-map/)
 
 ---
 
