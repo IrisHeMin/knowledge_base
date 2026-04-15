@@ -18,6 +18,70 @@ type: "deep-dive"
 
 # 中文版
 
+## 前置知识：什么是 PCI？什么是 PCI Slot？
+
+在深入讨论网卡命名规则之前，我们需要先理解 PCI 和 PCI Slot 这两个基础概念，因为它们是 Windows 设备枚举和命名的底层基础。
+
+### 什么是 PCI？
+
+**PCI（Peripheral Component Interconnect，外设互连标准）** 是计算机中 CPU 与外部硬件设备之间通信的总线标准。无论是物理机还是虚拟机，操作系统要和网卡、显卡、磁盘控制器等硬件设备交互，都需要通过某种总线协议。PCI（以及它的升级版 **PCIe — PCI Express**）是当今最主流的总线标准。
+
+```
+┌──────────┐                              ┌──────────────┐
+│          │    PCI / PCIe 总线（通信公路）    │  网卡 (NIC)   │
+│   CPU    │◄════════════════════════════►│  显卡 (GPU)   │
+│          │                              │  磁盘控制器    │
+└──────────┘                              └──────────────┘
+```
+
+在 Windows 设备管理器中，你会看到设备的硬件 ID 格式为 `PCI\VEN_XXXX&DEV_XXXX`，这就是 PCI 体系下的设备标识。其中 `VEN` 是厂商 ID，`DEV` 是设备 ID。
+
+> 参考：[Supported Ethernet NICs for Network Kernel Debugging](https://learn.microsoft.com/windows-hardware/drivers/debugger/supported-ethernet-nics-for-network-kernel-debugging-in-windows-10)
+> *"The vendor and device IDs are shown as VEN\_VendorID and DEV\_DeviceID. For example, if you see PCI\VEN\_8086&DEV\_104B, the vendor ID is 8086, and the device ID is 104B."*
+
+### 什么是 PCI Slot？
+
+在物理机上，PCI Slot 就是主板上的**物理插槽** — 你把网卡插到哪个槽，它就占哪个 slot。
+
+但更准确地说，PCI 设备的"位置"用 **BDF（Bus:Device.Function）三元组**来标识：
+
+```
+PCI 地址格式：  Domain : Bus : Device . Function
+示例：          0000   : 00  : 03     . 0
+                │        │     │        │
+                │        │     │        └─ Function（同一设备的子功能，多数为 0）
+                │        │     └────────── Device（≈ 就是所谓的 "Slot 号"）
+                │        └──────────────── Bus（总线编号）
+                └───────────────────────── Domain（通常为 0000）
+```
+
+**所以 "PCI Slot" 本质上就是 BDF 中的 Device 编号**，代表设备在总线上的位置编号。
+
+> 参考：[Hard Disk Location Path Format](https://learn.microsoft.com/windows-hardware/manufacture/desktop/hard-disk-location-path-format)
+> 位置路径格式示例：`PCIROOT(0)#PCI(0300)` — 其中 `0300` 表示 Bus 0、Device 03、Function 0。
+
+### 物理机 vs 虚拟机：谁决定 PCI Slot？
+
+**关键区别**在于谁控制 PCI 拓扑的分配：
+
+| 场景 | 谁决定 PCI Slot？ | 说明 |
+|------|-------------------|------|
+| **物理机** | 主板硬件设计 + 物理插槽位置 | 网卡插到哪个物理槽，就是哪个 Device 号 |
+| **虚拟机** | 虚拟化平台（Hypervisor）| 虚拟化平台在创建 VM 时分配虚拟 PCI 地址 |
+
+**但无论 PCI Slot 由谁分配，Windows 侧的行为是完全一致的：**
+
+1. Windows PnP 管理器让 PCI 总线驱动（`Pci.sys`）枚举设备
+2. 枚举顺序基于 BDF 编号
+3. 枚举顺序决定了 NET_LUID 分配和网卡命名
+
+> 参考：[Device nodes and device stacks - Windows drivers](https://learn.microsoft.com/windows-hardware/drivers/kernel/device-nodes-and-device-stacks)
+> *"During startup, the PnP manager asks the driver for each bus to enumerate child devices that are connected to the bus. For example, the PnP manager asks the PCI bus driver (Pci.sys) to enumerate the devices that are connected to the PCI bus."*
+
+**简单来说：PCI 是"公路"，PCI Slot 是"门牌号"，Windows 按门牌号从小到大依次"敲门"（枚举），先敲到的网卡就叫"以太网"，后敲到的叫"以太网 2"。至于门牌号由谁编排 — 物理机由主板决定，虚拟机由 Hypervisor 决定 — 这部分不影响 Windows 的行为逻辑。**
+
+---
+
 ## 问题 1：多网卡的命名规则是什么？是否与 PCI Slot 有关？
 
 ### 结论
@@ -210,6 +274,70 @@ netsh trace stop
 ---
 
 # English Version
+
+## Background: What Is PCI? What Is a PCI Slot?
+
+Before diving into NIC naming rules, we need to understand PCI and PCI Slot — they are the foundation of how Windows enumerates and names devices.
+
+### What Is PCI?
+
+**PCI (Peripheral Component Interconnect)** is the bus standard for communication between the CPU and external hardware devices. Whether on physical or virtual machines, the OS interacts with NICs, GPUs, and disk controllers through a bus protocol. PCI (and its successor **PCIe — PCI Express**) is the most widely used bus standard today.
+
+```
+┌──────────┐                                    ┌──────────────┐
+│          │    PCI / PCIe Bus (communication    │  NIC          │
+│   CPU    │◄══════════════════════════════════►│  GPU          │
+│          │           highway)                  │  Disk Ctrl    │
+└──────────┘                                    └──────────────┘
+```
+
+In Windows Device Manager, you'll see hardware IDs like `PCI\VEN_XXXX&DEV_XXXX` — this is the PCI identification scheme. `VEN` is the vendor ID, `DEV` is the device ID.
+
+> Reference: [Supported Ethernet NICs for Network Kernel Debugging](https://learn.microsoft.com/windows-hardware/drivers/debugger/supported-ethernet-nics-for-network-kernel-debugging-in-windows-10)
+> *"The vendor and device IDs are shown as VEN\_VendorID and DEV\_DeviceID. For example, if you see PCI\VEN\_8086&DEV\_104B, the vendor ID is 8086, and the device ID is 104B."*
+
+### What Is a PCI Slot?
+
+On physical machines, a PCI Slot is a **physical connector on the motherboard** — whichever slot you plug the NIC into determines its slot number.
+
+More precisely, a PCI device's "location" is identified by the **BDF (Bus:Device.Function) triplet**:
+
+```
+PCI Address Format:  Domain : Bus : Device . Function
+Example:             0000   : 00  : 03     . 0
+                     │        │     │        │
+                     │        │     │        └─ Function (sub-function, usually 0)
+                     │        │     └────────── Device (≈ the "Slot number")
+                     │        └──────────────── Bus (bus number)
+                     └───────────────────────── Domain (usually 0000)
+```
+
+**So "PCI Slot" is essentially the Device number in the BDF triplet**, representing the device's position on the bus.
+
+> Reference: [Hard Disk Location Path Format](https://learn.microsoft.com/windows-hardware/manufacture/desktop/hard-disk-location-path-format)
+> Location path format example: `PCIROOT(0)#PCI(0300)` — where `0300` means Bus 0, Device 03, Function 0.
+
+### Physical vs Virtual: Who Decides the PCI Slot?
+
+The **key difference** is who controls the PCI topology assignment:
+
+| Scenario | Who Decides PCI Slot? | Description |
+|----------|----------------------|-------------|
+| **Physical machine** | Motherboard design + physical slot | Whichever slot you plug the NIC into |
+| **Virtual machine** | Virtualization platform (Hypervisor) | The hypervisor assigns virtual PCI addresses when creating the VM |
+
+**Regardless of who assigns the PCI Slot, Windows behavior is identical:**
+
+1. Windows PnP manager asks the PCI bus driver (`Pci.sys`) to enumerate devices
+2. Enumeration order is based on BDF numbers
+3. Enumeration order determines NET_LUID assignment and NIC naming
+
+> Reference: [Device nodes and device stacks](https://learn.microsoft.com/windows-hardware/drivers/kernel/device-nodes-and-device-stacks)
+> *"During startup, the PnP manager asks the driver for each bus to enumerate child devices that are connected to the bus."*
+
+**In simple terms: PCI is the "highway", PCI Slot is the "house number". Windows knocks on doors (enumerates) from smallest to largest number — the first NIC it finds becomes "Ethernet", the next becomes "Ethernet 2". Who assigns the house numbers — the motherboard (physical) or the hypervisor (virtual) — does not change Windows' behavior.**
+
+---
 
 ## Question 1: What Are the NIC Naming Rules? Is It Related to PCI Slot?
 
