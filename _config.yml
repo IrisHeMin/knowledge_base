@@ -1,5 +1,5 @@
-title: Case Knowledge Base
-description: Support case summaries, troubleshooting notes, and lessons learned.
+title: Knowledge Base
+description: Technical deep dives, troubleshooting case studies, scenario maps, AI learning notes, and more.
 url: "https://Irishemin.github.io"
 baseurl: "/knowledge_base"
 markdown: kramdown
