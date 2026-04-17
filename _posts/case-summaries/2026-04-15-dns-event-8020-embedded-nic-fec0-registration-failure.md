@@ -1,15 +1,15 @@
 ---
 layout: post
-title: "DNS Event 8020: 管理网卡配置废弃 IPv6 DNS 导致 DNS 动态注册失败"
+title: "DNS Event 8020: 网卡配置废弃 IPv6 DNS 导致动态注册失败"
 date: 2026-04-15
 categories: [DNS, Windows-Server]
-tags: [dns, event-8020, nic-configuration, ipv6, fec0, dynamic-update, failover-cluster, dns-registration]
+tags: [dns, event-8020, nic-configuration, ipv6, fec0, dynamic-update, dns-registration, set-dnsclient]
 
 ---
 
-# Case Summary: DNS Event 8020 — 管理网卡配置废弃 IPv6 DNS 地址导致 DNS 动态注册每日失败
+# Case Summary: DNS Event 8020 — 网卡配置废弃 IPv6 DNS 地址导致 DNS 动态注册失败
 
-**Product/Service:** Windows Server 2022 / DNS Client / Failover Clustering
+**Product/Service:** Windows Server 2022 / DNS Client
 
 ---
 
@@ -238,8 +238,9 @@ Set-DnsClient -InterfaceAlias "Embedded NIC 1" -RegisterThisConnectionsAddress $
 
 ## 7. 参考文档 (References)
 
-- [DNS troubleshooting guidance](https://learn.microsoft.com/troubleshoot/windows-server/networking/troubleshoot-dns-guidance) — Microsoft 官方 DNS 故障排除指南
-- [Avoid registering unwanted network adapters in DNS](https://learn.microsoft.com/troubleshoot/windows-server/networking/troubleshoot-dns-guidance#avoid-registering-unwanted-network-adapters-in-dns) — 避免不需要的网卡注册 DNS 的官方指导
+- [Steps to avoid registering unwanted NICs in DNS](https://learn.microsoft.com/troubleshoot/windows-server/networking/unwanted-nic-registered-dns-mulithomed-dc) — 多网卡服务器避免不需要的网卡注册 DNS 的官方指导
+- [How to enable or disable DNS updates in Windows](https://learn.microsoft.com/troubleshoot/windows-server/networking/enable-disable-dns-dynamic-registration) — 启用/禁用 DNS 动态更新注册的方法
+- [Set-DnsClient](https://learn.microsoft.com/powershell/module/dnsclient/set-dnsclient?view=windowsserver2025-ps) — PowerShell cmdlet 配置网卡 DNS 客户端设置
 - [RFC 3879 - Deprecating Site Local Addresses](https://www.rfc-editor.org/rfc/rfc3879) — IPv6 Site-Local 地址废弃的 RFC 文档
 
 ---
@@ -382,6 +383,7 @@ Set-DnsClient -InterfaceAlias "Embedded NIC 1" -RegisterThisConnectionsAddress $
 
 ## 7. References
 
-- [DNS troubleshooting guidance](https://learn.microsoft.com/troubleshoot/windows-server/networking/troubleshoot-dns-guidance) — Official Microsoft DNS troubleshooting guide
-- [Avoid registering unwanted network adapters in DNS](https://learn.microsoft.com/troubleshoot/windows-server/networking/troubleshoot-dns-guidance#avoid-registering-unwanted-network-adapters-in-dns) — Official guidance on preventing unwanted NIC DNS registration
+- [Steps to avoid registering unwanted NICs in DNS](https://learn.microsoft.com/troubleshoot/windows-server/networking/unwanted-nic-registered-dns-mulithomed-dc) — Official guidance on preventing unwanted NIC DNS registration on multihomed servers
+- [How to enable or disable DNS updates in Windows](https://learn.microsoft.com/troubleshoot/windows-server/networking/enable-disable-dns-dynamic-registration) — Methods to enable/disable DNS dynamic update registration
+- [Set-DnsClient](https://learn.microsoft.com/powershell/module/dnsclient/set-dnsclient?view=windowsserver2025-ps) — PowerShell cmdlet for configuring interface-specific DNS client settings
 - [RFC 3879 - Deprecating Site Local Addresses](https://www.rfc-editor.org/rfc/rfc3879) — RFC documenting IPv6 Site-Local address deprecation
