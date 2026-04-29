@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "🔬 DD42: 当AI开始"欺骗"：对齐问题的最新隐忧"
+title: '🔬 DD42: 当AI开始"欺骗"：对齐问题的最新隐忧'
 date: 2026-04-15
 categories: [AI-Deep-Dive]
 tags: [alignment, deception, safety, agi, control-problem]

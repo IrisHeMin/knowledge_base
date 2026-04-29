@@ -39,7 +39,9 @@ title: Home
     var terms = query.toLowerCase().split(/\s+/);
     var titleHits = [], contentHits = [];
     posts.forEach(function(p) {
-      var titleStr = (p.title + ' ' + p.tags.join(' ') + ' ' + p.categories.join(' ')).toLowerCase();
+      var tags = Array.isArray(p.tags) ? p.tags : [];
+      var cats = Array.isArray(p.categories) ? p.categories : [];
+      var titleStr = ((p.title || '') + ' ' + tags.join(' ') + ' ' + cats.join(' ')).toLowerCase();
       var contentStr = (p.content || '').toLowerCase();
       var inTitle = terms.every(function(t) { return titleStr.indexOf(t) !== -1; });
       var inContent = terms.every(function(t) { return (titleStr + ' ' + contentStr).indexOf(t) !== -1; });
@@ -67,9 +69,9 @@ title: Home
   }
 
   function renderPost(p) {
-    var h = '<li class="post-list-item"><h2><a href="' + p.url + '">' + esc(p.title) + '</a></h2>';
+    var h = '<li class="post-list-item"><h2><a href="' + p.url + '">' + esc(p.title || '(untitled)') + '</a></h2>';
     h += '<div class="post-list-meta">📅 ' + p.date;
-    if (p.categories.length) h += ' &middot; 📁 ' + esc(p.categories.join(', '));
+    if (Array.isArray(p.categories) && p.categories.length) h += ' &middot; 📁 ' + esc(p.categories.join(', '));
     h += '</div>';
     if (p.excerpt) h += '<p class="post-excerpt">' + esc(p.excerpt) + '</p>';
     return h + '</li>';

@@ -53,7 +53,9 @@ permalink: /search/
     var terms = query.toLowerCase().split(/\s+/);
     var titleHits = [], contentHits = [];
     posts.forEach(function(post) {
-      var titleStr = (post.title + ' ' + post.categories.join(' ') + ' ' + post.tags.join(' ') + ' ' + post.excerpt).toLowerCase();
+      var tags = Array.isArray(post.tags) ? post.tags : [];
+      var cats = Array.isArray(post.categories) ? post.categories : [];
+      var titleStr = ((post.title || '') + ' ' + cats.join(' ') + ' ' + tags.join(' ') + ' ' + (post.excerpt || '')).toLowerCase();
       var contentStr = (post.content || '').toLowerCase();
       var inTitle = terms.every(function(t) { return titleStr.indexOf(t) !== -1; });
       var inContent = terms.every(function(t) { return (titleStr + ' ' + contentStr).indexOf(t) !== -1; });
@@ -83,9 +85,9 @@ permalink: /search/
 
   function renderResult(p) {
     var h = '<li class="post-list-item">';
-    h += '<h2><a href="' + p.url + '">' + escHtml(p.title) + '</a></h2>';
+    h += '<h2><a href="' + p.url + '">' + escHtml(p.title || '(untitled)') + '</a></h2>';
     h += '<div class="post-list-meta">📅 ' + p.date;
-    if (p.categories.length) h += ' &middot; 📁 ' + escHtml(p.categories.join(', '));
+    if (Array.isArray(p.categories) && p.categories.length) h += ' &middot; 📁 ' + escHtml(p.categories.join(', '));
     h += '</div>';
     if (p.excerpt) h += '<p class="post-excerpt">' + escHtml(p.excerpt) + '</p>';
     h += '</li>';
