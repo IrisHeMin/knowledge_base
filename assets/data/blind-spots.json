@@ -1,0 +1,21 @@
+{
+  "lastUpdated": "2026-05-04",
+  "schemaVersion": 1,
+  "categories": {
+    "network": "🌐 网络与协议",
+    "windows": "🪟 Windows 系统",
+    "ad": "🔐 Active Directory / 认证",
+    "azure": "☁️ Azure / 云",
+    "programming": "💻 编程与设计",
+    "devops": "⚙️ DevOps / 自动化",
+    "ai": "🤖 AI / LLM",
+    "other": "📦 其它"
+  },
+  "statusLabels": {
+    "unknown": "未学",
+    "learning": "学习中",
+    "mastered": "已掌握",
+    "archived": "已归档"
+  },
+  "items": []
+}
