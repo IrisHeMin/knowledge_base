@@ -74,14 +74,14 @@
   <input id="filter" type="text" placeholder="过滤 topic..." oninput="filterTopics()">
   <ul class="topic-list" id="topicList">
     <li class="hot" data-name="Cluster / Azure Local"><a href="#sec-cluster"><span class="count">11</span><span class="tname">Cluster / Azure Local</span></a></li>
-    <li class="hot" data-name="网络 / TCPIP"><a href="#sec-network"><span class="count">10</span><span class="tname">网络 / TCPIP</span></a></li>
+    <li class="hot" data-name="网络 / TCPIP"><a href="#sec-network"><span class="count">11</span><span class="tname">网络 / TCPIP</span></a></li>
     <li class="hot" data-name="SMB / 文件共享"><a href="#sec-smb"><span class="count">7</span><span class="tname">SMB / 文件共享</span></a></li>
-    <li class="hot" data-name="DNS"><a href="#sec-dns"><span class="count">6</span><span class="tname">DNS</span></a></li>
+    <li class="hot" data-name="DNS"><a href="#sec-dns"><span class="count">7</span><span class="tname">DNS</span></a></li>
     <li class="hot" data-name="存储 / 备份"><a href="#sec-storage"><span class="count">6</span><span class="tname">存储 / 备份</span></a></li>
     <li class="warm" data-name="Wi-Fi / 802.1X"><a href="#sec-wifi"><span class="count">7</span><span class="tname">Wi-Fi / 802.1X</span></a></li>
     <li class="warm" data-name="工具分享"><a href="#sec-tools"><span class="count">4</span><span class="tname">工具分享</span></a></li>
     <li class="warm" data-name="防火墙 / 安全"><a href="#sec-firewall"><span class="count">2</span><span class="tname">防火墙 / 安全</span></a></li>
-    <li class="warm" data-name="其他"><a href="#sec-other"><span class="count">6</span><span class="tname">其他</span></a></li>
+    <li class="warm" data-name="其他"><a href="#sec-other"><span class="count">10</span><span class="tname">其他</span></a></li>
   </ul>
 </aside>
 
@@ -90,10 +90,10 @@
 <p class="subtitle">来自 HANET_Techshare 邮件分类整理 — 点击任一行展开 <b>问题 / 排查思路 / 解决办法 / Takeaway</b></p>
 
 <div class="stats">
-  <div class="stat"><div class="num">60</div><div class="lbl">Tech Share 总数</div></div>
+  <div class="stat"><div class="num">66</div><div class="lbl">Tech Share 总数</div></div>
   <div class="stat"><div class="num">9</div><div class="lbl">Topic 分类</div></div>
   <div class="stat"><div class="num">1</div><div class="lbl">已完成详情 (demo)</div></div>
-  <div class="stat"><div class="num">59</div><div class="lbl">待补充</div></div>
+  <div class="stat"><div class="num">65</div><div class="lbl">待补充</div></div>
 </div>
 
 <!-- ============ DNS ============ -->
@@ -108,6 +108,7 @@
       <tr class="ts-row" data-id="ts-dns-cf-failover"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> DNS Conditional Forwarder Failover Behavior and Tuning Recommendation</td><td><span class="ts-tag">Conditional Fwd</span></td></tr>
       <tr class="ts-row" data-id="ts-dns-suffix-cluster"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Failover Cluster File Share Creation Failure — DNS Suffix Search List Misconfiguration</td><td><span class="ts-tag">Suffix List</span></td></tr>
       <tr class="ts-row" data-id="ts-dns-aks-aksonal"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> [AzLocal] 无法在 Arc AKS on Azure Local 中实现 Pod 解析 Worker Node 主机名</td><td><span class="ts-tag">AKS+DNS</span></td></tr>
+      <tr class="ts-row" data-id="ts-dns-cname-blank"><td class="ts-date">2025-11-25</td><td class="ts-title"><span class="arrow">▶</span> [Case Card] Ping.exe 解析失败 — CNAME 记录前的空格被 DNS Client 当作非法数据</td><td><span class="ts-tag">CNAME</span></td></tr>
     </tbody>
   </table>
 </section>
@@ -166,6 +167,7 @@
       <tr class="ts-row" data-id="ts-net-netprofm"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Netprofm Memory leak on server 2016</td><td><span class="ts-tag">内存泄漏</span></td></tr>
       <tr class="ts-row" data-id="ts-net-multinic-dhcp"><td class="ts-date">2026-04-24</td><td class="ts-title"><span class="arrow">▶</span> Windows Multi-NIC Naming Rules &amp; DHCP Initiation Order</td><td><span class="ts-tag">Multi-NIC</span></td></tr>
       <tr class="ts-row" data-id="ts-net-phantom-nic"><td class="ts-date">2026-04-02</td><td class="ts-title"><span class="arrow">▶</span> The Case of the Phantom NIC Killer — DWPNetworkService NIC Disable</td><td><span class="ts-tag">DWPNetworkService</span></td></tr>
+      <tr class="ts-row" data-id="ts-net-dhcp-dup-ip"><td class="ts-date">2025-12-17</td><td class="ts-title"><span class="arrow">▶</span> [Case Card][NET] DHCP Duplicate IP 奇案：是谁偷走了我的租约？</td><td><span class="ts-tag">DHCP</span></td></tr>
     </tbody>
   </table>
 </section>
@@ -241,6 +243,10 @@
       <tr class="ts-row" data-id="ts-other-netsha-r4"><td class="ts-date">2026-04-08</td><td class="ts-title"><span class="arrow">▶</span> NETSHA Idea Roaming 第四期 — 随机抽题·即兴分享</td><td><span class="ts-tag">团队活动</span></td></tr>
       <tr class="ts-row" data-id="ts-other-netsha-r3"><td class="ts-date">2026-02-12</td><td class="ts-title"><span class="arrow">▶</span> NETSHA Idea Roaming 第三期 — 嘿，2036！我们来串门了</td><td><span class="ts-tag">团队活动</span></td></tr>
       <tr class="ts-row" data-id="ts-other-netsha-r2"><td class="ts-date">2026-01-05</td><td class="ts-title"><span class="arrow">▶</span> NETSHA Idea Roaming 第二期 — 为知识买单：那些年我们下过的单</td><td><span class="ts-tag">团队活动</span></td></tr>
+      <tr class="ts-row" data-id="ts-other-autopilot-endpoint"><td class="ts-date">2025-11-21</td><td class="ts-title"><span class="arrow">▶</span> [Case Card] Windows Autopilot 注册卡住 — 运营商返回错误的 Azure Endpoint IP</td><td><span class="ts-tag">Autopilot</span></td></tr>
+      <tr class="ts-row" data-id="ts-other-miracast"><td class="ts-date">2025-12-18</td><td class="ts-title"><span class="arrow">▶</span> [MS closure summary] 设置中 Miracast 投影到此电脑连接失败</td><td><span class="ts-tag">Miracast</span></td></tr>
+      <tr class="ts-row" data-id="ts-other-ad-pwd-policy"><td class="ts-date">2025-12-16</td><td class="ts-title"><span class="arrow">▶</span> [MS case closure summary] AD 密码策略不生效</td><td><span class="ts-tag">AD / 密码策略</span></td></tr>
+      <tr class="ts-row" data-id="ts-other-netsha-r1"><td class="ts-date">2025-11-28</td><td class="ts-title"><span class="arrow">▶</span> NETSHA 第一期 Idea Roaming — 从抖音到 B 站，聊聊视频平台的鄙视链</td><td><span class="ts-tag">团队活动</span></td></tr>
     </tbody>
   </table>
 </section>
@@ -2761,6 +2767,173 @@ WLAN 操作日志（<code>netsh wlan show wlanreport</code>）和事件视图 <c
 <li><b>知识付费的真正价值不在购买，而在投入</b>—— 没看完的课等于没买。</li>
 <li>团队互相推荐 / 避坑能极大降低个人选错的成本。</li>
 <li>类似"消费分享"主题在 IT 团队里很有共鸣，人均能开口讲。</li>
+</ol>`,
+  },
+  "ts-dns-cname-blank": {
+    problem: `<b>Case Card：</b>客户用 <code>ping &lt;hostname&gt;</code> 偶发解析失败，但 <code>nslookup</code> 同名却能正常解析。<br><br>
+追查发现 DNS 服务器上的 CNAME 记录数据"看起来正常"，但记录前/数据字段中混入了一个不可见的<b>空格字符</b>。<br>
+DNS Client 服务把这个空格视为非法数据，于是 ping 直接报"无法解析"，而 nslookup 走的是直接 UDP 查询路径，绕过了 Client 服务的本地处理逻辑，所以表现不一致。`,
+
+    investigation: `<ol>
+<li><code>ping vs nslookup</code> 行为差异 → 暗示问题不在 DNS 服务器本身，而在客户端解析路径。</li>
+<li>抓 <code>NetEventPacketCapture</code> 看 DNS 应答内容：服务器返回的 CNAME 数据中含有 <code>0x20</code>（空格）字符。</li>
+<li>DNS 管理控制台肉眼看 CNAME 字段是"正常的"，但用 <code>dnscmd /enumrecords &lt;zone&gt; &lt;node&gt; /detail</code> 看到 RDATA 多了一个前导空格。</li>
+<li>对比 RFC 1035：CNAME 的 RDATA 不应包含空白字符；Windows DNS Client 严格按 RFC 校验，遇到非法数据视作 SERVFAIL。</li>
+<li>追溯空格来源：管理员通过批量脚本/CSV 导入记录时，单元格末尾或前面带了空格，没有 trim。</li>
+</ol>`,
+
+    solution: `<ol>
+<li>DNS 服务器上删除并重新创建该 CNAME 记录，确保 RDATA 没有任何空白字符。</li>
+<li>批量导入工具增加 <code>Trim()</code> 步骤，避免 CSV/Excel 导入时把空白字符带进去。</li>
+<li>定期扫描所有 CNAME / A 记录，用 <code>dnscmd /enumrecords ... /detail</code> 检查 RDATA 是否含 <code>0x20</code> / <code>0x09</code>。</li>
+</ol>`,
+
+    takeaway: `<ol>
+<li><b>"ping 不通但 nslookup 通"</b>是 DNS Client 服务端校验严格性问题，不是 DNS 服务器问题。</li>
+<li>批量导入 DNS 记录时，前导/尾部空格是经典坑。</li>
+<li>排查 DNS 数据完整性，<code>dnscmd /detail</code> 比 GUI 更靠谱。</li>
+</ol>`,
+  },
+
+  "ts-net-dhcp-dup-ip": {
+    problem: `<b>"租约失踪案"：</b>客户网络中频繁出现 DHCP Duplicate IP（重复地址）告警。<br><br>
+症状是：客户端拿到一个 IP，但 ARP 检测发现该 IP 已被占用 → DECLINE → 重试 → 再失败。<br>
+DHCP 服务器的池子里明明应该有大量可用 IP，但租约总是"被偷走"。`,
+
+    investigation: `<ol>
+<li>DHCP 服务器日志：发现 DHCPDECLINE 事件激增；查看出问题 IP 的最近租约历史。</li>
+<li>客户端层面：Win11 在 DHCP 拿到 IP 后会做 <b>ARP Probe</b>（发送 gratuitous ARP），如果有应答就发 DECLINE 并重新申请。</li>
+<li>抓包：发现某些"已占用"IP 的 ARP 应答来自一台<b>未在 DHCP 服务器登记</b>的静态 IP 设备 —— 私自配静态 IP 的旧打印机/IP 摄像头。</li>
+<li>根因：管理员没把"静态 IP 段"从 DHCP 池里 exclude 掉，导致 DHCP 把已经被静态使用的 IP 也分配出去。</li>
+<li>命名"奇案"是因为初次看像 DHCP bug，实际是网络治理问题。</li>
+</ol>`,
+
+    solution: `<ol>
+<li>DHCP 服务器 → Scope → Address Pool → 添加 <b>Exclusion Range</b>，把静态 IP 段排除。</li>
+<li>用 <code>arp -a</code> 或交换机 MAC 表全网扫描，把所有静态设备登记入 IPAM。</li>
+<li>启用 DHCP Server Conflict Detection (Server Properties → Advanced → Conflict detection attempts ≥ 1)，让 DHCP 在分配前自己 ping 一下。</li>
+<li>长期：所有 IP 段统一到 IPAM 管理，禁止私自配静态。</li>
+</ol>`,
+
+    takeaway: `<ol>
+<li><b>DHCP Duplicate IP ≠ DHCP bug</b>，9 成是 IP 池没排除静态段。</li>
+<li>Conflict Detection 是 DHCP 服务器自带的"二次确认"开关，建议生产环境启用。</li>
+<li>把网络故事讲成"奇案"，传播效率高得多。</li>
+</ol>`,
+  },
+
+  "ts-other-autopilot-endpoint": {
+    problem: `<b>Case Card：</b>新机器开箱启动 Windows Autopilot 注册时，进度卡在 "Setting up your device" 阶段不动，最后报 0x801c0003 / 0x80072EE7 类网络错误。<br><br>
+机器能上网（浏览器能访问 microsoft.com），但 Autopilot 注册失败。`,
+
+    investigation: `<ol>
+<li>抓 Autopilot 注册流程的 ETW + 客户端事件视图 <code>ModernDeployment-Diagnostics-Provider</code>。</li>
+<li>观察客户端尝试访问的 URL：<code>https://login.microsoftonline.com</code>、<code>https://enterpriseregistration.windows.net</code>、<code>https://device.login.microsoftonline.com</code>。</li>
+<li><code>nslookup</code> 这些域名 → 发现 DNS 返回的是<b>错误的 IP 地址</b>（不是真正的 Azure Front Door IP）。</li>
+<li>客户端用的是运营商（电信/联通）DNS。运营商 DNS 对部分 Microsoft 域名做了"劫持"或"加速"，返回了一个无法访问 Azure 真实端点的 IP。</li>
+<li>用公共 DNS（8.8.8.8 / 1.1.1.1）测试 → 解析正确 → 注册立刻成功。</li>
+</ol>`,
+
+    solution: `<ol>
+<li>临时：客户端配置静态 DNS 指向公司 DNS / 公共 DNS。</li>
+<li>长期：客户和运营商沟通，要求停止对 microsoft 域名的 DNS 干预；或客户网络出口加 DoH/DoT。</li>
+<li>检测脚本：对 Autopilot 关键域名做 IP 比对（实际解析 vs 已知 Azure IP 段），自动告警 DNS 劫持。</li>
+</ol>`,
+
+    takeaway: `<ol>
+<li>"能上网 ≠ 能 Autopilot"，Autopilot 对 DNS 解析的精确性要求比浏览器高。</li>
+<li>中国大陆运营商 DNS 干预微软云端点是已知风险，部署前必须验证。</li>
+<li>把 DNS 比对加入 Autopilot 部署 checklist 能防患未然。</li>
+</ol>`,
+  },
+
+  "ts-other-miracast": {
+    problem: `<b>MS closure summary：</b>客户在 Win11 设置中启用"投影到此电脑"，从手机/另一台 Win 用 Miracast 投屏，连接尝试始终失败：发现设备但点连接后超时。`,
+
+    investigation: `<ol>
+<li>检查接收端必备条件：
+<ul>
+<li>Wi-Fi 网卡支持 Wi-Fi Direct（<code>netsh wlan show drivers</code>，看 "Hosted network supported"/"Wireless Display Supported"）</li>
+<li>显卡驱动支持 Miracast（dxdiag → System → Miracast: Available）</li>
+<li>"投影到此电脑"功能已安装（Settings → Apps → Optional features → Wireless Display）</li>
+</ul>
+</li>
+<li>事件视图 <code>WLAN-WlanAutoconfig</code> + <code>Microsoft-Windows-WiFi-Display</code> 通道：观察 Miracast 协商失败具体阶段（RTSP M1-M7 握手）。</li>
+<li>抓包 NetEventPacketCapture：Miracast 用 IPv6 link-local + RTSP，先看 IP 协商是否完成。</li>
+<li>常见根因：
+<ul>
+<li>"Wireless Display" 可选组件没装</li>
+<li>防火墙拦截了 Miracast 入站规则</li>
+<li>显卡/网卡驱动版本太旧</li>
+<li>双发射卡设备 (例如有线+Wi-Fi) 选错出口</li>
+</ul></li>
+</ol>`,
+
+    solution: `<ol>
+<li>安装 Wireless Display 可选功能。</li>
+<li>启用防火墙规则组 "Wireless Display"（Public/Private 两个 profile）。</li>
+<li>更新显卡和 Wi-Fi 驱动到最新稳定版。</li>
+<li>必要时关闭 IPv6 隔离 / 强制走 Wi-Fi Direct 接口。</li>
+</ol>`,
+
+    takeaway: `<ol>
+<li>Miracast = Wi-Fi Direct + RTSP，三层任何一层断都会失败。</li>
+<li>"投影到此电脑"是 Win11 可选功能，不预装，新机器一定要先确认。</li>
+<li>这类多组件交互问题，用<b>分阶段抓包 + 协议握手</b>视角排查最快。</li>
+</ol>`,
+  },
+
+  "ts-other-ad-pwd-policy": {
+    problem: `<b>MS case closure summary：</b>管理员在 Default Domain Policy 改了密码策略（最短长度、复杂度、最大有效期），但实际客户端登录/改密时新策略不生效。`,
+
+    investigation: `<ol>
+<li>验证策略下发：<code>gpresult /h gpr.html</code> 在客户端看到 GPO 是否已应用。</li>
+<li>关键检查：密码策略只能在<b>域级别</b>的 GPO 生效；如果误改了 OU 级别 GPO，对域用户密码无效。</li>
+<li>Fine-Grained Password Policy (FGPP) / PSO（Password Settings Object）：如果存在 PSO 并 link 到用户/组，会覆盖 Default Domain Policy。<code>Get-ADUserResultantPasswordPolicy</code> 可以看实际生效策略。</li>
+<li>SYSVOL 复制：检查 DC 之间 SYSVOL 是否同步（<code>repadmin /showrepl</code> + <code>dfsrdiag replicationstate</code>），新策略可能只在某些 DC 生效。</li>
+<li>客户端连接的 DC：用 <code>nltest /dsgetdc:&lt;domain&gt;</code> 看实际登录 DC 是不是已收到新策略。</li>
+</ol>`,
+
+    solution: `<ol>
+<li>密码策略一定改 <b>Default Domain Policy</b>（域根 OU level），不是子 OU。</li>
+<li>如果有 PSO，要先看清覆盖关系；删除冲突的 PSO 或重新规划优先级。</li>
+<li>修复 SYSVOL/DFSR 复制问题。</li>
+<li>用户改密前 <code>gpupdate /force</code>，然后用 <code>net accounts /domain</code> 验证生效值。</li>
+</ol>`,
+
+    takeaway: `<ol>
+<li>AD 密码策略生效路径：Default Domain Policy → 域级别，不是 OU 级别。</li>
+<li>PSO 优先级高于 GPO，排查时先看 PSO。</li>
+<li><code>Get-ADUserResultantPasswordPolicy &lt;user&gt;</code> 是判断真实生效的金标准。</li>
+</ol>`,
+  },
+
+  "ts-other-netsha-r1": {
+    problem: `NETSHA Idea Roaming 系列<b>第一期</b> —— 主题"从抖音到 B 站，聊聊视频平台的鄙视链"。<br><br>
+首期定位：把"团队分享"从严肃的技术分享拓宽到"任何有趣的视角"，建立<b>无压力、好奇优先</b>的分享文化。`,
+
+    investigation: `<ol>
+<li>圆桌形式：每位 4-5 分钟个人观察 + 全员追问。</li>
+<li>分享视角维度：
+<ul>
+<li>用户人群差异（抖快小红书 vs B 站知乎）</li>
+<li>内容生产门槛差异（短平快 vs 长视频/深度）</li>
+<li>商业模式差异（带货 vs 会员/激励）</li>
+<li>"鄙视链"心理：圈层文化如何形成 vs 是否被夸大</li>
+</ul></li>
+<li>讨论延伸：作为 IT 工程师，我们是不是也有自己的"工具/语言鄙视链"？这种鄙视链对协作有何影响？</li>
+</ol>`,
+
+    solution: `<ol>
+<li>把娱乐话题和工程师身份关联，引出对自己的反思。</li>
+<li>每期固定输出"金句墙"和"讨论小结"，作为团队记忆。</li>
+<li>第一期成功后定下系列节奏，第 2-4 期延续。</li>
+</ol>`,
+
+    takeaway: `<ol>
+<li>团队文化建设可以"轻松起步"——技术内容不是唯一的分享形式。</li>
+<li>从娱乐话题切入，反而更容易引出对工作/协作的真实观察。</li>
+<li>"鄙视链"现象在工程团队普遍存在，公开讨论能化解很多隐性张力。</li>
 </ol>`,
   },
 };
