@@ -92,6 +92,7 @@ title: Home
 {% assign tutorial_count = 0 %}
 {% assign vc_count = 0 %}
 {% assign podcast_count = 0 %}
+{% assign techshare_count = 0 %}
 {% for post in site.posts %}
   {% if post.path contains "case-summaries/" %}{% assign case_count = case_count | plus: 1 %}
   {% elsif post.path contains "deep-dive/" %}{% assign deep_count = deep_count | plus: 1 %}
@@ -103,6 +104,7 @@ title: Home
   {% elsif post.path contains "tutorials/" %}{% assign tutorial_count = tutorial_count | plus: 1 %}
   {% elsif post.path contains "video-courses/" %}{% assign vc_count = vc_count | plus: 1 %}
   {% elsif post.path contains "ai-podcast/" %}{% assign podcast_count = podcast_count | plus: 1 %}
+  {% elsif post.path contains "tech-share/" %}{% assign techshare_count = techshare_count | plus: 1 %}
   {% endif %}
 {% endfor %}
 
@@ -170,6 +172,12 @@ title: Home
     <h3>AI播客快讯</h3>
     <p>每日AI行业快讯播客文稿，10-15分钟掌握AI圈最重要的大事</p>
     <span class="card-count">{{ podcast_count }} episodes</span>
+  </a>
+  <a href="{{ '/tech-share/' | relative_url }}" class="category-card">
+    <div class="card-icon">📡</div>
+    <h3>Tech Share</h3>
+    <p>同事内部 Tech Share 精华整理：问题 → 排查思路 → 解决办法 → Takeaway，4 段速读</p>
+    <span class="card-count">{{ techshare_count }} posts</span>
   </a>
 </section>
 

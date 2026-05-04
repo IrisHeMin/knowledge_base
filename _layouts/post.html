@@ -17,6 +17,8 @@ layout: default
       <span class="breadcrumb-sep">/</span><a href="{{ '/education/' | relative_url }}">Education</a>
     {% elsif page.path contains "tsg/" %}
       <span class="breadcrumb-sep">/</span><a href="{{ '/tsg/' | relative_url }}">TSG</a>
+    {% elsif page.path contains "tech-share/" %}
+      <span class="breadcrumb-sep">/</span><a href="{{ '/tech-share/' | relative_url }}">Tech Share</a>
     {% endif %}
     <span class="breadcrumb-sep">/</span><span class="breadcrumb-current">{{ page.title }}</span>
   </nav>
