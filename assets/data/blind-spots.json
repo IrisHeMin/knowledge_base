@@ -17,5 +17,127 @@
     "mastered": "已掌握",
     "archived": "已归档"
   },
-  "items": []
+  "items": [
+    {
+      "id": "bs-005",
+      "topic": "TCP 拥塞控制四阶段：慢启动 / 拥塞避免 / 快重传 / 快恢复，cwnd 增长规则",
+      "category": "network",
+      "priority": 5,
+      "status": "unknown",
+      "source": "问答 Q3",
+      "notes": "完全不会。慢启动指数增长（每 ACK +1MSS），拥塞避免线性（每 RTT +1MSS），ssthresh = cwnd/2 是切换点。RTO → cwnd=1 重新慢启动；3 个 dup ACK → 快重传+快恢复，cwnd 减半但不回到 1。",
+      "createdAt": "2026-05-04 06:24:45",
+      "updatedAt": "2026-05-04 06:24:45"
+    },
+    {
+      "id": "bs-003",
+      "topic": "服务器大量 TIME_WAIT 的危害与调优（tcp_tw_reuse / 长连接 / 谁主动关闭）",
+      "category": "network",
+      "priority": 4,
+      "status": "unknown",
+      "source": "问答 Q2",
+      "notes": "没答到这一面：TIME_WAIT 在主动关闭方，服务器堆积会耗端口/内存/conntrack；调优方向 tcp_tw_reuse、SO_REUSEADDR、改长连接、让客户端主动关闭。",
+      "createdAt": "2026-05-04 05:58:06",
+      "updatedAt": "2026-05-04 05:58:06"
+    },
+    {
+      "id": "bs-002",
+      "topic": "TIME_WAIT 的两个真正原因（最后 ACK 重传 + 防旧报文）和 2×MSL 由来",
+      "category": "network",
+      "priority": 4,
+      "status": "learning",
+      "source": "问答 Q2",
+      "notes": "答错时机（说成发 ACK 之前）；只答出\"让任务完成\"，未答出 (1) 保证最后 ACK 可重传 (2) 防止旧连接数据包干扰新连接（2×MSL 即由此而来）。Linux 默认 60s，Windows 240s。",
+      "createdAt": "2026-05-04 05:58:06",
+      "updatedAt": "2026-05-04 05:58:06"
+    },
+    {
+      "id": "bs-006",
+      "topic": "cwnd vs rwnd：发送窗口 = min(cwnd, rwnd)，流量控制 vs 拥塞控制区别",
+      "category": "network",
+      "priority": 4,
+      "status": "unknown",
+      "source": "问答 Q3",
+      "notes": "不知道两个窗口的区别。rwnd 是接收方告知，cwnd 是发送方自己估算网络容量。",
+      "createdAt": "2026-05-04 06:24:45",
+      "updatedAt": "2026-05-04 06:24:45"
+    },
+    {
+      "id": "bs-008",
+      "topic": "Wireshark/tshark 估算 cwnd：bytes_in_flight + tcptrace 时序图，区分 cwnd 限制 vs rwnd 限制",
+      "category": "network",
+      "priority": 4,
+      "status": "learning",
+      "source": "问答 Q3 追问",
+      "notes": "cwnd 是发送方内核变量包里没有，靠 tcp.analysis.bytes_in_flight 近似；tcptrace 图能直观看慢启动/拥塞避免/RTO/快恢复；ss -tin 在 Linux 看真实 cwnd。常见误区：Window Size 是 rwnd 不是 cwnd。",
+      "createdAt": "2026-05-04 06:28:26",
+      "updatedAt": "2026-05-04 06:28:26"
+    },
+    {
+      "id": "bs-010",
+      "topic": "Window Scaling 选项：64KB 不够，高 BDP 链路必须 SYN 协商 wscale，否则吞吐塌方",
+      "category": "network",
+      "priority": 4,
+      "status": "unknown",
+      "source": "问答 Q4",
+      "notes": "TCP Window Size 字段只有 16 位（65535），跨国高 BDP 链路必须 Window Scaling 放大。SYN 中协商 shift 值。防火墙吞 SYN 选项会导致 Window Scaling 失效。",
+      "createdAt": "2026-05-04 06:39:14",
+      "updatedAt": "2026-05-04 06:39:14"
+    },
+    {
+      "id": "bs-009",
+      "topic": "滑动窗口（机制） vs rwnd vs cwnd 三者区别：实际窗口 = min(rwnd, cwnd)",
+      "category": "network",
+      "priority": 4,
+      "status": "learning",
+      "source": "问答 Q4",
+      "notes": "把滑动窗口和延迟 ACK 混淆。滑动窗口是 pipelining 机制（vs Stop-and-Wait），rwnd 是接收方流控，cwnd 是发送方拥塞控制；前者是机制，后两者是数值上限。",
+      "createdAt": "2026-05-04 06:39:14",
+      "updatedAt": "2026-05-04 06:39:14"
+    },
+    {
+      "id": "bs-001",
+      "topic": "TCP 三次握手的本质：ISN 同步 vs 单纯确认",
+      "category": "network",
+      "priority": 3,
+      "status": "learning",
+      "source": "问答 Q1",
+      "notes": "答出双向确认的思想，但未提到序列号同步、ISN、为何不是 2 次的 RFC 793 论点（防历史重复连接）",
+      "createdAt": "2026-05-04 05:53:52",
+      "updatedAt": "2026-05-04 05:53:52"
+    },
+    {
+      "id": "bs-004",
+      "topic": "Windows/Linux TIME_WAIT 时长差异及调优手段（TcpTimedWaitDelay vs tcp_tw_reuse）",
+      "category": "network",
+      "priority": 3,
+      "status": "learning",
+      "source": "问答 Q2.2 追问",
+      "notes": "Windows 老版本 240s / 新版本 120s（注册表 TcpTimedWaitDelay 范围 30-300s 改后需重启）；Linux 60s 写死无法调，靠 tcp_tw_reuse 复用。Linux 的 tcp_fin_timeout 是 FIN_WAIT_2 不是 TIME_WAIT。",
+      "createdAt": "2026-05-04 06:20:35",
+      "updatedAt": "2026-05-04 06:20:35"
+    },
+    {
+      "id": "bs-007",
+      "topic": "CUBIC vs BBR vs Reno：现代拥塞控制算法选型，Linux/Windows 默认值",
+      "category": "network",
+      "priority": 3,
+      "status": "unknown",
+      "source": "问答 Q3",
+      "notes": "不知道有不同算法。Linux 默认 CUBIC，Windows 现在默认 CUBIC（Win10+），BBR 不靠丢包靠带宽探测。Get-NetTCPSetting 可查。",
+      "createdAt": "2026-05-04 06:24:45",
+      "updatedAt": "2026-05-04 06:24:45"
+    },
+    {
+      "id": "bs-011",
+      "topic": "延迟 ACK + Nagle 算法的 200ms 经典坑及排查",
+      "category": "network",
+      "priority": 3,
+      "status": "unknown",
+      "source": "问答 Q4",
+      "notes": "Iris 把延迟 ACK 当成滑动窗口。延迟 ACK 是接收方优化（200ms 或第 2 个段或捎带），与 Nagle 互动会卡 200ms。HTTP 小包延迟问题。",
+      "createdAt": "2026-05-04 06:39:14",
+      "updatedAt": "2026-05-04 06:39:14"
+    }
+  ]
 }
