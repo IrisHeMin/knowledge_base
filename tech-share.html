@@ -1,0 +1,2459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Tech Share by Topic</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI","Microsoft YaHei",sans-serif; margin: 0; color: #222; background: #f4f6fa; }
+  .layout { display: flex; min-height: 100vh; }
+  aside { width: 260px; background: #1f2d4a; color: #e6ebf5; padding: 16px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .side-header { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: #fff; border-bottom: 1px solid #3a4a6c; padding-bottom: 6px; }
+  #filter { width: 100%; padding: 6px 8px; border-radius: 4px; border: 1px solid #3a4a6c; background: #2a3a5c; color: #fff; font-size: 13px; margin-bottom: 8px; }
+  .topic-list { list-style: none; padding: 0; margin: 0; font-size: 13px; }
+  .topic-list li a { display: flex; align-items: center; gap: 8px; padding: 5px 8px; color: #c9d2e6; text-decoration: none; border-radius: 4px; }
+  .topic-list li a:hover { background: #2e3f60; color: #fff; }
+  .topic-list li.hot a { color: #ffd97a; font-weight: 600; }
+  .topic-list li.warm a { color: #fff; }
+  .topic-list .count { display: inline-block; min-width: 28px; text-align: center; background: #3a4a6c; color: #fff; border-radius: 10px; font-size: 11px; padding: 1px 6px; font-weight: 600; }
+  .topic-list li.hot .count { background: #d97706; }
+  .topic-list li.warm .count { background: #2563eb; }
+  .tname { flex: 1; }
+  main { flex: 1; padding: 24px 32px; max-width: calc(100vw - 260px); }
+  h1 { color: #1f2d4a; border-bottom: 2px solid #1f2d4a; padding-bottom: 8px; margin-top: 0; }
+  .subtitle { color: #666; margin-top: -4px; font-size: 13px; }
+  .stats { display: flex; gap: 16px; margin: 14px 0 18px; flex-wrap: wrap; }
+  .stat { background: #fff; border: 1px solid #d0d7de; border-radius: 6px; padding: 10px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .stat .num { font-size: 22px; font-weight: 700; color: #2a4d8f; }
+  .stat .lbl { font-size: 12px; color: #666; }
+  .topic-section { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 16px 20px; margin-bottom: 22px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); scroll-margin-top: 16px; }
+  .topic-section h2 { margin: 0 0 10px 0; color: #1a5b1a; font-size: 18px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
+  .topic-section .badge { display: inline-block; background: #b3261e; color: #fff; font-size: 12px; padding: 2px 10px; border-radius: 12px; margin-left: 8px; vertical-align: middle; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border: 1px solid #e2e8f0; padding: 8px 10px; vertical-align: top; text-align: left; font-size: 13px; }
+  th { background: #f1f5f9; color: #334155; font-weight: 600; }
+  tr:hover td { background: #f9fbff; }
+  .ts-date { font-family: Consolas,monospace; color: #64748b; white-space: nowrap; font-size: 12px; }
+  .ts-sharer { color: #1e40af; font-size: 12px; white-space: nowrap; }
+  .ts-title { color: #1f2d4a; font-weight: 500; }
+  .ts-tag { display: inline-block; background: #e0e7ff; color: #1e40af; padding: 2px 8px; border-radius: 10px; font-size: 11px; white-space: nowrap; }
+  .muted { color: #aaa; font-style: italic; }
+  .top-link { position: fixed; right: 24px; bottom: 24px; background: #1f2d4a; color: #fff; padding: 10px 14px; border-radius: 24px; text-decoration: none; font-size: 13px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+  .top-link:hover { background: #2a4d8f; }
+
+  /* Accordion */
+  .ts-row { cursor: pointer; }
+  .ts-row:hover td { background: #eef3fb !important; }
+  .ts-row.expanded td { background: #e3edfa !important; }
+  .detail-row { display: none; }
+  .detail-row.show { display: table-row; }
+  .detail-row > td { background: #f8fafc; padding: 14px 18px; border-top: 0 !important; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; }
+  .dfield { background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 14px; }
+  .dfield.problem    { border-left: 4px solid #b91c1c; }
+  .dfield.investigation { border-left: 4px solid #c2410c; }
+  .dfield.solution   { border-left: 4px solid #047857; }
+  .dfield.takeaway   { border-left: 4px solid #2563eb; }
+  .dlbl { font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .dval { font-size: 13px; line-height: 1.7; color: #1f2937; }
+  .dval ul, .dval ol { margin: 6px 0; padding-left: 22px; }
+  .dval li { margin-bottom: 4px; }
+  .dval code { background: #eef2f7; padding: 1px 5px; border-radius: 3px; font-family: Consolas,monospace; font-size: 12px; color: #b91c1c; }
+  .dval pre { background: #1e293b; color: #e2e8f0; padding: 10px 12px; border-radius: 4px; overflow-x: auto; font-size: 12px; line-height: 1.5; margin: 8px 0; }
+  .dval.pending { color: #9ca3af; font-style: italic; }
+  .dval table { margin: 6px 0; }
+  .dval table th, .dval table td { font-size: 12px; padding: 5px 8px; }
+  .ts-row .arrow { display: inline-block; width: 10px; color: #94a3b8; margin-right: 4px; transition: transform 0.15s; }
+  .ts-row.expanded .arrow { transform: rotate(90deg); color: #2563eb; }
+</style>
+</head>
+<body>
+<div class="layout">
+<aside>
+  <div class="side-header">📡 Topic 列表</div>
+  <input id="filter" type="text" placeholder="过滤 topic..." oninput="filterTopics()">
+  <ul class="topic-list" id="topicList">
+    <li class="hot" data-name="Cluster / Azure Local"><a href="#sec-cluster"><span class="count">10</span><span class="tname">Cluster / Azure Local</span></a></li>
+    <li class="hot" data-name="网络 / TCPIP"><a href="#sec-network"><span class="count">8</span><span class="tname">网络 / TCPIP</span></a></li>
+    <li class="hot" data-name="SMB / 文件共享"><a href="#sec-smb"><span class="count">7</span><span class="tname">SMB / 文件共享</span></a></li>
+    <li class="hot" data-name="DNS"><a href="#sec-dns"><span class="count">6</span><span class="tname">DNS</span></a></li>
+    <li class="hot" data-name="存储 / 备份"><a href="#sec-storage"><span class="count">5</span><span class="tname">存储 / 备份</span></a></li>
+    <li class="warm" data-name="Wi-Fi / 802.1X"><a href="#sec-wifi"><span class="count">4</span><span class="tname">Wi-Fi / 802.1X</span></a></li>
+    <li class="warm" data-name="工具分享"><a href="#sec-tools"><span class="count">4</span><span class="tname">工具分享</span></a></li>
+    <li class="warm" data-name="防火墙 / 安全"><a href="#sec-firewall"><span class="count">2</span><span class="tname">防火墙 / 安全</span></a></li>
+    <li class="warm" data-name="其他"><a href="#sec-other"><span class="count">1</span><span class="tname">其他</span></a></li>
+  </ul>
+</aside>
+
+<main>
+<h1>📡 Tech Share by Topic</h1>
+<p class="subtitle">来自 HANET_Techshare 邮件分类整理 — 点击任一行展开 <b>问题 / 排查思路 / 解决办法 / Takeaway</b></p>
+
+<div class="stats">
+  <div class="stat"><div class="num">48</div><div class="lbl">Tech Share 总数</div></div>
+  <div class="stat"><div class="num">9</div><div class="lbl">Topic 分类</div></div>
+  <div class="stat"><div class="num">1</div><div class="lbl">已完成详情 (demo)</div></div>
+  <div class="stat"><div class="num">47</div><div class="lbl">待补充</div></div>
+</div>
+
+<!-- ============ DNS ============ -->
+<section id="sec-dns" class="topic-section">
+  <h2>🌐 DNS <span class="badge">6</span></h2>
+  <table>
+    <thead><tr><th style="width:90px">日期</th><th>主题</th><th style="width:120px">子标签</th></tr></thead>
+    <tbody>
+      <tr class="ts-row" data-id="ts-dns-spooler"><td class="ts-date">2022-05-16</td><td class="ts-title"><span class="arrow">▶</span> Print Spooler 与 DNS — Win2012R2 起 ANY 查询对 CNAME 的行为变化</td><td><span class="ts-tag">CNAME / Spooler</span></td></tr>
+      <tr class="ts-row" data-id="ts-dns-dhcp-profile"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> DHCP获取的DNS被ProfileNameServer覆盖</td><td><span class="ts-tag">DHCP+DNS</span></td></tr>
+      <tr class="ts-row" data-id="ts-dns-bind-ip"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> 如何强制 DNS 服务器仅发布指定的 IP 地址，并忽略其本地接口的 IP 地址</td><td><span class="ts-tag">DNS Server</span></td></tr>
+      <tr class="ts-row" data-id="ts-dns-cf-failover"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> DNS Conditional Forwarder Failover Behavior and Tuning Recommendation</td><td><span class="ts-tag">Conditional Fwd</span></td></tr>
+      <tr class="ts-row" data-id="ts-dns-suffix-cluster"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Failover Cluster File Share Creation Failure — DNS Suffix Search List Misconfiguration</td><td><span class="ts-tag">Suffix List</span></td></tr>
+      <tr class="ts-row" data-id="ts-dns-aks-aksonal"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> [AzLocal] 无法在 Arc AKS on Azure Local 中实现 Pod 解析 Worker Node 主机名</td><td><span class="ts-tag">AKS+DNS</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ SMB ============ -->
+<section id="sec-smb" class="topic-section">
+  <h2>📂 SMB / 文件共享 <span class="badge">7</span></h2>
+  <table>
+    <thead><tr><th style="width:90px">日期</th><th>主题</th><th style="width:120px">子标签</th></tr></thead>
+    <tbody>
+      <tr class="ts-row" data-id="ts-smb-webdav"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Explorer 访问 WebDAV 共享路径显示空文件夹</td><td><span class="ts-tag">WebDAV</span></td></tr>
+      <tr class="ts-row" data-id="ts-smb-minsmb2"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> 系统升级 Win11 24H2 后，MinSmb2Dialect 引起 SMB 协商不成功</td><td><span class="ts-tag">SMB Dialect</span></td></tr>
+      <tr class="ts-row" data-id="ts-smb-copy-slow"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> 快速排查 SMB copy 慢是慢在 Windows OS [SMB/TCPIP] 还是中间网络</td><td><span class="ts-tag">SMB 性能</span></td></tr>
+      <tr class="ts-row" data-id="ts-smb-share-lost"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Share folder become unshare</td><td><span class="ts-tag">Share</span></td></tr>
+      <tr class="ts-row" data-id="ts-smb-dfs-rpc"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> DFS 命名空间无法查询，RPC 服务器不可用</td><td><span class="ts-tag">DFS</span></td></tr>
+      <tr class="ts-row" data-id="ts-smb-260char"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> 文件路径超过 260 字符且未启用 8dot3name 时造成文件无法打开</td><td><span class="ts-tag">长路径</span></td></tr>
+      <tr class="ts-row" data-id="ts-smb-usb-deny"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> U盘不能写入 'Destination Folder Access Denied'</td><td><span class="ts-tag">USB / ACL</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ Cluster ============ -->
+<section id="sec-cluster" class="topic-section">
+  <h2>🧱 Cluster / Azure Local / Hyper-V <span class="badge">10</span></h2>
+  <table>
+    <thead><tr><th style="width:90px">日期</th><th>主题</th><th style="width:120px">子标签</th></tr></thead>
+    <tbody>
+      <tr class="ts-row" data-id="ts-clu-azlocal-aad"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> [AzLocal] 注册失败排查分享：AAD 应用租户白名单问题</td><td><span class="ts-tag">Azure Local</span></td></tr>
+      <tr class="ts-row" data-id="ts-clu-netatc-rename"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> 为 NetworkATC 交换机更换名称（通过重建 NetIntent 实现）</td><td><span class="ts-tag">NetworkATC</span></td></tr>
+      <tr class="ts-row" data-id="ts-clu-remappipe-sccm"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> RemapPipeNames Breaks SCCM Prereq Check on SQL FCI</td><td><span class="ts-tag">SQL FCI</span></td></tr>
+      <tr class="ts-row" data-id="ts-clu-exchange"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Exchange 环境加节点失败</td><td><span class="ts-tag">Exchange</span></td></tr>
+      <tr class="ts-row" data-id="ts-clu-secureboot"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> 'Missing' Secure Boot certificates on Hyper-V VM</td><td><span class="ts-tag">Secure Boot</span></td></tr>
+      <tr class="ts-row" data-id="ts-clu-scenario-map"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Scenario Map: Fails to Create Windows Failover Cluster</td><td><span class="ts-tag">FOC 创建</span></td></tr>
+      <tr class="ts-row" data-id="ts-clu-bios-livemig"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> BIOS Mismatch Breaks Live Migration — EventID 155 Feature Mask</td><td><span class="ts-tag">Live Migration</span></td></tr>
+      <tr class="ts-row" data-id="ts-clu-cert-mismatch"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> 群集证书不匹配导致节点无法上线或无法加入群集</td><td><span class="ts-tag">证书</span></td></tr>
+      <tr class="ts-row" data-id="ts-clu-2025-netatc"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Windows Server 2025 Cluster Network ATC Management 网络异常</td><td><span class="ts-tag">2025</span></td></tr>
+      <tr class="ts-row" data-id="ts-clu-fileshare-fail"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Failover Cluster File Share Creation Failure (DNS Suffix)</td><td><span class="ts-tag">交叉</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ Network ============ -->
+<section id="sec-network" class="topic-section">
+  <h2>🔌 网络 / TCPIP <span class="badge">8</span></h2>
+  <table>
+    <thead><tr><th style="width:90px">日期</th><th>主题</th><th style="width:120px">子标签</th></tr></thead>
+    <tbody>
+      <tr class="ts-row" data-id="ts-net-dual-nic"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Dual NIC – One Adapter Auto-Disabled When Both Connected</td><td><span class="ts-tag">NIC</span></td></tr>
+      <tr class="ts-row" data-id="ts-net-nic-stat"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Abnormal network adapter statistics display</td><td><span class="ts-tag">NIC stat</span></td></tr>
+      <tr class="ts-row" data-id="ts-net-tcp-spurious"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> TCP Spurious Retransmissions — MinRTO vs Delayed ACK Race Condition</td><td><span class="ts-tag">TCP</span></td></tr>
+      <tr class="ts-row" data-id="ts-net-mtu"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> 小妙招 - 客户访问某些站点网页缓慢（MTU 不匹配导致）</td><td><span class="ts-tag">MTU</span></td></tr>
+      <tr class="ts-row" data-id="ts-net-pac-url"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> WinHTTP PAC URL Full Path</td><td><span class="ts-tag">PAC / Proxy</span></td></tr>
+      <tr class="ts-row" data-id="ts-net-iwr"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Invoke-Webrequest 失败</td><td><span class="ts-tag">PowerShell</span></td></tr>
+      <tr class="ts-row" data-id="ts-net-cmd-shell"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> 网络命令外壳 "抢了" 定位图标</td><td><span class="ts-tag">UI</span></td></tr>
+      <tr class="ts-row" data-id="ts-net-netprofm"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Netprofm Memory leak on server 2016</td><td><span class="ts-tag">内存泄漏</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ Wi-Fi ============ -->
+<section id="sec-wifi" class="topic-section">
+  <h2>📶 Wi-Fi / 802.1X <span class="badge">4</span></h2>
+  <table>
+    <thead><tr><th style="width:90px">日期</th><th>主题</th><th style="width:120px">子标签</th></tr></thead>
+    <tbody>
+      <tr class="ts-row" data-id="ts-wifi-cert"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> 802.1x - WIFI fails to connect with error "Can't connect because you need a certificate to sign in"</td><td><span class="ts-tag">证书</span></td></tr>
+      <tr class="ts-row" data-id="ts-wifi-wired-gpo"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Wired profile via GPO — "Automatically use my Windows logon name and password" 异常解勾</td><td><span class="ts-tag">GPO</span></td></tr>
+      <tr class="ts-row" data-id="ts-wifi-id-privacy"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> 802.1X Wi-Fi "Cannot Connect" Caused by Misconfigured Identity Privacy</td><td><span class="ts-tag">PEAP</span></td></tr>
+      <tr class="ts-row" data-id="ts-wifi-nps-upgrade"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> NPS 服务器的升级建议和步骤</td><td><span class="ts-tag">NPS</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ Storage ============ -->
+<section id="sec-storage" class="topic-section">
+  <h2>💾 存储 / 备份 <span class="badge">5</span></h2>
+  <table>
+    <thead><tr><th style="width:90px">日期</th><th>主题</th><th style="width:120px">子标签</th></tr></thead>
+    <tbody>
+      <tr class="ts-row" data-id="ts-stor-vss"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> VSS Shadow Copy unexpected lost</td><td><span class="ts-tag">VSS</span></td></tr>
+      <tr class="ts-row" data-id="ts-stor-trim"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> TRIM 功能引起三方 NetApp 存储设备性能问题</td><td><span class="ts-tag">TRIM</span></td></tr>
+      <tr class="ts-row" data-id="ts-stor-disk157"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Disk Event ID 157 / 15 caused by VMWare</td><td><span class="ts-tag">VMWare</span></td></tr>
+      <tr class="ts-row" data-id="ts-stor-wbadmin"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Wbadmin not working in scheduled task as System</td><td><span class="ts-tag">备份</span></td></tr>
+      <tr class="ts-row" data-id="ts-stor-efi"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> 重建 EFI 和恢复分区</td><td><span class="ts-tag">EFI</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ Tools ============ -->
+<section id="sec-tools" class="topic-section">
+  <h2>🛠️ 工具分享 <span class="badge">4</span></h2>
+  <table>
+    <thead><tr><th style="width:90px">日期</th><th>主题</th><th style="width:120px">子标签</th></tr></thead>
+    <tbody>
+      <tr class="ts-row" data-id="ts-tool-tsbuddy"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> custom AI agent - TroubleshootBuddy</td><td><span class="ts-tag">Copilot</span></td></tr>
+      <tr class="ts-row" data-id="ts-tool-smbperf"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> SMBPerfAnalyzer Agent</td><td><span class="ts-tag">SMB 性能</span></td></tr>
+      <tr class="ts-row" data-id="ts-tool-stacky"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Copilot agent Stacky for Azure Local</td><td><span class="ts-tag">Azure Local</span></td></tr>
+      <tr class="ts-row" data-id="ts-tool-hvcluster"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Copilot CLI Agent — Hyper-V Cluster Logs Analyzer</td><td><span class="ts-tag">Hyper-V</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ Firewall ============ -->
+<section id="sec-firewall" class="topic-section">
+  <h2>🔥 防火墙 / 安全 <span class="badge">2</span></h2>
+  <table>
+    <thead><tr><th style="width:90px">日期</th><th>主题</th><th style="width:120px">子标签</th></tr></thead>
+    <tbody>
+      <tr class="ts-row" data-id="ts-fw-mpssvc"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Windows Defender Firewall Service (mpssvc) Cannot Be Enabled — 0x800706d9</td><td><span class="ts-tag">mpssvc</span></td></tr>
+      <tr class="ts-row" data-id="ts-fw-general"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Windows 防火墙相关问题咨询</td><td><span class="ts-tag">咨询</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ Other ============ -->
+<section id="sec-other" class="topic-section">
+  <h2>📦 其他 <span class="badge">2</span></h2>
+  <table>
+    <thead><tr><th style="width:90px">日期</th><th>主题</th><th style="width:120px">子标签</th></tr></thead>
+    <tbody>
+      <tr class="ts-row" data-id="ts-other-locator-icon"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> 网络命令外壳 "抢了" 定位图标 (UI / Shell)</td><td><span class="ts-tag">Shell</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+</div>
+
+<a href="#" class="top-link">↑ 回到顶部</a>
+
+<script>
+function filterTopics(){
+  var q=document.getElementById('filter').value.toLowerCase().trim();
+  document.querySelectorAll('#topicList li').forEach(function(li){
+    var n=li.getAttribute('data-name')||'';
+    li.style.display=(q===''||n.toLowerCase().indexOf(q)!==-1)?'':'none';
+  });
+}
+
+// 详情数据
+window.TS_DETAILS = {
+  "ts-dns-spooler": {
+    problem: `客户在 Infoblox DNS 上为打印服务器创建了 CNAME，希望客户端用别名 <code>print</code> 访问：
+<pre>print  →  print.contoso.net.au  →  wpprint20.retail.ad.contoso.net.au</pre>
+但客户端连打印服务器时 Spooler 失败返回 <code>0x00000709 "invalid printer name"</code>，直接走 FQDN 则正常。<br><br>
+<b>核心矛盾</b>：CNAME 在 nslookup 层面解析正常，唯独 Print Spooler 拒绝。`,
+
+    investigation: `<b>1. Spooler 怎么用 DNS：</b>
+<ol>
+<li>服务启动时对自身 FQDN 查询，把 IP+名字列表缓存进内存 <code>NameCache</code></li>
+<li>客户端连进来时对客户端使用的名字（<code>print</code>）再查一次</li>
+<li>把第 2 步响应和第 1 步缓存对比，匹配才允许，否则 <code>0x00000709</code></li>
+</ol>
+注意：Spooler 用的是 <code>wtype = ANY</code>，不是常见的 <code>A</code>。<br><br>
+<b>2. Win2012R2 起的关键行为变化：</b>
+<table>
+<tr><th>版本</th><th>ANY 查 CNAME 的响应</th></tr>
+<tr><td>Server 2008R2 及之前</td><td>CNAME + 解析的 IP</td></tr>
+<tr><td>Server 2012R2 及之后</td><td><b>只 CNAME，没 IP</b></td></tr>
+</table>
+为适配，Spooler 自 2012R2 起改成两阶段：<b>第一轮 ANY</b>（如响应里没 IP 说明是 CNAME → 触发第二轮）<b>第二轮 A</b>（拿真实 IP 比对）。<br><br>
+<b>3. 解码 TTT trace 看实际响应：</b>
+<pre>spoolsv!TNameResolutionCache::ProcessDnsQueryResults+0x28e
+  pszName = "Print"
+  szA     = "172.25.44.44"   ← 居然带了 IP！</pre>
+<code>172.25.44.44</code> 是 Infoblox 自己的 IP，不是打印服务器的 IP。<br><br>
+<b>4. 收敛根因：</b> Infoblox 在 ANY 查 CNAME 时错误返回了 IP，破坏了 Spooler 的两阶段查询前提，导致比对失败。`,
+
+    solution: `<table>
+<tr><th>方向</th><th>动作</th></tr>
+<tr><td><b>根治</b></td><td>与 <b>Infoblox 厂商</b>确认并修复其在 <code>wtype=ANY</code> 查 CNAME 时错误返回 IP 的行为，使其与 Win DNS 2012R2+ 行为对齐</td></tr>
+<tr><td><b>临时规避</b></td><td>客户端直接用打印服务器 <b>FQDN</b> 而非 CNAME 别名</td></tr>
+<tr><td><b>验证手段</b></td><td>nslookup <code>set type=ANY</code> 查 CNAME，响应应只含别名不含 IP；再观察 Spooler 是否触发第二轮 A 查询（TTT / Procmon / 抓包）</td></tr>
+</table>
+本案<b>不是 Windows 侧 bug</b>，Spooler 两阶段逻辑是正确的，问题在第三方 DNS 实现差异。`,
+
+    takeaway: `<ol>
+<li><b>CNAME + 三方 DNS = 隐藏雷区。</b>Windows 组件依赖某个 DNS 行为细节时，混入 Infoblox/BIND/F5 要警惕版本/实现差异。</li>
+<li><b><code>wtype=ANY</code> ≠ "什么都给我"。</b>它在 Win2012R2 起对 CNAME 的语义是"先告诉我这是不是别名"，配合二次 A 查询用。</li>
+<li><b>Spooler 报 <code>0x00000709 "invalid printer name"</code>，名字解析层是必查项。</b>错误文案听起来"名字不对"，根因往往是 IP 比对失败。</li>
+<li>排查名字解析问题，<b>看 Spooler/客户端实际拿到的 IP</b>，而不是只看 nslookup <code>type=A</code>——客户端用的查询类型可能完全不同。</li>
+<li><b>TTT + Symbol 解析变量</b>（pszName/szA）是这种"代码层 vs DNS 实际响应"对照的最快路径。</li>
+</ol>`
+  },
+  "ts-clu-2025-netatc": {
+    problem: `打完补丁后 Hyper-V 集群的 <b>Management vNIC</b> 绑定损坏，导致集群节点通信中断。<br><br>
+故障现象：补丁安装重启后，某些节点的 Management vNIC 在 ATC（<b>Network ATC</b>）管理的 vSwitch 上绑定异常，
+节点无法加入集群心跳网络，Cluster Manager 报告节点隔离（<code>Isolated</code>）或不可达。<br><br>
+环境：Windows Server 2025 + Azure Local + Network ATC 管理的 vSwitch，
+补丁批次包含 2025 年积累更新（KB5xxxxx），部分节点升级后出现问题，另一部分节点正常，
+表现为间歇性节点摘除（<code>cluster node /status</code> 显示 Down）。`,
+    investigation: `排查步骤如下：<br><br>
+<ol>
+<li>检查 ATC Intent 配置：<code>Get-NetIntentStatus</code>，确认 Provisioning State 是否为 <code>Provisioned</code></li>
+<li>检查 vSwitch 绑定：<code>Get-VMSwitchTeam</code> 和 <code>Get-NetAdapter</code>，确认 Management vNIC 是否附加到正确 vSwitch</li>
+<li>查看事件日志 <code>Microsoft-Windows-Hyper-V-VmSwitch/Operational</code>，寻找绑定失败或 NIC 枚举错误</li>
+<li>对比正常节点与故障节点的 <code>Get-NetIntentStatus -Name &lt;IntentName&gt;</code> 输出</li>
+<li>确认补丁安装顺序：部分节点可能在 ATC 重新收敛前重启，导致 vNIC 配置不一致</li>
+</ol>
+根本原因：补丁安装触发了 ATC 的 vSwitch 重建流程，但 Management vNIC 的绑定未能在重建后正确恢复，
+与 ATC 的收敛计时器（Convergence Timer）存在竞态条件。`,
+    solution: `修复步骤：<br><br>
+<ol>
+<li>记录当前 ATC Intent 配置：<code>Get-NetIntent | Export-Clixml C:\\backup\\intent.xml</code></li>
+<li>删除受影响节点上的 ATC Intent：<code>Remove-NetIntent -Name &lt;IntentName&gt; -ComputerName &lt;NodeName&gt;</code></li>
+<li>等待 vSwitch 和 vNIC 完全移除（约 2 分钟），验证 <code>Get-VMSwitch</code> 返回空</li>
+<li>重新创建 Intent：<code>Add-NetIntent</code>（使用导出的配置），指定相同的物理适配器和模式</li>
+<li>等待 ATC 收敛完成：<code>Wait-NetIntentStatus -Name &lt;IntentName&gt; -State Provisioned</code></li>
+<li>验证 Management vNIC 绑定正常，节点重新加入集群</li>
+</ol>
+<b>临时缓解</b>：在 ATC 重建期间，可手动创建 External vSwitch 并绑定 Management vNIC 以保持节点连通性。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>补丁前备份 ATC Intent 配置</b>：<code>Get-NetIntent | Export-Clixml</code> 可快速恢复</li>
+<li><b>分批次打补丁</b>：每批节点重启后等待 ATC 完全收敛（<code>Provisioned</code> 状态）再继续</li>
+<li><b>监控 vSwitch 重建</b>：补丁后脚本自动检查 <code>Get-NetIntentStatus</code>，确认所有节点 State = Provisioned</li>
+<li><b>Network ATC 的幂等性</b>：删除并重建 Intent 通常是最干净的修复路径，比手动修改 vNIC 绑定更可靠</li>
+<li>2025 年的积累更新已知包含 ATC 相关修复，建议在测试环境先验证，再推广到生产节点</li>
+</ol>`,
+  },
+  "ts-clu-azlocal-aad": {
+    problem: `Azure Local（原 Azure Stack HCI）集群在执行 <b>注册（Registration）</b> 时报错 <code>AADSTS7000118</code>，
+注册流程中止，集群无法与 Azure 云端服务建立连接。<br><br>
+错误信息示例：<code>AADSTS7000118: The client application does not exist in the Azure Active Directory tenant.</code><br><br>
+故障场景：客户购置新的 Azure Local 硬件或在新 Azure AD 租户中首次部署 Azure Local，
+执行 <code>Register-AzStackHCI</code> 时抛出此错误。该错误表明当前 AAD 租户尚未被加入
+HCI Service 应用程序（<b>Microsoft Azure Stack HCI</b>，AppID: 1322e676-...）的白名单。`,
+    investigation: `排查流程：<br><br>
+<ol>
+<li>确认错误码为 <code>AADSTS7000118</code>（租户未授权），区别于其他 7000xxx 系列错误</li>
+<li>在 Azure Portal &gt; Enterprise Applications 中搜索 <b>Azure Stack HCI</b>，确认该应用是否已存在于租户</li>
+<li>尝试手动同意（Admin Consent）：访问
+<code>https://login.microsoftonline.com/&lt;TenantID&gt;/adminconsent?client_id=1322e676-xxxx</code>
+如果返回 <code>AADSTS7000118</code>，说明租户不在服务端白名单中</li>
+<li>确认 Azure 订阅类型：部分 CSP 订阅、政府云订阅或试用订阅可能需要额外白名单申请</li>
+<li>查看 Azure Local 注册日志：<code>C:\\Windows\\Logs\\AzureArcSetup\\</code> 目录</li>
+</ol>
+根本原因：HCI Service 对新租户的接入采用白名单机制，新租户默认不在允许列表中，需要人工审批。`,
+    solution: `解决方法：<br><br>
+<ol>
+<li><b>提交微软支持请求</b>，告知：租户 ID、订阅 ID、Azure Local 版本、错误截图，
+请求将租户加入 HCI Service 应用白名单</li>
+<li>微软工程师在后端将租户 ID 加入允许列表，通常需要 1-3 个工作日</li>
+<li>白名单更新后，重新执行注册：
+<pre>Register-AzStackHCI -SubscriptionId "&lt;subId&gt;" -TenantId "&lt;tenantId&gt;" -ResourceGroupName "&lt;rg&gt;"</pre></li>
+<li>验证注册状态：<code>Get-AzStackHCI</code> 应返回 <code>RegistrationStatus: Registered</code></li>
+</ol>
+<b>备注</b>：此问题在 Azure Local 23H2 版本中已改进，部分场景通过自动同意流程绕过白名单要求。
+建议升级到最新版本后再尝试注册。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>白名单机制是已知限制</b>：Azure Local 的 HCI Service AAD 应用需要租户级别授权，
+新租户首次部署必须经过白名单申请流程</li>
+<li><b>提前规划注册时间</b>：白名单审批可能耗时 1-3 天，不应在部署计划的最后阶段才执行注册</li>
+<li><b>区分错误码</b>：<code>AADSTS7000118</code> 是租户白名单问题，
+<code>AADSTS7000215</code> 是应用密钥问题，两者处理方式不同</li>
+<li>Azure Local 23H2+ 版本已改善此流程，升级可减少此类障碍</li>
+<li>CSP 合作伙伴代理客户部署时需确认客户租户是否已完成白名单申请</li>
+</ol>`,
+  },
+  "ts-clu-bios-livemig": {
+    problem: `Hyper-V 集群执行 <b>实时迁移（Live Migration）</b> 时失败，
+错误码 <code>0x80048016</code>，集群事件日志记录 <b>EventID 155</b>，
+详细描述中包含 <code>bit 48</code> 处理器特性不匹配。<br><br>
+故障场景：集群中各节点使用相同型号的服务器，但 BIOS 版本不一致，
+部分节点为 1.90，其他节点已升级至 1.98。BIOS 1.98 启用了 CPU 的新特性位，
+导致 Hyper-V 处理器兼容性检查失败，虚拟机无法在不同 BIOS 版本节点间迁移。<br><br>
+影响：虚拟机被锁定在特定节点，节点维护（Drain）无法完成，生产环境 HA 能力丧失。`,
+    investigation: `排查步骤：<br><br>
+<ol>
+<li>查看集群事件日志 EventID 155：<code>Get-WinEvent -LogName "Microsoft-Windows-Hyper-V-Worker-Admin" | Where-Object Id -eq 155</code></li>
+<li>事件详情显示：<code>The virtual machine could not be migrated... Processor feature mismatch at bit 48</code></li>
+<li>检查各节点 BIOS 版本：<code>Get-CimInstance Win32_BIOS | Select-Object Version,SMBIOSBIOSVersion</code></li>
+<li>发现节点 A/B/C 为 BIOS 1.98，节点 D 为 BIOS 1.90</li>
+<li>确认 BIOS 1.98 Release Notes 中提及启用了 TSX（Transactional Synchronization Extensions）相关 CPU 特性，对应 bit 48</li>
+<li>查看 VM 处理器兼容性设置：<code>Get-VMProcessor -VMName &lt;vmName&gt; | Select-Object CompatibilityForMigrationEnabled</code></li>
+</ol>
+根本原因：BIOS 版本差异导致 CPU 特性集（Feature Set）不一致，Hyper-V 实时迁移要求目标节点 CPU 特性集为源节点的超集。`,
+    solution: `两种解决方案：<br><br>
+<b>方案一（推荐）：统一 BIOS 版本</b>
+<ol>
+<li>将所有节点升级至相同 BIOS 版本（1.98），确保特性集一致</li>
+<li>更新前先将节点置于维护模式：<code>Suspend-ClusterNode -Drain</code></li>
+<li>完成 BIOS 升级重启后验证：<code>Get-VMHostNumaNode</code> 确认 CPU 信息</li>
+</ol>
+<b>方案二（临时缓解）：启用 VM 处理器兼容性</b>
+<ol>
+<li>关闭虚拟机：<code>Stop-VM -VMName &lt;vmName&gt;</code></li>
+<li>启用处理器兼容性：<code>Set-VMProcessor -VMName &lt;vmName&gt; -CompatibilityForMigrationEnabled 1</code></li>
+<li>启动 VM 并重试迁移</li>
+</ol>
+<b>注意</b>：方案二会降低 VM 内部可见的 CPU 特性，影响依赖高级指令集的工作负载性能。生产环境应优先统一 BIOS 版本。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>集群所有节点 BIOS 必须统一</b>：建议将 BIOS 版本一致性纳入集群健康检查项</li>
+<li><b>EventID 155 + 错误码 0x80048016 是 CPU 兼容性标志</b>：
+消息中的 <code>bit N</code> 指向具体的 CPU 特性位，可查阅 Intel/AMD 手册定位</li>
+<li><b>BIOS 升级计划应同步推进</b>：分批次维护时，最后一个节点的 BIOS 版本差异会阻断迁移</li>
+<li>处理器兼容性模式（<code>CompatibilityForMigrationEnabled</code>）是临时方案，不建议长期使用</li>
+<li>建议在 BIOS 升级前先在测试集群验证实时迁移功能</li>
+</ol>`,
+  },
+  "ts-clu-cert-mismatch": {
+    problem: `Azure Local / Hyper-V 集群的 <b>集群基础设施服务</b> 启动失败，
+集群事件日志或 Cluster Service 日志中出现错误码 <code>0x80090327</code>（NTE_BAD_LEN 或证书验证错误），
+错误关联字段为 <code>clusterInfraCert</code>。<br><br>
+故障表现：集群服务无法启动，或节点加入集群失败，
+检查 <code>HKLM\\Cluster\\ClusterCert</code> 注册表发现证书指纹与实际安装的证书不匹配。
+部分情况下，节点上安装了多个过期的集群基础设施证书，导致选择逻辑出错。<br><br>
+影响范围：所有依赖集群基础设施通信的功能均受影响，包括 CSV 访问、虚拟机 HA 等。`,
+    investigation: `排查流程：<br><br>
+<ol>
+<li>查看集群日志：<code>Get-ClusterLog -Destination C:\\ClusterLog -TimeSpan 60</code>，
+搜索关键词 <code>clusterInfraCert</code> 和 <code>0x80090327</code></li>
+<li>列出本机证书存储中的集群证书：
+<pre>Get-ChildItem Cert:\\LocalMachine\\My | Where-Object Subject -like "*cluster*"</pre></li>
+<li>检查注册表中记录的证书指纹：
+<code>HKLM\\Cluster\\ClusterCert</code>（十六进制值）</li>
+<li>对比注册表指纹与证书存储中实际证书的指纹，确认不匹配</li>
+<li>检查所有节点是否存在相同问题（集群证书应在所有节点同步）</li>
+<li>确认是否有证书自动续期机制（如 AutoEnrollment）生成了新证书但未更新集群引用</li>
+</ol>
+根本原因：证书自动续期或手动操作产生了新证书，但 <code>clusterInfraCert</code> 引用的指纹未同步更新。`,
+    solution: `修复步骤（需在所有集群节点上执行）：<br><br>
+<ol>
+<li>停止集群服务：<code>Stop-Service clussvc -Force</code>（所有节点）</li>
+<li>删除所有过期/不匹配的集群基础设施证书：
+<pre>Get-ChildItem Cert:\\LocalMachine\\My | Where-Object Subject -like "*cluster*" | Remove-Item</pre></li>
+<li>清理注册表中的证书引用（如有）：删除 <code>HKLM\\Cluster\\ClusterCert</code> 值</li>
+<li>在主节点重新启动集群服务：<code>Start-Service clussvc</code>，
+集群服务会自动生成新的集群基础设施证书并分发至各节点</li>
+<li>逐一启动其他节点的集群服务，等待每个节点完成证书同步</li>
+<li>验证：<code>Get-ClusterResource</code> 所有资源状态正常，EventID 1135/1136 无新告警</li>
+</ol>
+<b>注意</b>：删除证书前务必记录指纹，操作失误可导致集群完全不可用，建议在维护窗口执行。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>clusterInfraCert 不匹配是已知场景</b>：证书自动续期（AutoEnrollment）或手动替换证书后，
+集群服务的证书引用不会自动更新，需人工干预</li>
+<li><b>修复方法是清空重建</b>：删除所有相关证书后重启集群服务，让集群自动生成新证书比手动对齐指纹更可靠</li>
+<li><b>0x80090327 错误码是关键线索</b>：该错误特指证书加解密操作失败，结合 <code>clusterInfraCert</code> 字段可快速定位</li>
+<li>定期检查集群证书有效期：<code>Get-ChildItem Cert:\\LocalMachine\\My | Where-Object Subject -like "*cluster*" | Select-Object NotAfter</code></li>
+<li>在 Azure Local 环境中，可通过 WAC（Windows Admin Center）的健康检查功能监控证书状态</li>
+</ol>`,
+  },
+  "ts-clu-exchange": {
+    problem: `Exchange Server 2019 DAG（Database Availability Group）节点加入失败，
+错误发生在两个独立问题的叠加：<br><br>
+<b>问题一</b>：LAPS（Local Administrator Password Solution）密码注册表值类型错误。
+DAG 加入过程需读取本地管理员密码，但 <code>HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\AutoAdminLogon</code>
+相关路径中，LAPS 写入的注册表值类型为 <code>REG_SZ</code>，而 Exchange 安装程序期望 <code>REG_DWORD</code>，
+导致读取失败。<br><br>
+<b>问题二</b>：Windows Server 2025 新安全策略 <code>AllowCustomSSPsAPs = 0</code> 禁止了第三方 SSP/AP 加载，
+Exchange 的认证组件依赖此功能，导致 DAG 节点间复制通道建立失败。`,
+    investigation: `排查过程：<br><br>
+<b>问题一排查：</b>
+<ol>
+<li>Exchange 安装日志 <code>ExchangeSetup.log</code> 提示 LAPS 读取失败</li>
+<li>使用 <code>Get-Item HKLM:\\SOFTWARE\\Microsoft\\...\\LAPS\\State</code> 确认值类型</li>
+<li>发现 <code>ms-Mcs-AdmPwdExpirationTime</code> 以 REG_SZ 存储，应为 REG_DWORD</li>
+</ol>
+<b>问题二排查：</b>
+<ol>
+<li>DAG 日志显示 <code>MapiExceptionNetworkError</code> 或 Kerberos 认证失败</li>
+<li>检查 <code>HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa\\AllowCustomSSPsAPs</code>，值为 0</li>
+<li>Windows Server 2025 默认将此值设为 0，阻止 Exchange 的 NTLM SSP 扩展加载</li>
+<li>System 事件日志显示 EventID 5027/5028（Netlogon）或 Audit Failure</li>
+</ol>`,
+    solution: `两个问题分别处理：<br><br>
+<b>修复 LAPS 注册表类型：</b>
+<ol>
+<li>找到 LAPS 写入值的具体路径和名称</li>
+<li>使用 <code>reg add</code> 命令重新写入为正确类型：
+<pre>reg add "HKLM\\..." /v "&lt;ValueName&gt;" /t REG_DWORD /d &lt;value&gt; /f</pre></li>
+<li>或修改 LAPS 策略，指定正确的注册表类型</li>
+</ol>
+<b>修复 AllowCustomSSPsAPs：</b>
+<ol>
+<li>临时允许自定义 SSP/AP（Exchange 需要）：
+<pre>Set-ItemProperty HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Lsa -Name AllowCustomSSPsAPs -Value 1</pre></li>
+<li>或通过组策略：计算机配置 &gt; Windows 设置 &gt; 安全设置 &gt; 本地策略 &gt; 安全选项，
+设置"允许自定义 SSP 和 AP"为启用</li>
+<li>重启后重新执行 DAG 加入操作</li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>WS2025 的安全加固会影响 Exchange</b>：<code>AllowCustomSSPsAPs = 0</code> 是 WS2025 新默认值，
+在 Exchange DAG 节点上需要设为 1，Exchange 2019 CU15+ 已知此问题并有文档</li>
+<li><b>LAPS 注册表类型需严格检查</b>：LAPS v1（旧版）和 LAPS v2（新版）写入路径和类型不同，
+与其他软件集成时需核对期望类型</li>
+<li><b>多因素故障叠加排查</b>：DAG 加入失败可能同时受多个独立问题影响，需逐一隔离验证</li>
+<li>Exchange 与 WS2025 的兼容性矩阵请参考官方文档，确认支持版本后再升级 OS</li>
+<li>在 WS2025 上部署 Exchange 前，建议提前检查所有 LSA 保护相关设置</li>
+</ol>`,
+  },
+  "ts-clu-netatc-rename": {
+    problem: `管理员需要对 <b>Network ATC</b> 管理的 vSwitch 进行重命名，
+但直接使用 <code>Rename-VMSwitch</code> 命令会导致 ATC 配置状态不一致，
+甚至可能触发 ATC 自动恢复逻辑将 vSwitch 改回原名称。<br><br>
+背景：Network ATC 以声明式方式管理网络配置，所有 vSwitch 名称由 Intent 定义决定。
+直接操作 Hyper-V 层面的 vSwitch 会绕过 ATC 管理层，导致 ATC 检测到"漂移"并尝试自动修正，
+从而产生配置冲突。客户需要在不中断业务的情况下将 vSwitch 从旧名称改为新名称。`,
+    investigation: `分析 ATC 的工作机制：<br><br>
+<ol>
+<li><b>ATC Intent 是唯一配置来源</b>：vSwitch 名称由 Intent 的 <code>Name</code> 参数衍生，格式为 <code>ConvergedSwitch(&lt;IntentName&gt;)</code></li>
+<li>ATC 每隔固定周期（约 30 秒）检查配置漂移，发现差异后自动修正</li>
+<li>直接重命名 vSwitch 后，ATC 会在下一个收敛周期将其改回，或标记为 <code>Drift</code> 状态</li>
+<li>确认当前 Intent 配置：<code>Get-NetIntent</code> 查看 IntentName 和关联的物理适配器</li>
+<li>确认受影响的 VM 数量：如有 VM 使用该 vSwitch，重建过程中会短暂中断网络连接</li>
+</ol>
+<b>结论</b>：正确方法是通过 ATC 管理层操作，即删除旧 Intent 并用新名称创建新 Intent。`,
+    solution: `重命名 ATC vSwitch 的标准步骤：<br><br>
+<ol>
+<li><b>记录现有 Intent 配置</b>（防止配置丢失）：
+<pre>Get-NetIntent | ConvertTo-Json -Depth 10 | Out-File C:\\backup\\netintent_backup.json</pre></li>
+<li><b>安排维护窗口</b>：以下操作会导致短暂网络中断（约 2-5 分钟）</li>
+<li><b>迁移 VM</b>（可选）：将使用该 vSwitch 的 VM 迁移至其他节点或关闭</li>
+<li><b>删除旧 Intent</b>：
+<pre>Remove-NetIntent -Name "&lt;OldIntentName&gt;"</pre>
+等待 vSwitch 完全移除：<code>Get-VMSwitch</code> 返回空</li>
+<li><b>创建新 Intent（使用新名称）</b>：
+<pre>Add-NetIntent -Name "&lt;NewIntentName&gt;" -Management -Compute -AdapterName "&lt;Adapter1&gt;","&lt;Adapter2&gt;"</pre></li>
+<li><b>等待收敛</b>：<code>Wait-NetIntentStatus -Name "&lt;NewIntentName&gt;" -State Provisioned</code></li>
+<li>将 VM 的网络适配器重新连接到新 vSwitch 名称</li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>ATC 管理的资源只能通过 ATC 接口修改</b>：任何绕过 ATC 直接操作 Hyper-V 层的变更都会被 ATC 自动撤销</li>
+<li><b>Intent 名称决定 vSwitch 名称</b>：修改 vSwitch 名称 = 修改 Intent 名称 = 删除旧 Intent + 创建新 Intent</li>
+<li><b>必须规划维护窗口</b>：重建 Intent 期间 Management 网络会短暂中断，需提前通知相关方</li>
+<li>VM 网络适配器与 vSwitch 绑定的字符串名称不会自动更新，重建后需要手动重新连接</li>
+<li>建议将 Intent 备份纳入变更管理流程，每次修改前自动导出配置</li>
+</ol>`,
+  },
+  "ts-clu-remappipe-sccm": {
+    problem: `SCCM（Configuration Manager）控制台中，SQL Server FCI（故障转移群集实例）
+所在节点的 <b>操作系统版本</b> 显示为 <code>0, 0, 0</code>（Major.Minor.Build 全为零），
+导致 SCCM 无法正确识别节点系统版本，影响补丁合规性报告和客户端策略应用。<br><br>
+环境：SQL Server FCI 运行在 Windows Server 故障转移集群上，
+SQL 实例名为 <code>\\\\ClusterName\\SQLInstance</code>。SCCM 通过 WMI 和注册表读取节点 OS 信息，
+但由于 SQL FCI 的 RemapPipeNames 配置，注册表访问被重定向，
+SCCM 实际读取的是错误的路径，导致返回空值被解析为 0.0.0。`,
+    investigation: `排查过程：<br><br>
+<ol>
+<li>在 SCCM 控制台确认问题：资源管理器 &gt; 硬件清单 &gt; 操作系统，OS 版本显示 <code>0.0.0</code></li>
+<li>在问题节点上直接查询 WMI：
+<code>Get-WmiObject Win32_OperatingSystem | Select-Object Version</code>，返回正常版本</li>
+<li>检查 SCCM 硬件清单代理日志 <code>InventoryAgent.log</code>，发现读取注册表路径失败</li>
+<li>查看 SQL Server FCI 的注册表配置：
+<code>HKLM\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters\\RemapPipeNames</code></li>
+<li>发现 <code>RemapPipeNames = 1</code>，这会将所有命名管道（包括 <code>\\pipe\\winreg</code>）重定向</li>
+<li>SCCM 通过 <code>\\pipe\\winreg</code> 远程读取注册表时，被重定向到 SQL 命名管道，返回意外数据</li>
+</ol>
+根本原因：RemapPipeNames=1 是 SQL FCI 的推荐配置之一，但会导致 \\pipe\\winreg（注册表远程访问管道）被重定向。`,
+    solution: `解决方案：<br><br>
+<b>方案一（推荐）：精确控制 RemapPipeNames 范围</b>
+<ol>
+<li>查阅 SQL Server FCI 文档，确认 RemapPipeNames 是否真正必需</li>
+<li>如果必须启用，在 SCCM 站点配置中改用 WMI 而非注册表读取 OS 版本</li>
+<li>或在 SCCM 的硬件清单 MOF 中修改 OS 版本查询方式，直接使用 <code>Win32_OperatingSystem</code></li>
+</ol>
+<b>方案二：禁用 RemapPipeNames（需评估 SQL FCI 影响）</b>
+<ol>
+<li>与 SQL DBA 确认 RemapPipeNames=1 的必要性</li>
+<li>若可以禁用：<code>Set-ItemProperty ... RemapPipeNames -Value 0</code></li>
+<li>重启 Server 服务：<code>Restart-Service lanmanserver</code></li>
+<li>验证 SCCM 清单是否恢复正常 OS 版本显示</li>
+</ol>
+<b>方案三</b>：在 SCCM 中为该 SQL FCI 节点配置本地客户端策略，强制使用 WMI 查询 OS 版本。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>RemapPipeNames=1 影响范围超出预期</b>：该配置不只影响 SQL 管道，
+还会重定向系统级命名管道（如 \\pipe\\winreg），对依赖远程注册表的管理工具造成副作用</li>
+<li><b>诊断关键步骤</b>：当管理工具读取远程主机信息异常时，
+检查 <code>LanmanServer\\Parameters\\RemapPipeNames</code> 是常见排查项</li>
+<li><b>SQL FCI 环境的特殊性</b>：SQL FCI 节点有多项非标准配置，
+应建立专门的配置基线文档，标注与标准 Windows Server 的差异</li>
+<li>SCCM 清单数据异常不一定是客户端问题，可能是目标机配置影响了读取路径</li>
+<li>建议在部署 SQL FCI 时同步测试 SCCM 清单采集是否正常</li>
+</ol>`,
+  },
+  "ts-clu-scenario-map": {
+    problem: `新人工程师面对 Hyper-V / Azure Local <b>集群创建失败</b>场景时，
+缺乏系统化的排查框架，导致排查路径不清晰、遗漏关键检查点，
+排查时间过长甚至需要多次重开 Case。<br><br>
+常见的集群创建失败场景包括：DNS 解析问题、防火墙阻断集群通信端口、
+证书信任问题、域加入状态异常、存储路径权限错误、网络 Teaming 配置冲突、
+ATC Intent 收敛失败等。每个场景的根因和处理路径不同，需要有结构化的引导。<br><br>
+传统的 KB 文章是线性文本，难以快速定位特定失败模式对应的排查分支。`,
+    investigation: `解决思路：<br><br>
+利用 AI（GitHub Copilot / Claude）对已有的集群创建失败案例进行分析和归类，
+自动生成可视化的排查场景地图（Scenario Map）。<br><br>
+地图格式采用 <b>Mermaid 流程图</b>，以集群创建失败为根节点，
+按照错误症状（UI 报错、日志错误码、具体失败阶段）分叉，
+每个叶节点对应具体的根因和处理步骤。<br><br>
+地图托管在 <b>GitHub Pages</b> 上，支持中英文双版本，
+通过 URL 参数切换语言，方便团队成员在客户现场快速查阅。
+生成流程：收集历史 Case → AI 归纳模式 → 生成 Mermaid 代码 → 发布到 GitHub Pages。`,
+    solution: `实施成果：<br><br>
+<ol>
+<li>使用 <code>/scenario-troubleshoot-map</code> Copilot CLI 指令，将集群失败案例输入 AI</li>
+<li>AI 自动生成包含以下分支的排查图：
+<ul>
+<li>网络连通性检查路径（DNS / 防火墙 / MTU）</li>
+<li>存储验证路径（CHAP / iSCSI / SMB 权限）</li>
+<li>认证问题路径（证书 / Kerberos / LAPS）</li>
+<li>ATC/网络意图路径（vSwitch / VLAN / 适配器绑定）</li>
+</ul></li>
+<li>地图发布到 GitHub Pages，可通过内部 Wiki 链接直接访问</li>
+<li>团队成员在排查新 Case 时先打开地图，根据错误症状快速定位排查路径</li>
+</ol>
+地图链接已在团队 Teams 频道固定，新成员入职时作为培训材料使用。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>AI 辅助知识结构化</b>：零散的历史案例通过 AI 可以快速转化为结构化知识，
+避免反复重复相同的排查步骤</li>
+<li><b>可视化地图比文字更有效</b>：Mermaid 流程图在移动端和 PC 端都能快速加载，
+比长篇 KB 文章更适合现场排查</li>
+<li><b>GitHub Pages 是轻量级知识发布平台</b>：无需搭建专用文档系统，
+直接利用 GitHub 仓库发布，版本控制自动管理</li>
+<li>排查地图需要定期更新，每季度根据新增案例补充新的分支路径</li>
+<li>Mermaid 支持在 GitHub Markdown 中直接渲染，也可在 VS Code 中预览</li>
+</ol>`,
+  },
+  "ts-clu-secureboot": {
+    problem: `在为 Hyper-V 主机或 Azure Local 节点执行 <b>Secure Boot 证书升级</b> 时，
+管理员困惑于需要安装多少个新的 CA 证书。微软官方文档和部分第三方指南
+提到需要安装 <b>3 个新证书</b>（Windows UEFI CA 2023、Microsoft UEFI CA 2023 等），
+但实际测试表明 Hyper-V 环境中只需要 1 个证书即可完成升级，
+安装过多证书可能导致 Secure Boot 策略冲突或 VM 无法启动。<br><br>
+背景：微软在 2023 年发布了新的 UEFI Secure Boot CA 证书，
+用于替换即将过期的旧证书（2026 年前需完成升级），影响所有运行 Hyper-V 的 Windows Server。`,
+    investigation: `分析不同类型虚拟机需要的证书：<br><br>
+Secure Boot 证书升级涉及三个层面：
+<ol>
+<li><b>物理机固件层</b>：主板 UEFI 的 db/dbx 数据库，用于物理机启动验证</li>
+<li><b>Hyper-V 虚拟机层</b>：VM 的 UEFI Secure Boot 配置（msvm_virtualsystemmanagementservice）</li>
+<li><b>启动 VM 的固件文件</b>：MsUefiCertAuthority.dll 等文件</li>
+</ol>
+对于 <b>Hyper-V Gen2 VM 的 Secure Boot</b>，验证链为：
+<ol>
+<li>VM 的 Secure Boot 策略引用 <b>Windows UEFI CA 2023</b></li>
+<li>用于签名 bootmgfw.efi 的证书由 Windows UEFI CA 2023 签发</li>
+<li><b>无需</b> Microsoft UEFI CA 2023（该证书用于签名 Option ROM 等固件，与 Hyper-V VM 无关）</li>
+</ol>
+通过测试验证：仅安装 Windows UEFI CA 2023 后，受影响 VM 可正常启动且 Secure Boot 验证通过。`,
+    solution: `Hyper-V 环境 Secure Boot 证书升级步骤：<br><br>
+<ol>
+<li>下载 <b>Windows UEFI CA 2023</b> 证书（KB5036210 相关下载）</li>
+<li>在每台 Hyper-V 主机上安装证书到 UEFI 信任存储：
+<pre>Set-SecureBootUEFI -Name db -SignedFilePath &lt;cert.p7&gt;</pre>
+或通过 Hyper-V 主机的 SecureBoot Policy Update 工具</li>
+<li>验证证书已安装：<code>Get-SecureBootUEFI -Name db</code></li>
+<li>重启 Hyper-V 主机（部分场景需要）</li>
+<li>启动测试 VM，确认 Secure Boot 状态：
+<code>Confirm-SecureBootUEFI</code>（在 VM 内执行）应返回 True</li>
+</ol>
+<b>注意</b>：物理机固件层的证书升级（防止已签名恶意 bootloader）需要额外步骤，
+包括安装 Microsoft UEFI CA 2023 和更新 dbx 吊销列表，该步骤独立于 Hyper-V VM。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>Hyper-V VM 只需 1 个新证书</b>：Windows UEFI CA 2023 覆盖 Hyper-V Gen2 VM 的 Secure Boot 需求，
+Microsoft UEFI CA 2023 用于物理 Option ROM，两者用途不同，不要混淆</li>
+<li><b>阅读官方文档时注意区分场景</b>：微软文档同时涵盖物理机和虚拟机场景，
+需要仔细区分适用范围</li>
+<li><b>Secure Boot 证书更新有截止日期</b>：2026 年前必须完成，
+建议将升级任务纳入 2025 年 Q1-Q2 的计划维护窗口</li>
+<li>测试 VM 先于生产 VM 升级，验证兼容性</li>
+<li>升级后保留旧证书一段时间（约 3 个月），直到确认所有 VM 正常运行再删除旧证书</li>
+</ol>`,
+  },
+  "ts-dns-aks-aksonal": {
+    problem: `在 <b>Arc-enabled AKS（Azure Kubernetes Service）</b> 集群中，
+Pod 无法通过 DNS 解析 Worker Node 的主机名（短名称或 FQDN），
+导致 Pod 间基于主机名的通信失败。<br><br>
+场景描述：AKS 集群中某业务 Pod 需要通过 Worker Node 的主机名建立连接（如直接访问 Node 上的服务），
+DNS 查询返回 <code>NXDOMAIN</code>（无法解析）。集群内服务（Service DNS）正常，
+仅 Node 主机名解析失败。<br><br>
+Pod 的 <code>/etc/resolv.conf</code> 指向集群 CoreDNS，
+而 CoreDNS <b>并未</b>配置 Node 主机名解析，这是 Kubernetes 的设计决策：
+CoreDNS 只负责 Service DNS 和 Pod DNS，不负责底层 Node 的主机名解析。`,
+    investigation: `根因分析：<br><br>
+<ol>
+<li>在 Pod 内测试 DNS：<code>nslookup &lt;node-hostname&gt;</code> 返回 NXDOMAIN</li>
+<li>检查 CoreDNS ConfigMap：<code>kubectl get configmap coredns -n kube-system -o yaml</code>，
+无 Node 主机名解析规则</li>
+<li>尝试直接查询节点网络的 DNS 服务器（非 CoreDNS）：可以解析 Node 主机名</li>
+<li>查阅 Kubernetes 文档确认：CoreDNS 的设计范围是 Kubernetes 服务发现，
+不包括底层基础设施主机名解析</li>
+<li>Arc AKS 的 Node 主机名存储在 Kubernetes Node 对象中：
+<code>kubectl get node -o wide</code> 显示节点 IP 和主机名</li>
+</ol>
+<b>结论</b>：CoreDNS 不解析 Node 主机名是设计行为，需通过其他机制将 Node 信息注入 Pod。`,
+    solution: `推荐解决方案：使用 <b>Downward API</b> + <b>initContainer</b> 机制：<br><br>
+<ol>
+<li>在 Pod Spec 中使用 <b>Downward API</b> 将 Node 名称注入为环境变量：
+<pre>env:
+- name: NODE_NAME
+  valueFrom:
+    fieldRef:
+      fieldPath: spec.nodeName</pre></li>
+<li>在 <b>initContainer</b> 中查询 Kubernetes API，获取 Node 的 IP 地址，
+并写入 <code>/etc/hosts</code>：
+<pre>initContainers:
+- name: inject-host
+  image: bitnami/kubectl
+  command: ["sh", "-c",
+    "NODE_IP=$(kubectl get node $NODE_NAME -o jsonpath='{.status.addresses[0].address}');
+    echo "$NODE_IP $NODE_NAME" >> /etc/hosts"]</pre></li>
+<li>主容器启动后，直接通过主机名访问 Node，DNS 查询命中本地 <code>/etc/hosts</code></li>
+</ol>
+或者：修改 CoreDNS ConfigMap，添加静态 Hosts 插件配置（不推荐，维护成本高）。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>CoreDNS 不解析 Node 主机名是设计决策</b>：
+Kubernetes 的网络模型基于 Pod/Service IP，不依赖 Node 主机名，这是刻意的设计隔离</li>
+<li><b>Downward API 是最优雅的解决方案</b>：无需修改集群配置，
+通过 Kubernetes 原生 API 获取运行时环境信息</li>
+<li><b>initContainer 适合"启动前初始化"场景</b>：注入 /etc/hosts 是典型用法</li>
+<li>Arc AKS 的 Node 主机名遵循 Azure Local 的命名规则，与标准 AKS 有细微差异</li>
+<li>如果大量 Pod 都有此需求，考虑使用 Node Feature Discovery 或自定义 DaemonSet 统一管理</li>
+</ol>`,
+  },
+  "ts-dns-bind-ip": {
+    problem: `域控制器（DC）在 DNS 中注册的 <b>A 记录</b>仅包含 NAT 公网 IP 地址，
+而非内网 IP 地址，导致域内其他客户端通过 DNS 查询到 DC 时，连接到错误的 IP，
+无法正常进行域认证、LDAP 查询等操作。<br><br>
+环境：DC 具有内网 IP（如 10.0.0.1）和 NAT 映射的公网 IP（如 1.2.3.4），
+正常情况下 DNS 应只注册内网 IP。但 DC 的 DNS 注册行为被注册表键覆盖，
+只注册了指定的 IP 地址。<br><br>
+故障现象：<code>nslookup &lt;dc-hostname&gt;</code> 返回公网 IP，
+客户端尝试通过公网 IP 连接 DC 失败（防火墙拦截或路由不通）。`,
+    investigation: `排查步骤：<br><br>
+<ol>
+<li>在 DC 上运行 <code>ipconfig /all</code>，确认实际网络接口 IP（内网）</li>
+<li>在 DNS 服务器查看该 DC 的 A 记录，发现只有公网 IP</li>
+<li>检查 DC 的 DNS 注册设置：<code>netsh int ip show dns</code></li>
+<li>检查关键注册表键：
+<code>HKLM\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\PublishAddresses</code></li>
+<li>发现 <code>PublishAddresses</code> 值存在，内容为公网 IP（如 <code>1.2.3.4</code>）</li>
+<li>该键的作用：强制 DNS 只注册指定的 IP 地址，完全忽略网卡上的实际 IP</li>
+</ol>
+根本原因：<code>PublishAddresses</code> 注册表键被某次配置操作（可能是旧的 NLB 或多宿主配置）设置为公网 IP，
+覆盖了正常的 DNS 自动注册行为。`,
+    solution: `修复方法：<br><br>
+<ol>
+<li>确认 <code>PublishAddresses</code> 是问题根因后，删除该注册表值：
+<pre>Remove-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters" -Name "PublishAddresses"</pre></li>
+<li>强制 DC 重新注册 DNS A 记录：
+<pre>ipconfig /registerdns
+nltest /dsregdns</pre></li>
+<li>等待 DNS 复制（约 5-15 分钟）后验证：
+<code>nslookup &lt;dc-hostname&gt; &lt;dns-server&gt;</code>
+应返回内网 IP</li>
+<li>如果有多台 DC，逐一检查 <code>PublishAddresses</code> 键</li>
+</ol>
+<b>注意</b>：若业务需要 DC 同时注册多个 IP，可将多个 IP 以空格分隔写入 <code>PublishAddresses</code>，
+但通常建议删除此键，让系统自动注册所有内网接口 IP。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>PublishAddresses 是高优先级 DNS 注册覆盖</b>：只要该键存在，DC 的 DNS 注册完全由该值决定，
+忽略所有实际网卡 IP，这是很少有人知道的"隐藏"设置</li>
+<li><b>诊断 DNS 注册异常时检查此键</b>：当 DC 注册了意外 IP 时，
+除常规网卡配置外，必须检查 <code>PublishAddresses</code></li>
+<li><b>历史遗留配置是常见原因</b>：此键可能是多年前为特定场景设置，在人员更迭后无人知晓</li>
+<li>建议定期审计 DC 的 DNS 注册配置，确保注册的 IP 与预期一致</li>
+<li>多宿主 DC 的 DNS 注册策略需要明确文档化</li>
+</ol>`,
+  },
+  "ts-dns-cf-failover": {
+    problem: `DNS <b>条件转发器（Conditional Forwarder）</b>配置了主备两个上游 DNS 服务器，
+但当主 DNS 服务器故障时，客户端的 DNS 请求<b>不会切换</b>到备用服务器，
+而是持续超时，表现为业务 DNS 解析长时间不可用。<br><br>
+预期行为：主 DNS 无响应超过 ForwarderTimeout 后，
+自动切换至备用 DNS 服务器继续解析。<br><br>
+实际行为：即使主 DNS 已宕机 30 分钟，仍持续向主 DNS 发送请求并超时，
+备用 DNS 从未被使用。<br><br>
+环境：Windows DNS 服务器配置了条件转发器，ForwarderTimeout=5 秒，
+客户端每 1-2 秒重新发起查询。`,
+    investigation: `根因分析：<br><br>
+<ol>
+<li>查看 DNS 服务器 Debug 日志，确认是否向备用服务器发送查询</li>
+<li>分析 Windows DNS 的条件转发器切换机制：
+DNS 服务器内部维护一个 <b>递归超时计时器</b>，
+只有在 ForwarderTimeout 内没有收到任何响应时才标记主 DNS 为"失败"</li>
+<li><b>关键发现</b>：客户端每 1-2 秒重新发起 DNS 查询，
+每次新查询都<b>重置</b>了 DNS 服务器的递归超时计时器</li>
+<li>因此递归计时器永远无法倒计时到 0，主 DNS 永远不会被标记为失败</li>
+<li>即使 ForwarderTimeout=5 秒，只要客户端查询频率 &lt; 5 秒/次，切换就永远不会发生</li>
+</ol>
+这是 Windows DNS 实现上的设计行为（每次新查询重置计时器），非 Bug。`,
+    solution: `解决方案：<br><br>
+<b>方案一：调整客户端 DNS 查询间隔</b>
+<ol>
+<li>将客户端 DNS 重试间隔增加到大于 ForwarderTimeout（5 秒）</li>
+<li>确保递归计时器有机会倒计时到 0，触发主 DNS 标记失败</li>
+</ol>
+<b>方案二：调整 ForwarderTimeout（推荐）</b>
+<ol>
+<li>降低 ForwarderTimeout，使其小于客户端查询间隔：
+<pre>dnscmd /config /forwardertimeout 2</pre></li>
+<li>例如客户端每 3 秒查询一次，将 ForwarderTimeout 设为 2 秒，
+确保在下次查询前计时器已超时</li>
+</ol>
+<b>方案三：改用智能 DNS 负载均衡设备</b>
+<p>使用专业 DNS 负载均衡器（如 F5 GTM）替代 Windows 条件转发器，
+实现基于探测的主备切换。</p>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>高频客户端重试会阻断 DNS 故障转移</b>：
+Windows DNS 条件转发器的切换依赖递归计时器倒计时到 0，
+而高频查询持续重置该计时器，导致永远无法切换</li>
+<li><b>ForwarderTimeout 必须小于客户端查询间隔</b>：这是使故障转移有效的核心条件</li>
+<li><b>测试 DNS 故障转移不能只靠 ping</b>：必须模拟真实的客户端查询行为，
+包括查询频率和超时配置</li>
+<li>条件转发器不等同于 DNS 高可用：对于关键业务 DNS，应考虑专业 HA 方案</li>
+<li>Windows DNS Debug Log 是分析转发行为的最直接工具，建议在排查 DNS 故障时第一时间开启</li>
+</ol>`,
+  },
+  "ts-dns-dhcp-profile": {
+    problem: `客户端连接到某个 Wi-Fi 网络（SSID）后，使用的 DNS 服务器不是 DHCP 分配的地址，
+而是来自某个历史配置，导致 DNS 解析失败或访问了错误的 DNS 服务器。<br><br>
+故障现象：<code>ipconfig /all</code> 显示 Wi-Fi 连接的 DNS 服务器为旧地址，
+而非当前 DHCP 服务器分配的地址。即使手动刷新 DHCP（<code>ipconfig /release; ipconfig /renew</code>），
+DNS 服务器地址也不会更新。其他 SSID 或有线连接的 DNS 均正常。<br><br>
+环境：Windows 10/11 客户端，Wi-Fi SSID 有历史连接记录，
+某次手动配置了 DNS 服务器地址，但后来改回了"自动获取"却未清除注册表残留。`,
+    investigation: `排查过程：<br><br>
+<ol>
+<li>确认问题只影响特定 SSID：切换到其他 SSID 或有线网络，DNS 正常</li>
+<li>检查网络连接属性中 DNS 设置为"自动获取"（GUI 层面正常）</li>
+<li>深入检查注册表：
+<code>HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\NetworkList\\Profiles\\</code>
+或用 Wi-Fi 配置文件专用路径查找</li>
+<li>发现关键注册表值 <b>ProfileNameServer</b>（或类似命名）包含旧 DNS IP</li>
+<li>该注册表值存储在 Wi-Fi 连接配置文件（按 SSID 区分）下，
+优先级高于 DHCP 分配的 DNS，覆盖了 DHCP 的 DNS Option 6</li>
+</ol>
+根本原因：Windows 为每个 Wi-Fi SSID 保存独立的 DNS 配置，
+<code>ProfileNameServer</code> 注册表值在 UI "自动获取" 设置之外单独保存，
+清除 GUI 设置不会自动清除此注册表值。`,
+    solution: `修复步骤：<br><br>
+<ol>
+<li>找到问题 SSID 对应的注册表路径（可通过 WLAN Profile GUID 定位）：
+<pre>netsh wlan show profiles</pre>
+记录 SSID 对应的配置文件名称</li>
+<li>在注册表中定位并删除 <b>ProfileNameServer</b> 值：
+路径为 <code>HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\NetworkList\\Profiles\\{GUID}\\</code></li>
+<li>或者，通过 PowerShell 自动清理：
+<pre>$profiles = Get-ItemProperty "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\NetworkList\\Profiles\\*"
+$profiles | Where-Object ProfileNameServer | ForEach-Object {
+    Remove-ItemProperty $_.PSPath -Name "ProfileNameServer"
+}</pre></li>
+<li>断开并重新连接 Wi-Fi，验证 <code>ipconfig /all</code> 显示 DHCP 分配的 DNS</li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>Wi-Fi 每个 SSID 有独立的 DNS 配置存储</b>：
+<code>ProfileNameServer</code> 注册表值按 SSID Profile GUID 隔离存储，
+与网卡属性对话框中的 DNS 设置是独立的层次</li>
+<li><b>GUI "自动获取" 不会清除 ProfileNameServer</b>：两者是独立的配置路径，
+这是一个设计上容易产生混淆的行为</li>
+<li><b>诊断 Wi-Fi DNS 问题要检查注册表</b>：仅看网络连接属性不够，
+还需检查 NetworkList 注册表下的 SSID 配置文件</li>
+<li>企业环境中建议通过 GPO 统一管理 DNS 服务器配置，避免手动配置残留</li>
+<li>若多个客户端出现相同问题，可能是某个时期的网络配置脚本写入了此值</li>
+</ol>`,
+  },
+  "ts-dns-suffix-cluster": {
+    problem: `在 Windows Server 故障转移集群上创建<b>集群文件共享</b>时失败，
+错误提示"拒绝访问"或"无法连接到集群"。从集群节点使用 UNC 路径访问时，
+出现"用户名或密码不正确"。<br><br>
+深层原因：集群服务创建共享时需要通过网络路径访问自身（Loopback 访问），
+此时 Kerberos 认证依赖正确的 SPN（Service Principal Name）解析。
+如果 DNS 后缀搜索顺序配置不当（父域后缀排在子域后缀前面），
+客户端可能将 NetBIOS 名称解析为父域的 FQDN，
+导致生成错误的 Kerberos SPN，触发 NTLM 降级认证，
+而 NTLM Loopback 认证默认被 Loopback Protection 策略阻断，最终访问失败。`,
+    investigation: `详细排查过程：<br><br>
+<ol>
+<li>查看集群创建日志，发现错误码 <code>0xC000005E</code>（无可用登录服务器）或 <code>0xC0000035</code></li>
+<li>在集群节点运行 <code>klist get host/&lt;ClusterName&gt;</code>，
+发现获取到的 Kerberos ticket SPN 为 <code>host/&lt;ClusterName&gt;.&lt;ParentDomain&gt;</code>
+而非 <code>host/&lt;ClusterName&gt;.&lt;ChildDomain&gt;</code></li>
+<li>检查 DNS 后缀搜索顺序：
+<code>HKLM\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\SearchList</code>
+发现顺序为：<code>parent.com, child.parent.com</code>（父域在前）</li>
+<li>正确顺序应为：<code>child.parent.com, parent.com</code>（子域在前）</li>
+<li>确认 Loopback Check 配置：
+<code>HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa\\DisableLoopbackCheck</code> 为 0（启用保护）</li>
+</ol>
+根本原因：DNS 后缀顺序导致子域机器名解析到父域 FQDN，Kerberos SPN 不匹配，降级 NTLM 被 Loopback 阻断。`,
+    solution: `修复方案：<br><br>
+<b>方案一（推荐）：修正 DNS 后缀搜索顺序</b>
+<ol>
+<li>通过 GPO 配置 DNS 后缀顺序：
+计算机配置 &gt; 管理模板 &gt; 网络 &gt; DNS 客户端 &gt; DNS 后缀搜索列表</li>
+<li>确保子域（<code>child.parent.com</code>）排在父域（<code>parent.com</code>）前面</li>
+<li>应用后运行 <code>gpupdate /force</code>，验证 <code>ipconfig /all</code> 的"连接特定的 DNS 后缀"</li>
+</ol>
+<b>方案二（临时）：禁用 Loopback Check（不推荐用于生产）</b>
+<ol>
+<li><code>New-ItemProperty HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Lsa -Name DisableLoopbackCheck -Value 1 -PropertyType DWORD</code></li>
+</ol>
+<b>验证</b>：修复后重试创建集群共享，<code>klist purge</code> 清除旧 Kerberos ticket 后重新测试。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>DNS 后缀顺序影响 Kerberos 认证</b>：这是一个隐蔽的配置问题，
+子域前面的父域后缀会导致短名称解析到父域 FQDN，破坏 SPN 匹配</li>
+<li><b>NTLM Loopback Protection 是正确的安全配置</b>：
+不应为了解决集群问题而禁用它，正确做法是修复 DNS 后缀顺序</li>
+<li><b>集群共享创建失败要检查 DNS 解析</b>：
+使用 <code>Resolve-DnsName &lt;ClusterName&gt;</code> 验证解析结果</li>
+<li>多域环境（父子域）中的 DNS 后缀顺序是高频问题，建议纳入部署检查清单</li>
+<li><code>klist get host/&lt;name&gt;</code> 是快速验证 Kerberos SPN 解析的好工具</li>
+</ol>`,
+  },
+  "ts-fw-general": {
+    problem: `Windows 域环境中同时存在<b>两套防火墙 GPO 策略</b>：
+旧版的"<b>Windows 防火墙</b>"（保护所有网络连接，<code>legacyfw</code>）
+和新版的"<b>具有高级安全性的 Windows Defender 防火墙</b>"（<code>wf.msc</code>）。
+管理员发现两套策略之间的同步行为不一致，引发困惑：<br><br>
+对旧版策略的修改（启用/禁用防火墙，添加例外）会反映到新版高级策略的<b>域配置文件</b>中，
+但对新版高级策略的修改<b>不会</b>自动同步到旧版策略，
+导致管理员以为配置了新版策略但实际上旧版策略覆盖了新版配置。`,
+    investigation: `两套策略的关系分析：<br><br>
+<table border='1' cellpadding='6'>
+<tr><th>属性</th><th>旧版策略</th><th>新版高级策略</th></tr>
+<tr><td>GPO 路径</td><td>计算机配置 &gt; 管理模板 &gt; 网络 &gt; 网络连接 &gt; Windows 防火墙</td><td>计算机配置 &gt; Windows 设置 &gt; 安全设置 &gt; 高级安全 Windows 防火墙</td></tr>
+<tr><td>控制粒度</td><td>简单（开/关，端口例外）</td><td>精细（入站/出站规则，配置文件，协议）</td></tr>
+<tr><td>同步方向</td><td>旧版 → 新版域配置文件（单向）</td><td>新版不影响旧版</td></tr>
+<tr><td>配置文件</td><td>仅域配置文件</td><td>域 / 专用 / 公用三个配置文件</td></tr>
+</table><br><br>
+旧版策略修改后，变更会通过内部机制写入高级防火墙的域配置文件（Domain Profile），
+但高级防火墙中的修改不会回写到旧版策略格式，因为旧版格式无法表达高级策略的复杂规则。`,
+    solution: `最佳实践：<br><br>
+<ol>
+<li><b>禁用旧版防火墙策略</b>：将旧版 GPO 中的防火墙设置全部设为"未配置"，
+避免旧版策略覆盖新版高级策略</li>
+<li><b>统一使用新版高级安全防火墙策略</b>：
+在 GPO 中仅配置"高级安全 Windows Defender 防火墙"策略，
+获得更精细的控制能力</li>
+<li>若需保留旧版策略，了解同步方向并只在旧版中配置"域配置文件"的基础设置，
+细化规则在新版中配置</li>
+<li>使用 <code>netsh advfirewall show allprofiles</code> 验证当前生效的防火墙策略</li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>旧版改新版（Domain Profile）：单向同步</b>。旧版策略改动会覆盖新版高级策略的域配置文件，
+这一行为经常令管理员意外</li>
+<li><b>新版改旧版：不同步</b>。在新版高级防火墙中做的精细配置不会回写到旧版策略</li>
+<li><b>两套策略并存是遗留问题</b>：建议逐步迁移到只使用新版高级安全防火墙策略</li>
+<li>GPO 优先级和合并顺序的分析可使用 <code>gpresult /h report.html</code> 查看详细结果</li>
+<li>诊断防火墙问题时，同时检查两套策略的配置，避免遗漏旧版策略的影响</li>
+</ol>`,
+  },
+  "ts-fw-mpssvc": {
+    problem: `Windows 防火墙服务（<b>mpssvc</b>）启动失败，错误码 <code>0x800706d9</code>
+（"端点映射程序中没有更多的端点可用"，即 EPT_S_NOT_REGISTERED），
+导致防火墙无法启动，系统安全性受损，部分依赖防火墙的网络功能也随之失效。<br><br>
+故障场景：Windows Server 系统，mpssvc 服务状态为"已停止"，
+手动启动时立即报错。系统日志显示 EventID 7024（服务以错误终止）。<br><br>
+初步排查发现错误码与 RPC 端点注册相关，但实际根因更深层：
+<code>DebugedLoopbackApps</code> 注册表键存储了 683 个 SID，
+导致系统调用 <code>RtlCreateAcl</code> 时，所需 ACL 缓冲区大小超过 <b>65KB 硬限制</b>，
+函数调用失败，mpssvc 无法完成初始化。`,
+    investigation: `排查过程：<br><br>
+<ol>
+<li>查看服务错误：<code>sc start mpssvc</code>，确认错误码 0x800706d9</li>
+<li>查看系统事件日志：EventID 7024 mpssvc，以及相关的 EventID 7000/7001</li>
+<li>使用 Process Monitor 以 SYSTEM 权限启动 mpssvc，过滤 mpssvc.exe，
+捕获 RegQueryValue 和 RegOpenKey 操作</li>
+<li>发现大量读取 <code>HKLM\\SYSTEM\\CurrentControlSet\\Services\\SharedAccess\\Parameters\\FirewallPolicy\\FirewallRules</code>
+以及 <code>DebugedLoopbackApps</code> 键</li>
+<li>检查 DebugedLoopbackApps 值：包含 683 个 SID 条目（通常由 Visual Studio 或调试工具注册的应用 SID）</li>
+<li>计算 ACL 大小：683 个 SID，每个 ACE 约 100 字节，总计 ~68,300 字节 &gt; 65,535 字节（RtlCreateAcl 限制）</li>
+</ol>
+根本原因：<code>RtlCreateAcl</code> 的 ACL 大小参数为 ULONG，
+但内部缓冲区限制为 65,535 字节（0xFFFF），超过此限制返回 STATUS_ALLOTTED_SPACE_EXCEEDED，
+最终传播为 0x800706d9 错误。`,
+    solution: `修复步骤：<br><br>
+<ol>
+<li>以管理员权限打开注册表编辑器（regedit）</li>
+<li>导航至：<code>HKLM\\SYSTEM\\CurrentControlSet\\Services\\SharedAccess\\Parameters\\FirewallPolicy</code></li>
+<li>找到 <code>DebugedLoopbackApps</code> 值（REG_MULTI_SZ 或 REG_SZ）</li>
+<li>记录当前值内容（备份）：导出该键 <code>regedit /e backup.reg &lt;key-path&gt;</code></li>
+<li>清空 <code>DebugedLoopbackApps</code> 值（删除所有 SID 条目），或将其删除</li>
+<li>启动 mpssvc 服务：<code>Start-Service mpssvc</code></li>
+<li>验证：<code>Get-Service mpssvc | Select-Object Status</code> 应为 Running</li>
+</ol>
+<b>注意</b>：DebugedLoopbackApps 用于免除特定应用的防火墙 Loopback 检查（开发调试用途），
+清空后这些应用的 Loopback 豁免将失效，通常不影响生产环境。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>RtlCreateAcl 有 65KB 硬限制</b>：这是 Windows 内核级别的限制，
+当 ACL 中 ACE 数量过多时，超过限制导致相关服务无法启动</li>
+<li><b>DebugedLoopbackApps 是高频积累问题</b>：
+Visual Studio、Visual Studio Code、各种开发工具每次调试时都会注册 SID，
+在长期使用的开发机上会积累数百个条目</li>
+<li><b>mpssvc 0x800706d9 不总是 RPC 问题</b>：该错误码有多种来源，
+需要结合 Process Monitor 深入分析，而非仅凭错误码字面意思判断</li>
+<li>建议定期清理 DebugedLoopbackApps，特别是在开发机和调试环境中</li>
+<li>可通过脚本自动化检查此键的条目数量，超过 100 个时告警</li>
+</ol>`,
+  },
+  "ts-net-cmd-shell": {
+    problem: `用户发现 Windows 任务栏出现<b>蓝色定位图标</b>（位置访问标识），
+表示某个应用正在访问设备位置信息，但用户并未主动使用任何地图或位置服务应用，
+引发用户对隐私安全的担忧。<br><br>
+故障场景：安装了公司 IT 工具 <code>CorpLinkCloseTool.exe</code> 的 Windows 10/11 设备，
+在工具静默运行时，任务栏周期性出现蓝色定位图标，持续约数秒后消失。
+用户询问：是否有恶意软件在访问位置信息？公司工具是否违反隐私政策？`,
+    investigation: `排查过程：<br><br>
+<ol>
+<li>打开隐私设置 &gt; 位置 &gt; 查看最近访问位置的应用，发现记录为 <code>cmd.exe</code></li>
+<li>这一发现令人困惑：cmd.exe 本身没有理由访问位置信息</li>
+<li>使用 Process Monitor 过滤 cmd.exe 的 Process Create 事件，
+追踪到 CorpLinkCloseTool.exe 启动 cmd.exe 并执行命令</li>
+<li>分析 CorpLinkCloseTool.exe 的行为：启动 cmd.exe 执行 <code>netsh wlan show interfaces</code></li>
+<li>关键发现：<code>netsh wlan show interfaces</code> 命令读取当前连接 Wi-Fi 的 <b>BSSID</b>（接入点 MAC 地址）</li>
+<li>Windows 将读取 BSSID 的行为归类为"访问位置信息"（因为 BSSID 可用于 Wi-Fi 定位），
+因此触发位置访问标识，并记录调用进程（cmd.exe）</li>
+</ol>
+根本原因：netsh wlan show interfaces 读取 BSSID 被 Windows 视为位置信息访问，记录到调用该命令的进程（cmd.exe）。`,
+    solution: `处理方案：<br><br>
+<b>如果蓝色定位图标不影响业务：</b>
+<ol>
+<li>向用户说明：这是 CorpLinkCloseTool 读取 Wi-Fi BSSID 的预期行为，非安全威胁</li>
+<li>在隐私设置中确认位置权限仅授予必要应用</li>
+</ol>
+<b>如果需要消除定位图标：</b>
+<ol>
+<li>修改 CorpLinkCloseTool.exe，改用不触发位置权限的方法获取 Wi-Fi 信息：
+<code>Get-NetConnectionProfile</code> 不读取 BSSID，不触发位置访问</li>
+<li>或通过应用清单（App Manifest）声明工具的位置权限需求，使图标出现在工具自身而非 cmd.exe</li>
+<li>若工具无法修改，通过 GPO 隐藏位置访问托盘图标（非推荐）</li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>读取 Wi-Fi BSSID 触发 Windows 位置权限标记</b>：
+<code>netsh wlan show interfaces</code>、<code>WlanGetNetworkBssList</code> API 等读取 BSSID 的操作
+均被 Windows 归类为位置信息访问</li>
+<li><b>位置图标显示的进程可能是中间进程</b>：实际触发位置访问的是 netsh，
+但 Windows 记录的是调用 netsh 的父进程（cmd.exe），导致排查时容易误判</li>
+<li><b>Process Monitor 是追踪"谁启动了什么"的最佳工具</b></li>
+<li>企业工具开发应遵循最小权限原则，避免不必要地读取 BSSID</li>
+<li>如果工具确实需要 BSSID，应明确声明位置权限，并向用户解释用途</li>
+</ol>`,
+  },
+  "ts-net-dual-nic": {
+    problem: `笔记本电脑或服务器安装了 <b>Intel I226-LM</b> 网卡，
+并且同时存在第二块网卡（无线或其他有线网卡）时，
+Intel I226-LM 网卡会被<b>自动禁用</b>，用户无法通过有线网络连接，
+重新启用后短暂恢复但数分钟内再次被禁用。<br><br>
+故障现象：设备管理器中 Intel I226-LM 显示为"禁用"，
+事件日志有 EventID 27（网络链路断开）。手动启用后，
+约 2-5 分钟内再次被禁用，表现为"自愈"失败的循环。<br><br>
+用户误以为是驱动程序问题或硬件故障，替换驱动后问题依旧。`,
+    investigation: `使用 WPR（Windows Performance Recorder）追踪根因：<br><br>
+<ol>
+<li>启动 WPR 录制：<code>wpr -start GeneralProfile</code></li>
+<li>重现问题：手动启用 I226-LM，等待其被自动禁用</li>
+<li>停止录制：<code>wpr -stop trace.etl</code></li>
+<li>使用 WPA（Windows Performance Analyzer）打开 trace.etl，
+过滤进程 <code>DWPNetworkService.exe</code></li>
+<li>发现 DWPNetworkService.exe 在网卡被禁用前有 WMI 调用序列：
+<code>Win32_NetworkAdapter.Disable()</code></li>
+<li>分析 DWPNetworkService.exe（Dell Wireless Platform Network Service）的行为逻辑：
+当检测到第二块网卡时，DWPNetworkService 按照策略禁用指定的有线网卡</li>
+</ol>
+根本原因：Dell OEM 软件 DWPNetworkService.exe 通过 WMI 禁用 Intel I226-LM，
+其设计目的可能是强制使用无线连接（节能或企业策略），但在某些配置下行为异常。`,
+    solution: `修复方案：<br><br>
+<ol>
+<li>停止并禁用 DWPNetworkService：
+<pre>Stop-Service DWPNetworkService
+Set-Service DWPNetworkService -StartupType Disabled</pre></li>
+<li>或卸载 Dell Wireless Platform（控制面板 &gt; 程序和功能）</li>
+<li>若需要保留 DWPNetworkService，检查其配置文件或注册表：
+<code>HKLM\\SOFTWARE\\Dell\\DWP\\NetworkService</code>，查找网卡禁用策略配置</li>
+<li>联系 Dell 技术支持获取更新版本的 DWPNetworkService，修复异常禁用行为</li>
+<li>验证：手动启用 I226-LM 后，观察 10 分钟确认不再被自动禁用</li>
+</ol>
+<b>注意</b>：禁用 DWPNetworkService 可能影响 Dell 无线切换相关功能，
+需在测试环境验证后再推广。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>WPR/WPA 是诊断"谁禁用了网卡"的最佳工具</b>：
+Process Monitor 无法捕获 WMI 调用序列，WPR ETW 录制更全面</li>
+<li><b>OEM 预装软件是隐藏的故障来源</b>：DWPNetworkService.exe 是 Dell OEM 软件，
+排查时容易被忽略，应将 OEM 服务纳入排查范围</li>
+<li><b>WMI 是 Windows 组件间通信的重要通道</b>：通过 WMI 调用可以控制设备状态，
+追踪 WMI 调用是诊断设备状态意外变化的关键</li>
+<li>网卡"自动禁用"问题除 OEM 软件外，还可能由 NDIS 驱动 Bug、省电策略（Allow the computer to turn off this device）引起</li>
+<li>排查时先通过 WPR 捕获数据，再分析，而非直接更换驱动</li>
+</ol>`,
+  },
+  "ts-net-iwr": {
+    problem: `在计划任务或服务中以 <b>SYSTEM 账户</b>运行的 PowerShell 脚本
+执行 <code>Invoke-WebRequest</code> 时返回 <b>HTTP 400 Bad Request</b> 错误，
+而同一 URL 在普通用户账户下执行完全正常。<br><br>
+故障场景：自动化部署脚本使用 <code>Invoke-WebRequest -Uri "https://example.com/api"</code>，
+以 SYSTEM 上下文运行时 HTTP 400，排查目标服务端日志发现请求到达了服务端，
+服务端返回 400 是因为接收到格式异常的请求（代理相关头部）。`,
+    investigation: `排查过程：<br><br>
+<ol>
+<li>以 SYSTEM 身份运行测试：<code>psexec -s powershell.exe -command "Invoke-WebRequest -Uri 'https://example.com'"</code></li>
+<li>捕获 HTTP 请求内容（使用 Fiddler 或 Wireshark），发现请求中包含异常代理头部</li>
+<li>检查 SYSTEM 账户的 WinHTTP 代理配置：
+<pre>netsh winhttp show proxy</pre>
+发现配置为 <code>MANUAL_PROXY: 127.0.0.1:80</code></li>
+<li>检查 bitsadmin 代理配置（SYSTEM 账户的 IE 代理替代品）：
+<pre>bitsadmin /util /getieproxy LOCALSYSTEM</pre>
+返回 <code>MANUAL_PROXY: 127.0.0.1:80</code></li>
+<li>SYSTEM 账户的 Invoke-WebRequest 默认使用 WinHTTP，
+而 WinHTTP 代理被历史配置设为 127.0.0.1:80（端口 80 上无服务监听），
+请求到达真实目标时携带了 CONNECT 代理头，服务端返回 400</li>
+</ol>`,
+    solution: `修复步骤：<br><br>
+<ol>
+<li>清除 WinHTTP 代理设置（SYSTEM 账户全局）：
+<pre>netsh winhttp reset proxy</pre></li>
+<li>清除 bitsadmin 代理设置：
+<pre>bitsadmin /util /setieproxy LOCALSYSTEM NO_PROXY</pre></li>
+<li>若需要特定代理，正确配置代理地址（非 127.0.0.1:80）：
+<pre>netsh winhttp set proxy proxy-server="http://proxy.company.com:8080" bypass-list="*.internal.com"</pre></li>
+<li>验证：以 SYSTEM 身份重新执行 <code>Invoke-WebRequest</code>，确认不再返回 HTTP 400</li>
+<li>检查谁设置了 127.0.0.1:80 代理：可能是某个安全工具或代理软件的残留配置</li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>SYSTEM 账户使用 WinHTTP 而非 WinINet 代理</b>：
+普通用户的 IE 代理设置（WinINet）对 SYSTEM 账户无效，
+SYSTEM 账户的网络代理由 <code>netsh winhttp</code> 或 <code>bitsadmin</code> 控制</li>
+<li><b>HTTP 400 来自服务端，但根因在客户端代理</b>：
+错误发生在服务端，但根因是客户端发出了格式异常的请求，需要从两端分析</li>
+<li><b>bitsadmin /util /getieproxy LOCALSYSTEM 是检查 SYSTEM 代理的专用命令</b></li>
+<li>自动化脚本应在 SYSTEM 上下文中测试，不能假设用户上下文和 SYSTEM 上下文代理配置相同</li>
+<li>127.0.0.1:80 作为代理是典型的"残留僵尸配置"，定期清理 winhttp 代理是好习惯</li>
+</ol>`,
+  },
+  "ts-net-mtu": {
+    problem: `通过运营商<b>专线（Leased Line）</b>连接两个站点的网络出现不稳定，
+大文件传输失败、TCP 连接频繁中断，但 ping 测试正常（小包无丢失）。<br><br>
+问题根源：专线链路的 <b>Path MTU（路径最大传输单元）</b> 约为 1188 字节，
+远低于以太网标准的 1500 字节。当 Windows 发送大于 1188 字节的 IP 包时，
+中间路由器需要分片，但若路由器配置了 Don't Fragment (DF) 位，则直接丢包，
+ICMP Type 3 Code 4（需要分片）返回但被防火墙过滤，
+导致 Windows 无法通过 PMTUD 发现正确的 MTU，持续以 1500 字节发送大包并丢失。`,
+    investigation: `Path MTU 探测过程：<br><br>
+<ol>
+<li>使用 ping 测试不同数据包大小：<code>ping -f -l 1400 &lt;target-ip&gt;</code>（禁止分片）</li>
+<li>逐步减小包大小，发现 &gt;1188 字节时 ping 失败（ICMP Type 3 Code 4 被过滤）</li>
+<li>确认 Path MTU 约为 1188 字节</li>
+<li>在 Wireshark 中抓取大文件传输，确认 TCP 包在 1188 字节后被丢弃</li>
+<li>检查 ICMP 消息过滤：防火墙阻断了 ICMP Type 3 Code 4，
+Windows PMTUD 机制收不到反馈，无法自动调整</li>
+</ol>
+根本原因：专线链路物理/协议层 MTU 约 1188，防火墙过滤 ICMP PMTUD 消息，
+导致 Windows 自动路径 MTU 发现（PMTUD）失效，持续以大包发送导致丢包。`,
+    solution: `修复方法（手动设置 MTU）：<br><br>
+<ol>
+<li>找到连接专线的网络接口名称：<code>Get-NetAdapter</code></li>
+<li>将该接口的 MTU 设置为低于 Path MTU 的安全值（留出 TCP/IP 头部空间）：
+<pre>netsh interface ipv4 set subinterface "&lt;InterfaceName&gt;" mtu=1100 store=persistent</pre>
+1100 字节保留足够余量（1188 - 20 IP头 - 20 TCP头 = 1148，再留余量取 1100）</li>
+<li>验证设置：<code>netsh interface ipv4 show subinterfaces</code></li>
+<li>测试大文件传输，确认不再中断</li>
+<li>如果是服务器端，还需在对端机器同样设置 MTU，确保双向一致</li>
+</ol>
+<b>长期方案</b>：联系运营商修复专线 MTU（提升到 1500 字节），或允许 ICMP Type 3 Code 4 通过防火墙。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>ping 正常不代表大数据传输正常</b>：Path MTU 问题只影响超过 MTU 大小的数据包，
+小包（ping）完全不受影响</li>
+<li><b>专线 MTU 可能远低于 1500</b>：MPLS、VXLAN、GRE 等封装协议都会降低有效 MTU，
+专线部署时应明确确认 Path MTU</li>
+<li><b>PMTUD 依赖 ICMP</b>：防火墙过滤 ICMP Type 3 Code 4 会导致 PMTUD 失效，
+这是常见的网络配置错误</li>
+<li><code>ping -f -l &lt;size&gt;</code> 是手动测试 Path MTU 的简单工具</li>
+<li>手动设置 MTU 是快速修复方案，但应记录在网络文档中，避免未来变更时遗忘</li>
+</ol>`,
+  },
+  "ts-net-netprofm": {
+    problem: `生产服务器的 <b>svchost.exe</b> 进程内存持续增长，
+最终占用约 <b>1.3 GB</b>，导致服务器内存不足，影响其他应用性能，
+最终需要手动重启缓解，但数天后问题再次出现。<br><br>
+故障现象：Task Manager 中某个 svchost.exe 进程内存约 1.3 GB，
+正常情况下该 svchost 组应在 100 MB 以内。
+通过 <code>tasklist /svc</code> 确认是包含 <b>netprofm</b>（Network Location Awareness，
+网络位置感知）服务的 svchost 进程。<br><br>
+netprofm 服务负责检测和管理网络连接状态，正常情况下极少占用大量内存。`,
+    investigation: `诊断过程（WPR Heap Snapshot + UMDH）：<br><br>
+<ol>
+<li>对泄漏的 svchost.exe 进程启用堆追踪：
+<pre>gflags /i svchost.exe +ust</pre>
+重启服务或等待下次泄漏</li>
+<li>定期捕获堆快照（间隔 1 小时）：
+<pre>umdh -p:&lt;pid&gt; -f:heap1.txt
+# 等待1小时后
+umdh -p:&lt;pid&gt; -f:heap2.txt
+umdh heap1.txt heap2.txt -f:diff.txt</pre></li>
+<li>分析 diff.txt，发现增长最大的调用栈来自 <code>netprofm.dll</code> 的 COM 对象分配</li>
+<li>具体追踪到 <code>INetworkCostManager</code> 和 <code>INetworkConnectionCost</code> COM 接口的对象
+被频繁创建但未释放（引用计数未归零）</li>
+<li>触发条件：每次网络状态变化（Wi-Fi 切换、VPN 连接）都创建新 COM 对象，积累导致泄漏</li>
+</ol>
+根本原因：netprofm 内部 COM 对象引用计数管理 Bug，特定网络状态变化序列触发对象未释放。`,
+    solution: `解决方案：<br><br>
+<b>临时缓解（立即见效）：</b>
+<ol>
+<li>重启 netprofm 服务（注意：会重置网络配置文件）：
+<pre>Stop-Service netprofm -Force
+Start-Service netprofm</pre></li>
+</ol>
+<b>长期修复：</b>
+<ol>
+<li>安装最新 Windows 累积更新（netprofm 的 COM 泄漏在多个更新中有修复）</li>
+<li>检查 KB 编号：搜索"netprofm memory leak"相关 KB，对应系统版本安装</li>
+<li>设置监控：通过 PowerShell 定期检查 svchost（netprofm）内存，超过阈值时自动告警并重启</li>
+</ol>
+<b>监控脚本参考：</b>
+<pre>$pid = (Get-Service netprofm).ProcessId
+Get-Process -Id $pid | Select-Object WorkingSet64</pre>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>WPR Heap Snapshot + UMDH 是定位内存泄漏的标准工具链</b>：
+通过对比两次快照的差异，精确定位泄漏的调用栈，比直觉判断更可靠</li>
+<li><b>svchost 内存泄漏要先确认具体服务</b>：<code>tasklist /svc</code> 或 Process Explorer
+可以查看 svchost 内部托管的服务列表</li>
+<li><b>COM 对象引用计数是 Windows 内存泄漏的常见来源</b>：
+每个 COM 对象必须有配对的 AddRef/Release，否则内存永不释放</li>
+<li>对于已知的 svchost 内存泄漏，优先通过安装 Windows Update 修复，
+而非长期依赖重启缓解</li>
+<li>建议对关键服务器设置内存使用监控基线，超阈值自动告警</li>
+</ol>`,
+  },
+  "ts-net-nic-stat": {
+    problem: `管理员通过 Windows <b>任务管理器</b>的"性能"选项卡或"进程"列监控网络适配器（NIC）
+的发送（Send）流量统计时，发现数值异常偏高或跳变，
+与实际业务流量不符，令人怀疑是否存在异常流量。<br><br>
+故障场景：服务器安装了 Broadcom 网卡，任务管理器显示 NIC TX 计数器持续增长，
+数值远超实际数据传输量（如空闲时显示每秒发送数百 MB）。
+网络监控工具（如 SNMP counters）显示正常，仅任务管理器数值异常。`,
+    investigation: `排查过程：<br><br>
+<ol>
+<li>任务管理器 NIC 统计对比：将任务管理器数值与 PowerShell 获取的数值对比：
+<pre>Get-NetAdapterStatistics -Name "&lt;NicName&gt;" | Select-Object SentBytes,ReceivedBytes</pre></li>
+<li>发现任务管理器数值与 <code>Get-NetAdapterStatistics</code> 差异巨大，PowerShell 显示正常</li>
+<li>分析数据来源：任务管理器使用 <b>PDH（Performance Data Helper）</b> 计数器
+<code>\\Network Interface(*)\\Bytes Sent/sec</code> 读取 NIC 统计</li>
+<li>检查 Broadcom 驱动版本，对比发现旧版驱动的 PDH 计数器实现存在 Bug：
+32 位计数器在溢出时未正确处理，导致累积计算出现错误</li>
+<li>在 Broadcom 驱动发布说明中确认该 Bug 及修复版本</li>
+</ol>
+根本原因：Broadcom 驱动旧版本中 PDH 计数器接口有 32 位溢出 Bug，
+导致任务管理器和 Performance Monitor 显示虚假数值。`,
+    solution: `解决方案：<br><br>
+<b>立即验证（确认是否是计数器 Bug）：</b>
+<ol>
+<li>使用 PowerShell 获取真实统计：
+<pre>Get-NetAdapterStatistics -Name "&lt;NicName&gt;" | Select-Object *</pre></li>
+<li>同时用网络监控工具（SNMP/WMI）比对，如果 PowerShell 数值正常，
+则任务管理器 PDH Bug 确认</li>
+</ol>
+<b>根本修复：升级 Broadcom 驱动</b>
+<ol>
+<li>从 Broadcom 官网或服务器厂商（HPE/Dell）获取最新驱动</li>
+<li>在维护窗口升级：<code>pnputil /add-driver broadcom.inf /install</code>
+或通过设备管理器更新驱动</li>
+<li>重启网络适配器（无需重启服务器）</li>
+<li>验证：升级后任务管理器数值与 <code>Get-NetAdapterStatistics</code> 一致</li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>任务管理器网络统计不可盲目信任</b>：任务管理器依赖 PDH 计数器，
+而 PDH 计数器的实现由驱动厂商提供，存在 Bug 可能性</li>
+<li><b>Get-NetAdapterStatistics 是更可靠的数据来源</b>：
+直接调用 NDIS 层的统计接口，不经过 PDH，更准确</li>
+<li><b>驱动程序 Bug 是硬件统计异常的常见原因</b>：在定位"异常流量"前，
+先确认监控工具本身是否有问题</li>
+<li>服务器 NIC 驱动应定期更新，特别是企业级 Broadcom / Intel 网卡，
+厂商持续修复性能和稳定性问题</li>
+<li>建立多层次监控：任务管理器 + PowerShell + SNMP 三者结合，任何单一来源出现异常时交叉验证</li>
+</ol>`,
+  },
+  "ts-net-pac-url": {
+    problem: `企业代理环境中，PAC（Proxy Auto-Configuration）文件的
+<code>FindProxyForURL(url, host)</code> 函数在处理 <b>HTTPS 请求</b>时，
+<code>url</code> 参数只收到主机名（如 <code>https://example.com</code>），
+而非预期的完整 URL（如 <code>https://example.com/path/to/resource</code>），
+导致基于 URL 路径的代理路由规则无法正确工作。<br><br>
+管理员在 PAC 文件中写了类似 <code>if (url.indexOf("/api/v2/") != -1)</code> 的路径判断，
+对 HTTP 请求有效，对 HTTPS 请求始终失效（因为 url 只有域名，无路径）。`,
+    investigation: `原因分析：<br><br>
+<ol>
+<li>测试 PAC 函数：使用 IE/Edge 的 PAC 测试工具，输入 HTTPS URL，
+观察 <code>url</code> 参数的实际值</li>
+<li>发现对于 HTTPS 请求，浏览器传给 <code>FindProxyForURL</code> 的 url 参数为
+<code>https://example.com</code>（仅主机名），而非 <code>https://example.com/full/path</code></li>
+<li>查阅 PAC 规范文档：这是<b>设计行为</b>——
+对于 HTTPS 流量，浏览器发送的是 CONNECT 代理请求（仅需目标主机和端口），
+不暴露 URL 路径（保护 HTTPS 流量的隐私），因此 FindProxyForURL 也只能得到主机名</li>
+<li>HTTP 请求则包含完整 URL，因为 HTTP 代理请求本身就包含完整路径</li>
+<li>AutoProxyQueryWithFullUrl API：可以传递完整 URL，但仅适用于程序显式调用，
+普通浏览器 HTTPS 请求不走此路径</li>
+</ol>
+根本原因：HTTPS 的代理机制（CONNECT 隧道）决定了 PAC 脚本无法获取 URL 路径，这是协议设计决策。`,
+    solution: `应对方案：<br><br>
+<ol>
+<li><b>基于主机名路由</b>（推荐）：修改 PAC 规则，改为基于 <code>host</code> 参数判断，
+而非 url 路径：<code>if (dnsDomainIs(host, ".api.example.com")) return "PROXY ..."</code></li>
+<li><b>子域名区分</b>：将需要不同代理规则的服务部署在不同子域名下，
+通过主机名区分而非路径区分</li>
+<li><b>对于需要路径路由的场景</b>：只能对 HTTP 流量有效，
+HTTPS 流量无法在 PAC 层面做路径级别的路由</li>
+<li><b>替代方案：透明代理（TLS Inspection）</b>：
+若业务要求基于路径路由 HTTPS，需要部署支持 TLS 解密的透明代理，
+解密后检查路径再转发</li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>HTTPS 流量 PAC 脚本只能得到主机名，这是设计决策</b>：
+HTTPS 的 CONNECT 代理机制保护了 URL 路径隐私，PAC 无法绕过</li>
+<li><b>PAC 路径判断仅对 HTTP 有效</b>：在写 PAC 规则时，
+基于路径的判断条件对 HTTPS 流量无效，需改用基于主机名的判断</li>
+<li><b>网络架构设计应考虑代理路由粒度</b>：如果需要路径级别的 HTTPS 路由，
+必须在架构设计阶段考虑使用支持 TLS Inspection 的方案</li>
+<li>AutoProxyQueryWithFullUrl API 是特殊场景，不适用于普通浏览器场景</li>
+<li>测试 PAC 文件时同时测试 HTTP 和 HTTPS URL，确认行为符合预期</li>
+</ol>`,
+  },
+  "ts-net-tcp-spurious": {
+    problem: `内部服务之间的 TCP 连接出现频繁的<b>虚假重传（Spurious Retransmission）</b>，
+Wireshark 抓包显示大量 <code>[TCP Retransmission]</code> 标记，
+但网络实际上并无丢包。虚假重传导致吞吐量下降，业务响应时间增加。<br><br>
+环境：客户端 Windows Server 与中间代理服务器通信，代理服务器再连接后端服务。
+客户端使用了"数据中心"TCP 优化模板（通过 <code>netsh int tcp set supplemental</code> 设置），
+该模板将 <code>MinRTO</code>（最小重传超时）设置为 <b>20 毫秒</b>。<br><br>
+代理服务器的 <b>Delayed ACK</b> 延迟约为 28 毫秒（标准 Delayed ACK 行为），
+导致客户端 MinRTO < 代理 Delayed ACK 延迟，触发虚假重传。`,
+    investigation: `分析过程：<br><br>
+<ol>
+<li>Wireshark 抓包：在客户端和代理服务器两侧同时抓包</li>
+<li>比对时间戳：客户端发送数据包后 20ms 触发重传，
+但 20ms 内代理服务器实际上收到了包，只是 ACK 还在 Delayed ACK 等待中（约 28ms）</li>
+<li>这是虚假重传：包并未丢失，只是 ACK 比 MinRTO 晚到</li>
+<li>检查客户端 TCP 配置：
+<pre>netsh int tcp show supplemental</pre>
+发现当前模板为 Datacenter，MinRTO=20ms</li>
+<li>检查代理的 Delayed ACK 设置：标准 Windows Delayed ACK 约 200ms，
+但代理做了优化，约 28ms，两者接近但超过 MinRTO</li>
+</ol>
+根本原因：MinRTO(20ms) &lt; 代理 Delayed ACK(28ms)，
+在网络正常无丢包的情况下，客户端误以为包丢失并重传。`,
+    solution: `修复方案：<br><br>
+<ol>
+<li>将客户端 MinRTO 调整为大于代理 Delayed ACK 的值（建议 60ms）：
+<pre>netsh int tcp set supplemental template=Datacenter minrto=60</pre></li>
+<li>或切换到其他 TCP 模板（默认模板 MinRTO=300ms，虚假重传风险极低）：
+<pre>netsh int tcp set supplemental template=Internet</pre></li>
+<li>验证：修改后重新抓包，确认 [TCP Retransmission] 数量显著减少</li>
+<li>若代理 Delayed ACK 可配置，也可以将其降至 &lt;20ms（需评估代理性能影响）</li>
+</ol>
+<b>权衡</b>：Datacenter 模板的 20ms MinRTO 在真实丢包场景下响应更快，
+修改为 60ms 后真实丢包的响应时间会稍微增加，需根据业务场景评估。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>MinRTO 必须大于端到端 RTT + 最大 Delayed ACK 时间</b>：
+MinRTO 设置过小是虚假重传的根本原因，在部署数据中心 TCP 模板时需验证</li>
+<li><b>Wireshark 双端抓包是分析虚假重传的关键</b>：
+单端抓包无法区分真实丢包和虚假重传</li>
+<li><b>数据中心 TCP 模板的激进参数需要谨慎使用</b>：
+20ms MinRTO 对低延迟数据中心内部通信合理，但对跨数据中心或有中间代理的场景可能过于激进</li>
+<li>记录当前 TCP 模板配置：<code>netsh int tcp show global</code> 和 <code>show supplemental</code></li>
+<li>虚假重传不导致数据错误，但会严重影响吞吐量，表现为高重传率但低丢包率</li>
+</ol>`,
+  },
+  "ts-smb-260char": {
+    problem: `用户通过映射的 Azure Files 网络驱动器打开 PDF 文件时失败，
+错误提示"文件名太长"或"找不到文件"，而同一文件通过浏览器或本地副本可以正常打开。<br><br>
+问题根因：Azure Files SMB 共享中的 PDF 文件所在路径（驱动器盘符 + 目录路径 + 文件名）
+总长度超过 <b>260 字符</b>（Windows MAX_PATH 限制）。<br><br>
+例如：<code>Z:\\Dept\\Projects\\2024\\Client\\Design\\Documents\\Final\\PDF\\Report_v3_approved.pdf</code>
+总长度可能达到 270+ 字符。<br><br>
+Azure Files 不支持 <b>8.3 短文件名（8dot3name）</b>，
+而本地 NTFS 卷通常可以用 8.3 短名称绕过 MAX_PATH 限制，因此本地副本正常但 Azure Files 访问失败。`,
+    investigation: `排查步骤：<br><br>
+<ol>
+<li>测量路径长度：在 PowerShell 中计算：
+<pre>(Get-Item "Z:\\...path...\\file.pdf").FullName.Length</pre>
+确认路径长度 &gt; 260 字符</li>
+<li>检查是否启用了 Windows 10/11 长路径支持：
+<code>HKLM\\SYSTEM\\CurrentControlSet\\Control\\FileSystem\\LongPathsEnabled</code>
+即使启用，部分 Win32 API 应用仍不支持长路径</li>
+<li>确认 Azure Files 共享无 8.3 短名称：
+<code>fsutil 8dot3name query Z:</code> 返回不支持或 Azure Files 无法执行此命令</li>
+<li>确认 PDF 阅读器（如 Adobe Acrobat）是否支持长路径：
+大多数版本不支持，即使系统启用了 LongPathsEnabled</li>
+</ol>
+根本原因：Azure Files 缺少 8.3 短名称支持 + 应用程序不支持长路径 = 超过 260 字符的 PDF 无法打开。`,
+    solution: `解决方案：<br><br>
+<b>方案一（推荐）：映射更深层子目录为新驱动器</b>
+<ol>
+<li>找到包含该文件的最近父目录，使其映射后路径在 260 字符内</li>
+<li>映射子目录：<code>net use X: \\\\storage.file.core.windows.net\\share\\Dept\\Projects\\2024\\Client</code></li>
+<li>用户通过 X: 驱动器访问，路径大幅缩短</li>
+</ol>
+<b>方案二：重命名/移动文件以缩短路径</b>
+<ol>
+<li>缩短目录名或文件名，确保总路径 &lt;260 字符</li>
+<li>注意：如有历史链接或书签指向原路径，需同步更新</li>
+</ol>
+<b>方案三（应用层）：启用系统长路径支持后升级 PDF 应用</b>
+<ol>
+<li>启用 LongPathsEnabled，同时使用支持长路径的 PDF 应用（如 Edge PDF 查看器）</li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>Azure Files 无 8.3 短名称支持</b>：这与本地 NTFS 的重要区别，
+迁移文件服务器到 Azure Files 前需测试长路径场景</li>
+<li><b>映射更深层子目录是最快的解决方案</b>：无需修改文件结构，立即可用</li>
+<li><b>Windows MAX_PATH = 260 字符是老旧限制</b>：现代 Windows 可通过 LongPathsEnabled 突破，
+但需要应用程序同时支持，PDF 阅读器通常落后</li>
+<li>云文件服务迁移前，应审计文件路径长度分布，识别潜在的长路径风险</li>
+<li>Edge 内置 PDF 查看器支持长路径，可作为过渡方案</li>
+</ol>`,
+  },
+  "ts-smb-copy-slow": {
+    problem: `用户报告 Windows 11 客户端复制文件到 SMB 共享的速度明显慢于 Windows 10 客户端，
+相同网络、相同服务器、相同文件，Win11 吞吐量仅为 Win10 的 50-70%，
+导致大批量文件迁移任务耗时大幅增加。<br><br>
+初步猜测：SMB 版本差异、TCP 配置、NIC 驱动或 SMB 客户端行为变化。
+但简单比对难以确定根因，需要系统化的测量和对比。`,
+    investigation: `结构化排查方法：<br><br>
+<b>第一步：标准化基准测试</b>
+<ol>
+<li>使用 robocopy 排除文件系统和应用层变量：
+<pre>robocopy \\\\server\\share\\testfile . /J /MT:1 /LOG:robocopy_win11.log</pre>
+Win10 和 Win11 使用相同命令和相同源文件</li>
+<li>记录吞吐量（MB/s），确认差异可重现</li>
+</ol>
+<b>第二步：Wireshark 分析 SMB2 读取命令</b>
+<ol>
+<li>在 Win11 和 Win10 同时抓包</li>
+<li>过滤 SMB2 读取命令：<code>smb2.cmd == 8</code>（Read 命令）</li>
+<li>分析 Read Request 的 <code>Length</code> 字段（请求读取大小）和 <code>MaxCount</code></li>
+<li>发现 Win11 的 SMB2 Read 请求单次最大读取大小较小，导致相同数据需要更多往返</li>
+<li>对比 SMB Dialect 版本和 SMB2 协商参数</li>
+</ol>
+根本原因：Win11 某版本 SMB 客户端读取请求大小优化参数有所调整，导致单次 I/O 效率降低。`,
+    solution: `优化步骤：<br><br>
+<ol>
+<li>检查 SMB 客户端配置：
+<pre>Get-SmbClientConfiguration | Select-Object RequireSecuritySignature,EnableLargeMtu,ConnectionCountPerRssNetworkInterface</pre></li>
+<li>确认 <code>EnableLargeMtu</code> 为 True（允许大 MTU 的 SMB 帧）</li>
+<li>检查 Win11 SMB 相关注册表，对比 Win10 参数差异</li>
+<li>若是 SMB Signing 性能问题：评估是否可以禁用强制签名（<code>RequireSecuritySignature</code>），
+在安全可接受的环境中禁用签名可提升 20-30% 性能</li>
+<li>调整 SMB 带宽限速（若有）：<code>Get-SmbBandwidthLimit</code></li>
+<li>测试后安装最新 Windows 11 累积更新（SMB 性能 Fix 通常包含在内）</li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>robocopy 是 SMB 性能基准测试的标准工具</b>：排除应用层变量，直接测量 SMB 吞吐量</li>
+<li><b>smb2.cmd == 8 是 Wireshark 分析 SMB 读取性能的关键过滤器</b>：
+关注 Read 请求的大小和密度</li>
+<li><b>Windows 版本升级可能改变 SMB 客户端行为参数</b>：
+升级前应在测试环境验证文件传输性能</li>
+<li>SMB Signing 对性能有显著影响（通常 15-30%），需在安全和性能间权衡</li>
+<li>性能对比测试必须控制变量（相同文件、相同网络路径、相同时间段）</li>
+</ol>`,
+  },
+  "ts-smb-dfs-rpc": {
+    problem: `客户端访问 <b>DFS（分布式文件系统）</b>命名空间路径时失败，
+错误提示：<b>"RPC 服务器不可用"</b>（Error 1722 / 0x6BA）。<br><br>
+故障现象：用户输入 <code>\\\\domain\\dfsroot\\share</code> 无法连接，
+但直接输入 <code>\\\\fileserver\\share</code> 可以正常访问。
+DNS 解析和基本网络连通性均正常，Ping DC 有响应，Kerberos 认证正常。<br><br>
+DFS 命名空间的工作原理：客户端访问 DFS 路径时，
+首先向 DC 查询 DFSN（DFS Namespace）服务，
+由 DFSN 服务返回实际的文件服务器路径，再重定向客户端访问。`,
+    investigation: `排查步骤：<br><br>
+<ol>
+<li>从客户端测试 DFS 解析：<code>dfsutil /pktinfo</code> 查看客户端 DFS 缓存</li>
+<li>尝试直接访问 DC 的 DFS 服务：<code>dfsutil /root:\\\\&lt;DC-hostname&gt;\\dfsroot /verbose</code>
+报告 RPC 失败</li>
+<li>检查 DC 上的 DFSN 服务状态：<code>Get-Service dfs</code>
+发现服务状态为 <b>Stopped（已停止）</b></li>
+<li>检查 RPC 绑定：DFS 客户端通过 RPC 联系 DFSN 服务，
+RPC Endpoint Mapper 解析域名（非主机名），找不到对应 RPC 端点</li>
+<li>启动 DFSN 服务测试：<code>Start-Service dfs</code>，立即重试 DFS 访问 —— 成功</li>
+<li>调查 DFSN 服务停止原因：服务崩溃日志、Event ID 7034（服务意外终止）</li>
+</ol>
+根本原因：DC 上 DFSN 服务（dfs）停止运行，DFS 解析 RPC 调用无端点可用，返回 1722。`,
+    solution: `处理方案：<br><br>
+<b>立即恢复：</b>
+<ol>
+<li>在所有 DFS 命名空间服务器（通常是 DC）上启动 DFSN 服务：
+<pre>Get-Service dfs -ComputerName &lt;DC1&gt;,&lt;DC2&gt; | Start-Service</pre></li>
+<li>确认 DFS 命名空间可访问：<code>dfsutil /root:\\\\domain\\dfsroot</code></li>
+</ol>
+<b>防止再次停止：</b>
+<ol>
+<li>配置 DFSN 服务为自动重启：
+<pre>sc.exe failure dfs reset= 86400 actions= restart/30000/restart/60000/restart/120000</pre></li>
+<li>调查崩溃原因：Application Event Log 中查找 dfs 服务相关事件</li>
+<li>安装最新 Windows 更新，修复 DFSN 已知崩溃 Bug</li>
+</ol>
+<b>注意 RPC 解析行为</b>：DFS 使用域名（domain.com）而非 DC 主机名绑定 RPC，
+这意味着任何 DC 上的 DFSN 服务可以响应客户端请求，但所有 DC 必须有 DFSN 服务运行。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>DFS "RPC 服务器不可用" 首先检查 DFSN 服务</b>：
+Error 1722 在 DFS 场景下，最常见原因是 DFSN 服务停止，而非真正的 RPC 框架问题</li>
+<li><b>DFS 的 RPC 绑定到域名而非 DC 主机名</b>：
+任何提供 DFSN 服务的 DC 都可以服务 DFS 查询，但所有 DC 上的 DFSN 都要运行</li>
+<li><b>服务崩溃后默认不会自动重启</b>：必须手动配置服务恢复策略</li>
+<li>建议将 DFSN 服务状态纳入 DC 监控项，与 DNS、Netlogon 等关键服务一起监控</li>
+<li>DFS 故障排查工具：<code>dfsutil</code>、<code>dfsdiagtool</code> 是最直接的诊断工具</li>
+</ol>`,
+  },
+  "ts-smb-minsmb2": {
+    problem: `SMB 客户端无法连接某些文件服务器，错误提示协议版本不兼容，
+或连接失败无明显错误码。通过 Wireshark 抓包分析，
+发现 SMB 协商阶段客户端<b>最低协议版本被限制为 SMB 3.0</b>（0x0300），
+导致只支持 SMB 2.0/2.1 的服务器拒绝连接。<br><br>
+管理员检查 GPO 中的 SMB 配置项（HKLM\\SYSTEM\\CurrentControlSet\\Services\\LanmanWorkstation\\Parameters）
+发现 <code>MinSmb2Dialect</code> 值为 <code>0x300</code>，
+但确认所有相关 GPO 均未配置此项，无法解释该值的来源。`,
+    investigation: `追踪策略来源：<br><br>
+<ol>
+<li>确认 MinSmb2Dialect 值：
+<pre>Get-ItemProperty "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\LanmanWorkstation\\Parameters" -Name MinSmb2Dialect</pre>
+返回 0x300（SMB 3.0）</li>
+<li>运行 <code>gpresult /h report.html</code> 导出 GPO 应用报告，
+搜索 "MinSmb2Dialect" —— <b>未找到</b>任何 GPO 配置此项</li>
+<li>转向 Intune 配置管理策略检查：打开 Intune 门户，
+查找设备配置文件中的"自定义 OMA-URI"和"端点安全"策略</li>
+<li>检查设备的 MDM 策略应用日志：
+<code>C:\\Windows\\Logs\\PolicyManager\\</code> 目录下的日志文件</li>
+<li>在 PolicyManager 日志中发现关键信息：<b>WinningProvider GUID</b>，
+通过 GUID 追踪到具体的 Intune 配置文件</li>
+<li>找到 Intune 策略：某个"安全基线"或"自定义配置文件"包含 MinSmb2Dialect=0x300 的 OMA-URI 设置</li>
+</ol>`,
+    solution: `修复步骤：<br><br>
+<ol>
+<li>定位 Intune 策略：在 Intune 门户中根据 WinningProvider GUID 找到对应策略</li>
+<li>修改策略：将 MinSmb2Dialect 值改为 <code>0x200</code>（SMB 2.0 最低），
+或删除该配置项（允许所有 SMB2+ 版本）</li>
+<li>部署策略更新，等待设备同步（约 15-30 分钟）或强制同步：
+<pre>Invoke-MDMCommand -DeviceID &lt;id&gt; -Command SyncML/EnforceSync</pre></li>
+<li>验证：<code>Get-ItemProperty ... MinSmb2Dialect</code> 值已更新，
+SMB 连接测试正常</li>
+</ol>
+<b>了解 PolicyManager 日志使用方法</b>：
+<pre>Get-Content "C:\\Windows\\Logs\\PolicyManager\\*.log" | Select-String "MinSmb2Dialect"</pre>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>Intune 策略独立于 GPO</b>：当 GPO 中找不到某配置项来源时，
+下一步应检查 Intune（MDM）策略</li>
+<li><b>PolicyManager WinningProvider GUID 是追踪策略来源的关键</b>：
+每条 MDM 策略都有关联的 GUID，通过 GUID 可在 Intune 门户中定位具体策略</li>
+<li><b>SMB 版本限制影响范围广</b>：MinSmb2Dialect=0x300 会阻断与所有不支持 SMB 3.0 的设备通信，
+包括老旧 NAS、打印服务器等</li>
+<li>Intune 安全基线可能包含激进的 SMB 版本限制，部署前应评估对现有 SMB 连接的影响</li>
+<li>SMB 协议版本问题优先用 Wireshark 抓包确认（SMB Negotiate 协商报文中可见版本列表）</li>
+</ol>`,
+  },
+  "ts-smb-share-lost": {
+    problem: `Windows 文件服务器在重启后，部分或全部 <b>SMB 共享消失</b>，
+用户无法访问之前正常的网络共享路径（<code>\\\\server\\share</code>），
+提示"网络路径未找到"。<br><br>
+故障场景：每次服务器重启后共享都会消失，需要管理员手动重新创建共享，
+但下次重启后再次消失。通过计划任务或 PowerShell 脚本重新创建后，
+可以正常使用到下次重启。<br><br>
+管理员排查发现：SMB 共享的持久化信息存储在注册表 <code>HKLM\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Shares</code>，
+重启后该注册表键的内容消失（变为空），导致所有共享丢失。`,
+    investigation: `审计排查过程：<br><br>
+<ol>
+<li>确认注册表键消失：重启前导出：
+<code>reg export HKLM\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Shares shares_before.reg</code>
+重启后检查，确认内容已清空</li>
+<li>启用注册表审计：
+<pre>auditpol /set /subcategory:"Registry" /success:enable /failure:enable</pre>
+配置注册表键 SACL，审计 Shares 键的"删除"操作</li>
+<li>重启服务器，触发问题</li>
+<li>查看安全事件日志，搜索 <b>EventID 4657</b>（注册表值修改）或 <b>EventID 4660</b>（注册表键删除），
+目标对象为 <code>LanmanServer\\Shares</code></li>
+<li>同时检查 SMB 访问日志 <b>EventID 5140</b>（共享被访问），
+追踪是否有清理脚本在访问共享后删除</li>
+</ol>
+根本原因（常见）：某个初始化脚本、组策略或安全工具在系统启动时清空了 Shares 注册表键。`,
+    solution: `修复步骤：<br><br>
+<ol>
+<li><b>立即恢复共享</b>：从备份的注册表文件恢复：
+<code>reg import shares_before.reg</code>，然后 <code>Restart-Service lanmanserver</code></li>
+<li><b>查找并消除根因</b>：通过审计日志找到清除 Shares 键的进程/账户，
+修改对应脚本或策略</li>
+<li>常见嫌疑：
+<ul>
+<li>组策略"删除所有 SMB 共享"设置</li>
+<li>安全加固脚本中的清理逻辑</li>
+<li>系统备份/还原工具的副作用</li>
+</ul></li>
+<li><b>预防措施</b>：定期备份 Shares 注册表键，并在重启后验证共享是否完整</li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>SMB 共享持久化在注册表中</b>：<code>HKLM\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Shares</code>，
+注册表消失则共享消失，与文件夹本身无关</li>
+<li><b>EventID 4657/4660 + 注册表 SACL 是追踪删除操作的标准方法</b></li>
+<li><b>EventID 5140 可追踪共享访问事件</b>，结合 4657 确定操作序列</li>
+<li>共享配置应纳入备份策略，定期导出注册表键</li>
+<li>如果共享数量较多，建议使用 DSC（Desired State Configuration）或脚本管理共享配置，
+确保配置可重现</li>
+</ol>`,
+  },
+  "ts-smb-usb-deny": {
+    problem: `管理员在 Intune 中更新了 USB 存储设备访问策略（从"拒绝"改为"允许"），
+策略已下发到设备并显示合规，但用户插入 USB 存储设备仍然被拒绝，
+设备管理器中显示 USB 存储设备被禁用。<br><br>
+故障现象：<code>gpresult /r</code> 和 Intune 合规报告均显示 USB 策略已更新为允许，
+但实际行为仍是拒绝。设备重启后问题依旧。<br><br>
+初步排查排除了 GPO 残留配置，注册表 USB 相关键值也显示为允许状态，
+但服务层面存在问题。`,
+    investigation: `深入排查过程：<br><br>
+<ol>
+<li>检查 USB 相关服务状态：
+<pre>Get-Service WPDBusEnum | Select-Object Status,StartType</pre>
+发现 <b>WPDBusEnum</b>（Portable Device Enumerator Service）状态为 <b>Disabled（已禁用）</b></li>
+<li>WPDBusEnum 是 USB 便携设备枚举服务，禁用后所有 USB 存储设备将无法正常加载</li>
+<li>尝试启动服务：<code>Start-Service WPDBusEnum</code>
+立即成功 —— USB 设备可以访问</li>
+<li>但重启后服务再次被禁用，说明有某个机制在重置服务状态</li>
+<li>检查 Intune 脚本：在 Intune 门户查看"脚本"配置，
+发现有一个安全加固脚本（Security Hardening Script）包含：
+<code>Set-Service WPDBusEnum -StartupType Disabled</code></li>
+<li>该脚本是早期 USB 禁用策略的一部分，Intune 策略更新后脚本未同步更新</li>
+</ol>`,
+    solution: `修复步骤：<br><br>
+<ol>
+<li>在 Intune 门户找到并修改包含 WPDBusEnum 禁用的脚本</li>
+<li>更新脚本内容，将 <code>Set-Service WPDBusEnum -StartupType Disabled</code>
+改为 <code>Set-Service WPDBusEnum -StartupType Manual</code>（或 Automatic）</li>
+<li>重新部署脚本到受影响设备</li>
+<li>在受影响设备上手动恢复服务：
+<pre>Set-Service WPDBusEnum -StartupType Manual
+Start-Service WPDBusEnum</pre></li>
+<li>验证：插入 USB 存储设备，确认可以正常访问</li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>Intune 脚本与 Intune 策略是独立的配置通道</b>：
+策略更新不会自动影响脚本，两者需要单独维护</li>
+<li><b>WPDBusEnum 服务是 USB 存储的关键依赖</b>：
+禁用该服务等同于从服务层面禁用 USB 存储，即使注册表策略允许</li>
+<li><b>服务启动类型是排查 USB 访问问题的检查项</b>：
+注册表权限和 GPO 都正常时，检查相关服务的 StartupType</li>
+<li>安全加固脚本修改了系统底层配置，需要与上层策略保持同步，
+建议建立策略-脚本一致性检查机制</li>
+<li>Intune 配置复杂度高，建议维护配置文档，记录脚本和策略的关联关系</li>
+</ol>`,
+  },
+  "ts-smb-webdav": {
+    problem: `用户通过 <b>WebDAV</b> 映射的网络驱动器访问共享文件夹时，
+文件夹显示为<b>空</b>（没有任何文件），但通过浏览器直接访问同一 URL 可以看到所有文件，
+确认文件实际存在于服务器端。<br><br>
+故障特征：只有一个特定目录出现此问题，其他目录正常；
+同一目录在其他客户端（Chrome/Edge 浏览器）可以看到文件。
+Windows 资源管理器通过 WebDAV 映射驱动器后，该目录显示 0 个文件。<br><br>
+WebDAV 协议通过 PROPFIND 请求枚举目录内容，服务器返回 207 Multi-Status 响应，
+包含目录中每个文件的属性。问题在于枚举过程中提前中止。`,
+    investigation: `使用 Fiddler 和 MRxDAV 日志分析：<br><br>
+<ol>
+<li>启用 MRxDAV 日志：
+<code>reg add HKLM\\SYSTEM\\CurrentControlSet\\Services\\MRxDAV\\Parameters /v LoggingFlags /t REG_DWORD /d 0xFFFFFFFF</code></li>
+<li>重现问题后收集日志：<code>C:\\Windows\\System32\\LogFiles\\WMI\\MRxDAV*.etl</code></li>
+<li>在日志中发现关键错误：<code>STATUS_NAME_TOO_LONG</code>（错误码 0xC0000106）</li>
+<li>该错误发生在解析目录中某个<b>文件名过长的文件</b>时</li>
+<li>MRxDAV 遇到 STATUS_NAME_TOO_LONG 后，<b>立即中止</b>整个目录枚举，
+不再处理后续文件，返回空目录</li>
+<li>找到问题文件：目录中有一个文件名约 240+ 字符，超过 MRxDAV 的处理能力</li>
+</ol>
+根本原因：目录中存在单个超长文件名，MRxDAV 在处理该文件时返回 STATUS_NAME_TOO_LONG，
+且错误处理逻辑选择中止整个枚举而非跳过该文件。`,
+    solution: `修复步骤：<br><br>
+<ol>
+<li><b>定位问题文件</b>：通过浏览器或其他工具（SMB 直接访问）找到超长文件名文件</li>
+<li><b>重命名文件</b>：将文件名缩短到合理范围（建议 &lt;200 字符，留足路径余量）：
+<code>Rename-Item -Path "\\\\server\\webdav\\..\\&lt;long-filename&gt;" -NewName "&lt;short-filename&gt;"</code></li>
+<li><b>或移动文件</b>：将超长文件名文件移至其他目录，用户可单独访问</li>
+<li>刷新 WebDAV 缓存（重新映射驱动器或等待缓存超时）</li>
+<li>验证：目录现在应该显示所有其他文件</li>
+</ol>
+<b>长期建议</b>：在 WebDAV 服务端添加文件名长度限制，
+或配置 MRxDAV 在遇到 STATUS_NAME_TOO_LONG 时跳过文件继续枚举
+（需要补丁支持，标准行为是中止）。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>MRxDAV 遇到 STATUS_NAME_TOO_LONG 时中止整个目录枚举</b>：
+一个超长文件名文件会导致整个目录在 Windows 资源管理器中显示为空，
+这是一个错误处理策略问题，影响范围远超预期</li>
+<li><b>WebDAV 问题优先启用 MRxDAV 日志</b>：
+该日志详细记录每次 PROPFIND 操作和错误，是 WebDAV 故障排查的关键工具</li>
+<li><b>文件名长度是 WebDAV 兼容性的隐藏陷阱</b>：
+NTFS 支持最长 255 字符文件名，但某些协议栈处理能力更小</li>
+<li>内容管理系统（CMS）生成的自动命名文件容易产生超长文件名，需要添加命名约束</li>
+<li>若无法重命名，可考虑通过 IIS 配置对超长文件名请求返回合适错误而非中断枚举</li>
+</ol>`,
+  },
+  "ts-stor-disk157": {
+    problem: `运行 VMware 虚拟机的 Windows Server 主机在事件日志中频繁出现 <b>EventID 15</b>
+和 <b>EventID 157</b>（磁盘被意外删除），引发管理员对磁盘健康状况的担忧，
+误以为存在磁盘故障或存储控制器问题。<br><br>
+事件详情：<code>EventID 15: The device, \\Device\\Harddisk&lt;N&gt;\\DR&lt;N&gt;, is not ready for access yet.</code>
+<code>EventID 157: Disk &lt;N&gt; has been surprise removed.</code><br><br>
+这些事件在 VMware 执行<b>静默快照（Quiesced Snapshot）</b>时定期出现，
+频率与 VMware 快照调度一致，但管理员不了解两者的关联关系。`,
+    investigation: `关联 VMware 快照与磁盘事件：<br><br>
+<ol>
+<li>记录 EventID 15/157 出现的时间点</li>
+<li>查看 VMware vCenter 或 ESXi 的快照作业日志，对比时间戳</li>
+<li>发现完全吻合：每次静默快照触发时，Windows 事件日志中就出现 EventID 15/157</li>
+<li>分析 VMware 静默快照的工作原理：
+<ul>
+<li>VMware Tools 通知 Windows 进入 VSS 静默状态</li>
+<li>ESXi 在 VM 内存和磁盘状态一致时，热移除（Hot-Remove）快照磁盘，记录快照点</li>
+<li>快照完成后，快照磁盘被热插回（Hot-Add）</li>
+</ul></li>
+<li>Windows 看到磁盘 Hot-Remove 就记录 EventID 157（设备意外移除），
+Hot-Add 时记录设备出现事件。这是<b>正常的 VMware 快照流程</b>，非故障。</li>
+</ol>
+根本原因：VMware 静默快照通过热插拔快照磁盘实现，Windows 操作系统层面观察到磁盘移除/加入，
+记录相应事件，属于预期行为。`,
+    solution: `无需操作 —— 这是预期行为：<br><br>
+<ol>
+<li><b>向管理员确认</b>：EventID 15/157 与 VMware 静默快照直接对应，是正常现象，不代表磁盘故障</li>
+<li><b>抑制告警误报</b>：如果监控系统对 EventID 157 触发告警，
+在告警规则中添加过滤条件：事件与 VMware 快照时间窗口（±2 分钟）重合时忽略</li>
+<li><b>确认 VMware Tools 版本最新</b>：旧版 VMware Tools 可能导致快照期间 I/O 超时，
+更新到最新版本可减少快照对 Windows 的影响</li>
+<li>如果快照期间观察到真实的 I/O 错误（超时 &gt; 30 秒），则另当别论</li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>EventID 157"磁盘意外移除"不总代表磁盘故障</b>：
+VMware 快照、在线磁盘迁移、存储多路径切换等正常操作都可能触发此事件</li>
+<li><b>事件时间戳与基础设施操作的相关性分析是关键</b>：
+将磁盘事件与 VMware/存储操作日志对比，通常可以快速识别误报</li>
+<li><b>VMware 静默快照对 Windows 的影响是已知且被接受的</b>：
+VSS + Hot-Remove 是 VMware 快照一致性的标准实现方式</li>
+<li>监控系统应区分"预期的临时磁盘移除"和"真实磁盘故障"，避免过多告警疲劳</li>
+<li>VMware Tools 升级是维护 VMware 环境健康度的重要常规任务</li>
+</ol>`,
+  },
+  "ts-stor-efi": {
+    problem: `管理员需要扩展系统盘（C 盘），但 C 盘后面紧跟着的是 <b>EFI 系统分区</b>，
+磁盘管理器（Disk Management）和 diskpart 都无法直接向右扩展 C 盘，
+因为 EFI 分区占据了 C 盘右侧的空间，且 EFI 分区不能简单删除。<br><br>
+典型磁盘布局：<code>[C: 100GB][EFI 100MB][Recovery 500MB][Unallocated 200GB]</code><br><br>
+目标：将 200GB 未分配空间合并到 C 盘，需要移动或重建 EFI 和恢复分区。<br><br>
+直接删除 EFI 分区会导致系统无法启动，需要在 WinPE 环境下操作，
+并确保重建的 EFI 分区使用正确的分区 GUID 和属性。`,
+    investigation: `操作前分析：<br><br>
+<ol>
+<li>记录当前分区布局：<code>diskpart &gt; list disk &gt; select disk 0 &gt; list partition</code></li>
+<li>记录各分区属性（重点：EFI 分区的 GUID 和 GPT 属性）：
+<code>detail partition</code></li>
+<li>EFI 分区必须属性：<br>
+  分区类型 GUID: <code>C12A7328-F81F-11D2-BA4B-00A0C93EC93B</code><br>
+  分区属性: Required=Yes（系统必需）</li>
+<li>恢复分区 GUID: <code>DE94BBA4-06D1-4D40-A16A-BFD50179D6AC</code></li>
+<li>制作 WinPE 启动 U 盘（使用 Windows ADK 中的 MakeWinPEMedia）</li>
+</ol>`,
+    solution: `WinPE 下重建 EFI 和恢复分区的步骤：<br><br>
+<ol>
+<li>从 WinPE U 盘启动</li>
+<li>备份当前 EFI 分区内容：<code>xcopy G:\\* X:\\efi_backup /e /h</code>（G 为 EFI 分区盘符）</li>
+<li>进入 diskpart：
+<pre>diskpart
+select disk 0
+select partition &lt;EFI-num&gt;
+delete partition override
+select partition &lt;Recovery-num&gt;
+delete partition override</pre></li>
+<li>扩展 C 盘（现在右侧全为未分配空间）：
+<pre>select partition &lt;C-num&gt;
+extend</pre></li>
+<li>在 C 盘右侧重建 EFI 分区（100MB）：
+<pre>create partition efi size=100
+format fs=fat32 quick
+assign letter=G</pre></li>
+<li>设置正确的分区 GUID 和属性（使用 gdisk 或 diskpart set id 命令）</li>
+<li>还原 EFI 内容：<code>xcopy X:\\efi_backup G:\\ /e /h</code></li>
+<li>重建恢复分区（类似步骤），重启验证系统正常启动</li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>EFI 分区必须使用特定 GUID 和属性</b>，否则系统无法启动，
+操作前必须记录原始 GUID 值</li>
+<li><b>WinPE 是进行系统分区操作的安全环境</b>：在线操作系统分区风险高，WinPE 提供完全控制</li>
+<li><b>EFI 在 C 盘右侧是 OEM 预装系统的常见布局</b>（与微软推荐布局不同），
+云 VM 和物理机升级场景中会遇到此问题</li>
+<li>操作前必须完整备份 EFI 分区内容（bootmgr.efi 等文件），误操作可使系统变砖</li>
+<li>BCDboot 工具（<code>bcdboot C:\\Windows /s G: /f UEFI</code>）可在 EFI 分区重建后恢复引导配置</li>
+</ol>`,
+  },
+  "ts-stor-trim": {
+    problem: `挂载了 NetApp ONTAP 存储的 Hyper-V 主机出现频繁的 <b>I/O 延迟</b>，
+虚拟机内部出现存储超时，Windows 事件日志记录 <b>EventID 129</b>
+（StorPort 重置请求）和 <b>EventID 9</b>（设备超时），
+但存储控制器和网络层面未发现明显瓶颈。<br><br>
+环境：虚拟机内 Windows 操作系统向虚拟磁盘发送 <b>SCSI UNMAP 命令</b>（对应 TRIM/DISCARD 操作），
+虚拟磁盘由 ONTAP 存储提供，ONTAP 在处理 UNMAP 命令时产生较大延迟，
+导致 I/O 队列积压，VM 内部报告 I/O 超时。`,
+    investigation: `诊断过程：<br><br>
+<ol>
+<li>捕获 StorPort 追踪：使用 StorPort ETW 追踪工具记录 I/O 命令序列</li>
+<li>在追踪数据中过滤 SCSI 命令码 <b>0x42</b>（UNMAP 命令），
+发现大量 UNMAP 请求，且每个 UNMAP 请求的响应时间远高于普通读写 I/O</li>
+<li>UNMAP 命令由 Windows 文件系统（NTFS）在删除文件或释放空间后发出，
+用于通知存储层可以回收相应物理块（精简配置场景下的空间回收）</li>
+<li>联系 NetApp 支持确认：ONTAP 处理 UNMAP 时会触发内部 Aggregate 级别的块回收操作，
+在高并发或大量删除场景下，UNMAP 处理延迟可达数百毫秒</li>
+<li>通过 ONTAP 管理界面确认当前 ONTAP 版本的 UNMAP 行为，
+发现 UNMAP 处理未经优化（异步队列不足）</li>
+</ol>
+根本原因：VM 工作负载产生大量 UNMAP 请求，ONTAP 处理 UNMAP 延迟高，导致 I/O 超时。`,
+    solution: `解决方案：<br><br>
+<b>方案一：在 ONTAP 侧禁用 UNMAP 处理</b>
+<ol>
+<li>将 ONTAP LUN 的 UNMAP（space-reuse）功能禁用：
+<pre>lun modify -path /vol/&lt;vol&gt;/&lt;lun&gt; -space-enable false</pre></li>
+<li>此操作使 ONTAP 忽略来自 VM 的 SCSI UNMAP 命令，不再进行块回收</li>
+<li>副作用：空间不会自动回收，精简配置的空间利用率优势减弱</li>
+</ol>
+<b>方案二：在 VM 侧禁用 TRIM</b>
+<ol>
+<li>在 Windows VM 内执行：<code>fsutil behavior set disabledeletenotify 1</code></li>
+<li>禁用后 NTFS 不再向存储层发送 TRIM/UNMAP 通知</li>
+</ol>
+<b>推荐</b>：两者都实施，并升级 ONTAP 到较新版本（UNMAP 性能有持续改进）。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>虚拟化环境中 SCSI UNMAP 可能引起性能问题</b>：
+精简配置的存储在处理 UNMAP 时有额外开销，高频删除工作负载（数据库、日志）会放大此问题</li>
+<li><b>EventID 129（StorPort 重置）是存储 I/O 超时的关键指示器</b>，需要与底层存储日志关联分析</li>
+<li><b>TRIM/UNMAP 是"好意带来坏影响"的典型案例</b>：
+设计目的是帮助存储回收空间，但在某些存储实现下性能代价过高</li>
+<li>在部署精简配置存储时，应提前测试 UNMAP 对存储性能的影响</li>
+<li>StorPort ETW 追踪是分析低层 SCSI 命令模式的最直接方法</li>
+</ol>`,
+  },
+  "ts-stor-vss": {
+    problem: `文件服务器的 <b>VSS 卷影副本（Volume Shadow Copy）</b>保留天数
+从正常的 20+ 天大幅缩短至约 3 天，导致用户无法通过"以前的版本"功能恢复几天前的文件，
+数据保护窗口严重不足。<br><br>
+环境：D 盘为 5.3TB 的文件服务器数据卷，卷影副本存储配置在 F 盘（专用卷影存储盘），
+最大存储限制设置为默认值（固定大小）。<br><br>
+故障分析：事件日志出现两类关键事件：
+<b>EventID 33</b>（最旧的卷影副本已被删除，为新副本腾出空间）
+和 <b>EventID 36</b>（卷影副本存储增长失败）。
+这表明文件服务器写入量远超预期，卷影副本存储空间被快速填满。`,
+    investigation: `分析根本原因：<br><br>
+<ol>
+<li>查看 VSS 当前状态：
+<pre>vssadmin list shadows /for=D:
+vssadmin list shadowstorage</pre>
+确认当前副本数量和存储使用量</li>
+<li>分析 EventID 33 和 36 的频率：
+<code>Get-WinEvent -LogName Application | Where-Object Id -in 33,36 | Group-Object Id</code>
+若每天都有 EventID 33，说明副本持续被删除</li>
+<li>评估文件变化量：VSS 卷影副本采用 Copy-on-Write 机制，
+只存储发生变化的数据块。文件变化越频繁，卷影副本占用空间越大</li>
+<li>D 盘（5.3TB 文件服务器）如果每天有大量用户修改文件，
+产生的差异块可能高达数百 GB，很快填满卷影存储</li>
+<li>确认 F 盘卷影存储的当前最大限制：<code>vssadmin list shadowstorage</code>，
+查看 Maximum Shadow Copy Storage space</li>
+</ol>
+根本原因：高写入量导致每天产生大量差异块，卷影存储快速填满，
+系统自动删除最旧副本为新副本腾出空间，压缩了保留期。`,
+    solution: `解决方案：增加卷影存储容量上限：<br><br>
+<ol>
+<li>评估 F 盘可用空间，确定可增加的最大存储量</li>
+<li>调整卷影存储最大值（示例增加到 500GB）：
+<pre>vssadmin resize shadowstorage /for=D: /on=F: /maxsize=500GB</pre></li>
+<li>同时增加最大卷影副本数量（默认 64，可增加至更高）：
+<pre>reg add "HKLM\\SYSTEM\\CurrentControlSet\\Services\\VSS\\Settings" /v MaxShadowCopies /t REG_DWORD /d 128 /f</pre></li>
+<li>监控 F 盘使用量，确保不超过 F 盘总容量的 80%</li>
+<li><b>补充措施</b>：配置更频繁的备份快照（如每天 3 次），减少每次快照的差异量</li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>EventID 33 = 卷影副本自动删除警报</b>，出现频率反映保留策略压力，
+每天出现说明存储严重不足</li>
+<li><b>卷影副本保留期由存储空间决定，不是由时间直接控制</b>：
+增加存储是延长保留期的根本方法</li>
+<li><b>高写入量服务器需要更大的卷影存储</b>：
+建议卷影存储大小 = 每日写入量 × 期望保留天数 × 1.2（安全余量）</li>
+<li>VSS 存储应部署在单独的磁盘（如 F 盘），
+避免与数据盘竞争 I/O，也便于独立监控和扩展</li>
+<li><code>vssadmin list shadowstorage</code> 应纳入每周巡检项目</li>
+</ol>`,
+  },
+  "ts-stor-wbadmin": {
+    problem: `使用 Windows 服务器备份（<b>wbadmin</b>）将数据备份到网络共享路径时，
+以 <b>SYSTEM 账户</b>运行的备份任务失败，提示"访问被拒绝"或"无法访问网络路径"。<br><br>
+故障场景：计划任务以 SYSTEM 账户运行 <code>wbadmin start backup -backuptarget:\\\\server\\backup</code>，
+虽然共享路径对 Administrators 组开放了读写权限，
+但 SYSTEM 账户无法访问该共享。<br><br>
+管理员尝试将 SYSTEM 账户加入本地 Administrators 组，问题依旧。
+原因是 SYSTEM 账户访问网络资源时，使用的不是本机的 SYSTEM 权限，
+而是<b>计算机账户（Computer Account）</b>进行 Kerberos 认证。`,
+    investigation: `认证机制分析：<br><br>
+<ol>
+<li>启用 SMB 日志确认认证失败：
+<code>Get-WinEvent -LogName "Microsoft-Windows-SMBServer/Audit" | Where-Object Message -like "*AccessDenied*"</code></li>
+<li>查看拒绝记录，确认访问账户为 <code>DOMAIN\\ComputerName$</code>（计算机账户格式，以 $ 结尾）</li>
+<li>在网络共享的安全权限中搜索 <code>ComputerName$</code>：不在访问列表中</li>
+<li>理解 Windows 认证原则：SYSTEM 账户在访问<b>网络资源</b>时，
+使用计算机账户（Machine Account）进行 Kerberos 认证，
+这与本地 SYSTEM 权限完全不同</li>
+<li>验证：将 ComputerName$ 加入共享 ACL 后，测试备份 —— 成功</li>
+</ol>
+根本原因：SYSTEM 访问网络共享使用计算机账户认证，共享 ACL 中没有授权计算机账户。`,
+    solution: `修复步骤：<br><br>
+<ol>
+<li>在目标网络共享服务器上，将源机器的计算机账户加入共享权限：
+<ul>
+<li>共享权限：添加 <code>DOMAIN\\BackupSourceMachine$</code>，赋予"完全控制"</li>
+<li>NTFS 权限：在共享目录属性 &gt; 安全中，添加 <code>DOMAIN\\BackupSourceMachine$</code>，
+赋予读取/写入权限</li>
+</ul></li>
+<li>重新运行备份任务，确认成功</li>
+</ol>
+<b>搜索计算机账户的方法</b>：<br>
+<code>Get-ADComputer -Filter "Name -eq 'BackupSourceMachine'"</code>
+确认账户格式为 <code>Domain\\BackupSourceMachine$</code>（末尾有 $）`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>SYSTEM 账户访问网络资源 = 计算机账户认证</b>：
+这是 Windows 认证的基本原则，但经常令管理员困惑</li>
+<li><b>计算机账户格式</b>：域名 + 反斜杠 + 计算机名 + $ 号，例如 <code>CONTOSO\\WebServer01$</code></li>
+<li><b>计划任务以 SYSTEM 运行访问网络资源</b>是高频场景，
+备份、配置管理、监控代理都可能遇到此问题</li>
+<li>排查访问拒绝时，SMB 服务器的审计日志（EventID 5140/5145）会显示实际访问账户</li>
+<li>将计算机账户加入共享 ACL 时，需同时处理共享权限和 NTFS 权限</li>
+</ol>`,
+  },
+  "ts-tool-hvcluster": {
+    problem: `Windows Server Hyper-V 集群故障排查涉及多种日志来源（Windows 事件日志、
+集群日志、Hyper-V 日志、网络追踪等），手动逐一分析耗时数小时且容易遗漏关键信息。<br><br>
+需要一个自动化工具，能够快速分析集群日志、关联多个日志来源、
+识别故障模式，并给出结构化的诊断报告。`,
+    investigation: `需求分析：<br><br>
+<ol>
+<li>集群故障排查日志来源包括：
+<ul>
+<li>Windows 事件日志（System、Application、FailoverClustering）</li>
+<li>集群日志（cluster.log）</li>
+<li>Hyper-V 主机事件日志（Microsoft-Windows-Hyper-V-*）</li>
+<li>网络追踪（ETL 文件、pcap）</li>
+<li>PowerShell 输出（Get-ClusterLog、Get-ClusterNode 等）</li>
+</ul></li>
+<li>工具需要能够理解 Windows 集群的复杂故障模式，
+如仲裁丢失、节点隔离、存储故障切换等</li>
+<li>GitHub Copilot CLI 的自定义 Agent 框架提供了灵活的 AI 分析能力</li>
+</ol>`,
+    solution: `<b>HyperVCluster-Log-Assistant</b> —— Copilot CLI 自定义 Agent<br><br>
+该工具作为 GitHub Copilot CLI 的自定义 Agent（custom agent）部署，
+专门用于 Hyper-V 集群日志分析：<br><br>
+<b>核心能力：</b>
+<ol>
+<li>接受粘贴的日志片段（事件日志、cluster.log、PowerShell 输出）</li>
+<li>自动识别关键错误事件和时间轴</li>
+<li>关联多来源日志，找出故障的根本原因链</li>
+<li>生成结构化的诊断报告（症状 / 根因 / 建议操作）</li>
+</ol>
+<b>触发词：</b>"analyze this log"、"cluster log"、"什么导致了集群故障"<br><br>
+<b>使用方式：</b>在 Copilot CLI 中呼叫该 Agent，粘贴相关日志内容即可获得分析结果。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>AI 辅助日志分析可以大幅提升排查效率</b>：
+结构化的专家提示词（system prompt）让 AI 具备领域专业知识</li>
+<li><b>Copilot CLI 自定义 Agent 框架</b>非常适合构建专用排查助手，
+可以针对特定产品领域（集群、网络、存储）定制分析模式</li>
+<li>日志分析工具的价值在于"关联"能力：单一日志往往只是症状，
+跨日志来源的时间线关联才能找到根因</li>
+<li>工具本身也是知识沉淀：每次排查积累的模式可以更新到 Agent 的提示词中</li>
+</ol>`,
+  },
+  "ts-tool-smbperf": {
+    problem: `SMB 文件传输性能问题（传输慢、延迟高、间歇性卡顿）的排查需要同时分析
+<b>Wireshark 网络数据包</b>和 <b>Process Monitor 文件系统事件</b>，
+人工对比两个工具的输出效率低，难以快速定位瓶颈是在网络层、SMB 协议层还是文件系统层。`,
+    investigation: `工具需求分析：<br><br>
+<ol>
+<li>SMB 性能问题的典型诊断维度：
+<ul>
+<li>网络层：丢包、重传、延迟（Wireshark）</li>
+<li>SMB 协议层：命令延迟、读写块大小、Session 多路复用（Wireshark smb2 过滤）</li>
+<li>服务器响应层：SMB2 Response 时间（Wireshark smb2.time_delta）</li>
+<li>文件系统层：文件锁争用、I/O 大小、访问路径（ProcMon）</li>
+</ul></li>
+<li>需要工具能够自动解析 Wireshark pcap 输出和 ProcMon CSV 导出，
+关联时间戳，识别性能异常模式</li>
+</ol>`,
+    solution: `<b>SMBPerfAnalyzer</b> —— Copilot CLI 自定义 Agent<br><br>
+该 Agent 专注于 SMB/DFS 性能分析：<br><br>
+<b>核心能力：</b>
+<ol>
+<li><b>Wireshark 分析</b>：解析 tshark 输出（<code>smb2.cmd==8</code> 读取命令过滤），
+计算响应时间分布，识别高延迟操作</li>
+<li><b>ProcMon 分析</b>：解析文件系统事件 CSV，
+识别 ACCESS DENIED、SHARING VIOLATION 等错误，分析文件访问路径</li>
+<li><b>性能基线对比</b>：Win11 vs Win10 SMB 行为差异分析</li>
+<li><b>DFS 路径解析</b>：追踪 DFS referral 的性能影响</li>
+</ol>
+<b>典型使用场景：</b>用户反映文件拷贝到 SMB 共享很慢，
+使用 robocopy 测量后粘贴输出，Agent 分析并建议是否需要捕获 Wireshark。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>SMB 性能排查需要多层次分析</b>：
+快速确认网络层正常后，重点分析 SMB 协议层的命令模式和响应时间</li>
+<li><b>Wireshark 过滤器 <code>smb2.cmd==8</code></b> 过滤 SMB2 Read 请求，
+结合 <code>smb2.time_delta</code> 分析服务器响应时间，是 SMB 性能分析的标准方法</li>
+<li><b>robocopy /MT:1 /L 模式</b>（单线程列表模式）可以排除多线程因素，
+精准测量基础传输性能</li>
+<li>Win11 和 Win10 在 SMB 客户端行为上存在差异（如读取块大小），
+性能对比测试应控制操作系统变量</li>
+</ol>`,
+  },
+  "ts-tool-stacky": {
+    problem: `Azure Local（原 Azure Stack HCI）工程师和支持人员需要快速查找：
+<ul>
+<li>Microsoft Learn 上的产品文档和最新功能说明</li>
+<li>内部 GitHub 仓库中的已知问题和解决方案</li>
+<li>IcM（内部事件管理）系统中的相关故障案例</li>
+</ul>
+三个来源分散，人工逐一搜索效率低，且 Microsoft Learn 内容更新频繁，
+需要一个集成搜索和 AI 分析的工具。`,
+    investigation: `工具设计需求：<br><br>
+<ol>
+<li>需要同时搜索多个知识源并整合结果</li>
+<li>Azure Local 是高度技术性产品（HCI、S2D、Arc、Azure Bridge），
+通用 AI 对产品细节了解有限，需要借助实时搜索补充</li>
+<li>GPT 5.2 模型具备高质量的技术推理能力，
+结合 Retrieval-Augmented Generation（RAG）可以大幅提升准确性</li>
+</ol>`,
+    solution: `<b>Stacky</b> —— Azure Local 专用 AI 助手（Copilot CLI 自定义 Agent）<br><br>
+<b>核心特性：</b>
+<ol>
+<li><b>三源搜索整合</b>：同时查询 Microsoft Learn、内部 GitHub 仓库、IcM 故障案例库</li>
+<li><b>GPT 5.2 模型</b>：使用最新大语言模型进行语义理解和回答生成</li>
+<li><b>RAG 架构</b>：搜索结果作为上下文注入模型，确保回答基于真实文档</li>
+<li><b>Azure Local 专用知识</b>：系统提示词包含产品架构、常见故障模式等专业背景</li>
+</ol>
+<b>使用场景示例：</b>
+<ul>
+<li>"Stacky，Azure Local 23H2 的网络 Intent 怎么配置？"</li>
+<li>"最近 IcM 里有没有关于 S2D 性能下降的相关案例？"</li>
+<li>"Azure Local 注册失败 AADSTS7000118 是什么原因？"</li>
+</ul>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>产品专用 AI 助手比通用 AI 更高效</b>：
+定制化的搜索范围和系统提示词让 AI 在特定领域的回答质量远高于通用问答</li>
+<li><b>多源搜索整合是关键能力</b>：
+单一文档来源往往不完整，结合官方文档 + 内部经验 + 真实案例才能覆盖复杂问题</li>
+<li><b>RAG 比单纯依赖模型训练数据更可靠</b>：
+产品文档更新快，RAG 确保回答基于最新内容，避免过时信息</li>
+<li>Copilot CLI 的自定义 Agent 框架为构建此类专用工具提供了低成本、高灵活度的平台</li>
+</ol>`,
+  },
+  "ts-tool-tsbuddy": {
+    problem: `技术支持工程师在排查复杂故障时，需要：
+<ol>
+<li>快速理解客户描述的症状</li>
+<li>系统性地缩小可能的根因范围</li>
+<li>知道下一步应该收集什么数据</li>
+</ol>
+传统排查依赖个人经验，新工程师缺乏系统性排查框架，
+资深工程师面对陌生领域也需要快速参考知识库。`,
+    investigation: `工具设计分析：<br><br>
+<ol>
+<li>有效的故障排查遵循三阶段工作流：
+<ul>
+<li><b>阶段一：症状分析</b> — 理解客户描述，提取关键特征</li>
+<li><b>阶段二：假设生成</b> — 基于症状生成可能的根因假设，按概率排序</li>
+<li><b>阶段三：验证计划</b> — 对每个假设制定验证步骤和数据收集方案</li>
+</ul></li>
+<li>覆盖 Windows、Azure、M365、基础设施、网络、安全等多个产品领域</li>
+<li>工具需要能够理解自然语言描述的故障症状，而不是严格的关键词匹配</li>
+</ol>`,
+    solution: `<b>TroubleshootBuddy</b> —— 资深技术支持 AI Agent（Copilot CLI 自定义 Agent）<br><br>
+<b>核心能力：</b>
+<ol>
+<li><b>三阶段排查工作流</b>：症状分析 → 假设概率排序 → 验证步骤生成</li>
+<li><b>多产品覆盖</b>：Windows、Azure（所有主要服务）、M365、网络、安全</li>
+<li><b>概率驱动</b>：对每个可能的根因给出置信度（如"可能性 70%：证书过期"）</li>
+<li><b>数据收集指导</b>：精确告知下一步需要收集哪些日志或运行哪些命令</li>
+</ol>
+<b>典型使用示例：VPN 排查</b><br>
+用户描述："客户报告 VPN 连接频繁断开，大约每 30 分钟一次"<br>
+TroubleshootBuddy 响应：列出可能原因（NAT 超时、Keep-alive 配置、证书有效期等），
+按概率排序，并为每个原因提供验证命令。<br><br>
+<b>内部文档链接</b>：详细使用说明参见内部 Wiki 的 TroubleshootBuddy 页面。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>结构化排查框架比随机排查效率高 3-5 倍</b>：
+有假设、有优先级、有验证步骤的排查可以避免无谓的数据收集</li>
+<li><b>AI 在"已知问题模式匹配"上表现出色</b>：
+训练数据中包含大量 Windows/Azure 故障案例，能快速识别常见故障模式</li>
+<li><b>工具的价值不在于替代工程师判断，而在于提升速度</b>：
+AI 给出假设列表，工程师根据现场经验判断优先级，形成最佳协作模式</li>
+<li>自定义 Agent 的系统提示词应包含"我是资深工程师，请直接给出技术建议"等角色设定，
+避免 AI 过于保守或模糊的回答</li>
+</ol>`,
+  },
+  "ts-wifi-cert": {
+    problem: `企业 Wi-Fi 使用 802.1X EAP 认证，CA 证书到期后更换了新的 CA，
+但 Wi-Fi 客户端连接失败。NPS 服务器日志显示证书验证成功，
+但客户端侧报告"服务器证书不受信任"。<br><br>
+调查发现，Windows Wi-Fi 配置文件（WLAN Profile）中有一个 <b>CAHashList</b> 字段，
+存储了受信任的 CA 证书哈希列表。
+新 CA 证书使用不同的颁发机构，导致新颁发机构的哈希值不在 CAHashList 中，
+客户端 EAP 证书过滤逻辑拒绝了新 CA 签发的服务器证书，
+即使该证书已安装在客户端的受信任根存储中也无效。`,
+    investigation: `诊断步骤：<br><br>
+<ol>
+<li>在客户端启用 WLAN 自动配置日志：
+<code>netsh wlan set tracing mode=yes</code>，复现故障后停止：
+<code>netsh wlan set tracing mode=no</code></li>
+<li>分析追踪日志，在 <code>C:\\ProgramData\\Microsoft\\wlansvc\\Logs\\</code> 中查找 EAP 错误</li>
+<li>关键错误信息：<code>EAP_E_CERT_NOT_FOUND</code> 或 "certificate issuer not trusted"</li>
+<li>检查当前 Wi-Fi 配置文件中的 CAHashList：
+<pre>netsh wlan export profile name="WiFiProfileName" folder=C:\\temp
+&lt;CAHashList&gt; ... &lt;/CAHashList&gt;</pre>
+比对 CAHashList 中的哈希与新 CA 证书的哈希</li>
+<li>获取新 CA 证书的 Thumbprint：<code>Get-ChildItem Cert:\\LocalMachine\\Root | Where-Object Subject -like "*NewCA*"</code></li>
+</ol>
+根本原因：CAHashList 记录了旧 CA 的哈希，新 CA 哈希不在列表中，EAP 拒绝证书。`,
+    solution: `解决方案：更新 Wi-Fi 配置文件中的 CAHashList<br><br>
+<ol>
+<li>导出当前 Wi-Fi 配置文件 XML：
+<code>netsh wlan export profile name="WiFiProfileName" folder=C:\\temp</code></li>
+<li>编辑 XML 文件，在 <code>&lt;CAHashList&gt;</code> 中添加新 CA 证书的哈希值：
+<pre>&lt;CAHashList Enabled="true"&gt;
+  &lt;CAHash&gt;旧CA哈希&lt;/CAHash&gt;
+  &lt;CAHash&gt;新CA哈希&lt;/CAHash&gt;
+&lt;/CAHashList&gt;</pre></li>
+<li>通过 Intune 或 GPO 将更新后的 WLAN Profile XML 下发到所有客户端</li>
+<li>或在过渡期将 CAHashList 的 Enabled 属性设为 false（禁用哈希过滤），
+待所有客户端更新后重新启用</li>
+<li>验证：客户端重新连接 Wi-Fi，确认认证成功</li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>CAHashList 是企业 Wi-Fi 证书更换的常见陷阱</b>：
+证书已更新、已受信任，但配置文件的固化哈希列表导致 EAP 拒绝</li>
+<li><b>Wi-Fi 配置文件包含证书绑定</b>：CA 更换时不仅要更新证书，
+还要同步更新所有 WLAN Profile 配置</li>
+<li>CA 证书更换的完整检查清单：
+<ul>
+<li>NPS 服务器证书更新</li>
+<li>客户端受信任根 CA 存储更新</li>
+<li>Wi-Fi 配置文件 CAHashList 更新</li>
+<li>有线 802.1X 配置文件（如有）同步更新</li>
+</ul></li>
+<li>建议在 CA 证书到期前 90 天开始规划更换，给予足够时间测试和分批部署</li>
+</ol>`,
+  },
+  "ts-wifi-id-privacy": {
+    problem: `企业 Wi-Fi 使用 PEAP（Protected EAP）进行 802.1X 认证，
+配置了 <b>EnableIdentityPrivacy=true</b> 以隐藏真实用户身份，
+但同时 <b>anonymousUserName</b> 字段为空。<br><br>
+结果：Wi-Fi 认证失败。NPS 日志显示收到了格式为
+<code>host/&lt;empty&gt;.CNAD.xx.xx</code> 的 Outer Identity，
+NPS 策略无法匹配此格式的身份，导致认证请求被拒绝。<br><br>
+分析：当 anonymousUserName 为空时，PEAP 客户端构造 Outer Identity 为
+<code>host/[空字符串].域名</code>，这是一个无效的身份格式。`,
+    investigation: `诊断过程：<br><br>
+<ol>
+<li>在 NPS 服务器上启用会计日志并查看拒绝的认证请求：
+<code>Get-WinEvent -LogName "Security" | Where-Object Id -eq 6273</code>（EventID 6273 = NPS 拒绝）</li>
+<li>在 EventID 6273 中查看 Called-Station-Id、Calling-Station-Id 和 <b>Account-Name</b> 字段，
+发现 Account-Name 为 <code>host/.CNAD.xx.xx</code>（注意主机名部分为空）</li>
+<li>检查客户端 Wi-Fi 配置文件 XML：
+<pre>&lt;EAPConfig&gt;&lt;PEAP&gt;
+  &lt;EnableIdentityPrivacy&gt;true&lt;/EnableIdentityPrivacy&gt;
+  &lt;AnonymousUserName&gt;&lt;/AnonymousUserName&gt;  &lt;!-- 空！ --&gt;</pre></li>
+<li>查阅 Microsoft 文档：anonymousUserName 为空时，行为未定义（implementation-specific），
+Windows 实现构造了 <code>host/[empty].domain</code> 格式</li>
+</ol>
+根本原因：anonymousUserName 为空导致 PEAP 构造无效的 Outer Identity。`,
+    solution: `修复方案：在配置文件中设置 anonymousUserName<br><br>
+<ol>
+<li>更新 Wi-Fi 配置文件 XML，为 anonymousUserName 设置一个有效值：
+<pre>&lt;EnableIdentityPrivacy&gt;true&lt;/EnableIdentityPrivacy&gt;
+&lt;AnonymousUserName&gt;anonymous&lt;/AnonymousUserName&gt;</pre></li>
+<li>常用的匿名用户名值：<code>anonymous</code>、<code>anonymous@domain.com</code></li>
+<li>NPS 策略应配置为接受匿名标识的外层身份（Outer Identity），
+真实身份验证在 PEAP 内层的 TLS 隧道中进行</li>
+<li>通过 Intune / GPO 将更新后的配置文件下发，测试认证成功</li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>EnableIdentityPrivacy=true 时必须同时设置 anonymousUserName</b>：
+两者是配对选项，单独开启 IdentityPrivacy 但不设置匿名用户名会导致认证失败</li>
+<li><b>PEAP Outer Identity 格式必须是 NPS 策略能匹配的有效格式</b>：
+检查 NPS 网络策略中的条件，确保匿名标识符与 Outer Identity 一致</li>
+<li>EventID 6273（NPS 拒绝）中的 Account-Name 字段是诊断 EAP 身份问题的最直接证据</li>
+<li>企业 Wi-Fi 配置文件中的空字段不等于"不配置"，
+某些字段为空时会触发特定的默认行为（如此案例中的 host/ 前缀）</li>
+</ol>`,
+  },
+  "ts-wifi-nps-upgrade": {
+    problem: `企业需要将 <b>NPS（Network Policy Server）服务器</b>从 Windows Server 2016
+升级到 Windows Server 2025，但直接原地升级（in-place upgrade）存在风险：
+升级期间 Wi-Fi 和 VPN 认证服务中断，升级后证书绑定可能丢失，
+以及多因素认证（MFA）扩展与新版 NPS 的兼容性问题。<br><br>
+需要一个安全的迁移指南，实现零停机或最短停机时间的 NPS 升级。`,
+    investigation: `升级前评估：<br><br>
+<ol>
+<li><b>证书绑定评估</b>：NPS 服务器证书通过 RADIUS 端口绑定，
+升级后需重新确认证书绑定：<code>netsh http show sslcert</code></li>
+<li><b>MFA 扩展兼容性</b>：检查当前 NPS MFA 扩展（如 Azure AD MFA Extension）
+是否支持 Windows Server 2025，查阅 Microsoft 兼容性矩阵</li>
+<li><b>当前 NPS 配置备份</b>：
+<code>netsh nps export filename=C:\\nps_backup.xml exportPSK=YES</code></li>
+<li><b>RADIUS 客户端清单</b>：列出所有 Wi-Fi 控制器、VPN 设备配置的 RADIUS 服务器 IP，
+升级期间这些设备需要切换到备用 NPS</li>
+</ol>`,
+    solution: `<b>并行部署 + 切换方案（零停机）：</b><br><br>
+<ol>
+<li>部署新的 Windows Server 2025 NPS 服务器（保持旧 NPS 继续运行）</li>
+<li>在新 NPS 上导入配置：<code>netsh nps import filename=C:\\nps_backup.xml</code></li>
+<li>安装和配置 MFA 扩展（确认兼容性后安装新版本）</li>
+<li>绑定 RADIUS 服务器证书：
+<pre>netsh http add sslcert ipport=0.0.0.0:443 certhash=&lt;thumbprint&gt; appid={...}</pre></li>
+<li>在 Wi-Fi 控制器上添加新 NPS 作为<b>辅助 RADIUS 服务器</b>，
+将少量 SSID 或用户组路由到新 NPS 进行测试</li>
+<li>验证认证成功后，逐步将所有流量切换到新 NPS</li>
+<li>旧 NPS 保留 2-4 周作为回退选项，确认新 NPS 稳定后退役</li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>NPS 升级必须采用并行部署方式</b>：
+RADIUS 认证是网络基础设施的核心，停机影响所有使用 802.1X 的设备</li>
+<li><b>证书绑定是升级后最常见的故障点</b>：
+新服务器部署后必须立即验证证书绑定，并测试完整的 EAP 认证流程</li>
+<li><b>MFA 扩展兼容性需提前验证</b>：
+第三方 MFA 扩展可能有操作系统版本要求，升级前必须确认</li>
+<li>建议在非高峰时段执行切换操作，并在初始切换后保持值班，
+快速响应认证异常</li>
+<li>NPS 配置定期备份（每月）是灾难恢复的基础</li>
+</ol>`,
+  },
+  "ts-wifi-wired-gpo": {
+    problem: `企业部署了 <b>Credential Guard</b>（凭据保护），
+有线网络的 802.1X 认证使用 MSCHAPv2，
+结果导致两个问题同时出现：<br><br>
+<ol>
+<li><b>Credential Guard 与 MSCHAPv2 不兼容</b>：
+Credential Guard 要求 NTLMv2，而 MSCHAPv2 依赖 NT Hash，
+启用 Credential Guard 后 NT Hash 无法访问，MSCHAPv2 认证失败</li>
+<li><b>有线网络 GPO 策略不生效</b>：
+有线 802.1X 的 GPO 配置（通过 WIRED AutoConfig 策略分发）
+在客户端未正常应用，导致有线认证配置缺失</li>
+</ol>`,
+    investigation: `双问题诊断：<br><br>
+<b>问题一：Credential Guard + MSCHAPv2</b>
+<ol>
+<li>查看 Event Log: <code>Microsoft-Windows-WinLogon</code> 和 NTLM 相关日志</li>
+<li>确认 Credential Guard 状态：<code>msinfo32 &gt; 系统摘要 &gt; 基于虚拟化的安全服务运行中</code></li>
+<li>Microsoft 文档明确说明：启用 Credential Guard 后，NTLM/MSCHAPv2 无法使用缓存的 NT Hash 进行认证</li>
+</ol>
+<b>问题二：有线 GPO 不生效</b>
+<ol>
+<li>运行 <code>gpresult /h C:\\gpo_report.html</code> 检查有线 AutoConfig 策略的应用状态</li>
+<li>确认 <b>Wired AutoConfig 服务</b>是否运行：<code>Get-Service dot3svc</code></li>
+<li>检查有线 GPO 模板路径和权限</li>
+</ol>`,
+    solution: `两个问题的独立解决方案：<br><br>
+<b>方案一：解决 Credential Guard + MSCHAPv2 冲突</b>
+<ol>
+<li><b>推荐方案</b>：迁移到 EAP-TLS（基于证书的认证），完全消除对 NT Hash 的依赖</li>
+<li><b>临时方案</b>：在必须保留 MSCHAPv2 的场景下，对特定设备禁用 Credential Guard：
+<code>reg add HKLM\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard /v EnableVirtualizationBasedSecurity /t REG_DWORD /d 0 /f</code></li>
+</ol>
+<b>方案二：修复有线 GPO 不生效</b>
+<ol>
+<li>确认 Wired AutoConfig 服务已启动并设为自动：
+<code>Set-Service dot3svc -StartupType Automatic; Start-Service dot3svc</code></li>
+<li>检查并修复 GPO 有线策略模板（确保策略路径正确）</li>
+<li>强制刷新组策略：<code>gpupdate /force</code></li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>Credential Guard 与 MSCHAPv2 硬性不兼容</b>：
+这是设计决定，非 bug。启用 Credential Guard 时必须迁移到证书认证（EAP-TLS）</li>
+<li><b>EAP-TLS 是企业 802.1X 的最佳实践</b>：
+基于证书认证不依赖密码哈希，安全性更高，也兼容 Credential Guard</li>
+<li><b>有线 802.1X 依赖 dot3svc 服务</b>（Wired AutoConfig），
+该服务默认可能未启动，导致有线认证 GPO 策略无法应用</li>
+<li>部署 Credential Guard 前必须审计所有认证协议，
+确保不依赖 NTLM/MSCHAPv2 的任何场景</li>
+</ol>`,
+  },
+  "ts-other-locator-icon": {
+    problem: `用户发现 Windows 任务栏出现<b>蓝色定位图标</b>（位置访问标识），
+表示某个应用正在访问设备位置信息，但用户并未主动使用任何地图或位置服务应用，
+引发用户对隐私安全的担忧。<br><br>
+故障场景：安装了公司 IT 工具 <code>CorpLinkCloseTool.exe</code> 的 Windows 10/11 设备，
+在工具静默运行时，任务栏周期性出现蓝色定位图标，持续约数秒后消失。
+用户询问：是否有恶意软件在访问位置信息？公司工具是否违反隐私政策？`,
+    investigation: `排查过程：<br><br>
+<ol>
+<li>打开隐私设置 &gt; 位置 &gt; 查看最近访问位置的应用，发现记录为 <code>cmd.exe</code></li>
+<li>这一发现令人困惑：cmd.exe 本身没有理由访问位置信息</li>
+<li>使用 Process Monitor 过滤 cmd.exe 的 Process Create 事件，
+追踪到 CorpLinkCloseTool.exe 启动 cmd.exe 并执行命令</li>
+<li>分析 CorpLinkCloseTool.exe 的行为：启动 cmd.exe 执行 <code>netsh wlan show interfaces</code></li>
+<li>关键发现：<code>netsh wlan show interfaces</code> 命令读取当前连接 Wi-Fi 的 <b>BSSID</b>（接入点 MAC 地址）</li>
+<li>Windows 将读取 BSSID 的行为归类为"访问位置信息"（因为 BSSID 可用于 Wi-Fi 定位），
+因此触发位置访问标识，并记录调用进程（cmd.exe）</li>
+</ol>
+根本原因：netsh wlan show interfaces 读取 BSSID 被 Windows 视为位置信息访问，记录到调用该命令的进程（cmd.exe）。`,
+    solution: `处理方案：<br><br>
+<b>如果蓝色定位图标不影响业务：</b>
+<ol>
+<li>向用户说明：这是 CorpLinkCloseTool 读取 Wi-Fi BSSID 的预期行为，非安全威胁</li>
+<li>在隐私设置中确认位置权限仅授予必要应用</li>
+</ol>
+<b>如果需要消除定位图标：</b>
+<ol>
+<li>修改 CorpLinkCloseTool.exe，改用不触发位置权限的方法获取 Wi-Fi 信息：
+<code>Get-NetConnectionProfile</code> 不读取 BSSID，不触发位置访问</li>
+<li>或通过应用清单（App Manifest）声明工具的位置权限需求，使图标出现在工具自身而非 cmd.exe</li>
+<li>若工具无法修改，通过 GPO 隐藏位置访问托盘图标（非推荐）</li>
+</ol>`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>读取 Wi-Fi BSSID 触发 Windows 位置权限标记</b>：
+<code>netsh wlan show interfaces</code>、<code>WlanGetNetworkBssList</code> API 等读取 BSSID 的操作
+均被 Windows 归类为位置信息访问</li>
+<li><b>位置图标显示的进程可能是中间进程</b>：实际触发位置访问的是 netsh，
+但 Windows 记录的是调用 netsh 的父进程（cmd.exe），导致排查时容易误判</li>
+<li><b>Process Monitor 是追踪"谁启动了什么"的最佳工具</b></li>
+<li>企业工具开发应遵循最小权限原则，避免不必要地读取 BSSID</li>
+<li>如果工具确实需要 BSSID，应明确声明位置权限，并向用户解释用途</li>
+</ol>`,
+  },
+  "ts-clu-fileshare-fail": {
+    problem: `在 Windows Server 故障转移集群上创建<b>集群文件共享</b>时失败，
+错误提示"拒绝访问"或"无法连接到集群"。从集群节点使用 UNC 路径访问时，
+出现"用户名或密码不正确"。<br><br>
+深层原因：集群服务创建共享时需要通过网络路径访问自身（Loopback 访问），
+此时 Kerberos 认证依赖正确的 SPN（Service Principal Name）解析。
+如果 DNS 后缀搜索顺序配置不当（父域后缀排在子域后缀前面），
+客户端可能将 NetBIOS 名称解析为父域的 FQDN，
+导致生成错误的 Kerberos SPN，触发 NTLM 降级认证，
+而 NTLM Loopback 认证默认被 Loopback Protection 策略阻断，最终访问失败。`,
+    investigation: `详细排查过程：<br><br>
+<ol>
+<li>查看集群创建日志，发现错误码 <code>0xC000005E</code>（无可用登录服务器）或 <code>0xC0000035</code></li>
+<li>在集群节点运行 <code>klist get host/&lt;ClusterName&gt;</code>，
+发现获取到的 Kerberos ticket SPN 为 <code>host/&lt;ClusterName&gt;.&lt;ParentDomain&gt;</code>
+而非 <code>host/&lt;ClusterName&gt;.&lt;ChildDomain&gt;</code></li>
+<li>检查 DNS 后缀搜索顺序：
+<code>HKLM\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\SearchList</code>
+发现顺序为：<code>parent.com, child.parent.com</code>（父域在前）</li>
+<li>正确顺序应为：<code>child.parent.com, parent.com</code>（子域在前）</li>
+<li>确认 Loopback Check 配置：
+<code>HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa\\DisableLoopbackCheck</code> 为 0（启用保护）</li>
+</ol>
+根本原因：DNS 后缀顺序导致子域机器名解析到父域 FQDN，Kerberos SPN 不匹配，降级 NTLM 被 Loopback 阻断。`,
+    solution: `修复方案：<br><br>
+<b>方案一（推荐）：修正 DNS 后缀搜索顺序</b>
+<ol>
+<li>通过 GPO 配置 DNS 后缀顺序：
+计算机配置 &gt; 管理模板 &gt; 网络 &gt; DNS 客户端 &gt; DNS 后缀搜索列表</li>
+<li>确保子域（<code>child.parent.com</code>）排在父域（<code>parent.com</code>）前面</li>
+<li>应用后运行 <code>gpupdate /force</code>，验证 <code>ipconfig /all</code> 的"连接特定的 DNS 后缀"</li>
+</ol>
+<b>方案二（临时）：禁用 Loopback Check（不推荐用于生产）</b>
+<ol>
+<li><code>New-ItemProperty HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Lsa -Name DisableLoopbackCheck -Value 1 -PropertyType DWORD</code></li>
+</ol>
+<b>验证</b>：修复后重试创建集群共享，<code>klist purge</code> 清除旧 Kerberos ticket 后重新测试。`,
+    takeaway: `<b>关键教训：</b><br><br>
+<ol>
+<li><b>DNS 后缀顺序影响 Kerberos 认证</b>：这是一个隐蔽的配置问题，
+子域前面的父域后缀会导致短名称解析到父域 FQDN，破坏 SPN 匹配</li>
+<li><b>NTLM Loopback Protection 是正确的安全配置</b>：
+不应为了解决集群问题而禁用它，正确做法是修复 DNS 后缀顺序</li>
+<li><b>集群共享创建失败要检查 DNS 解析</b>：
+使用 <code>Resolve-DnsName &lt;ClusterName&gt;</code> 验证解析结果</li>
+<li>多域环境（父子域）中的 DNS 后缀顺序是高频问题，建议纳入部署检查清单</li>
+<li><code>klist get host/&lt;name&gt;</code> 是快速验证 Kerberos SPN 解析的好工具</li>
+</ol>`,
+  },
+};
+
+(function(){
+  function pendingDetail(){
+    return "<div class='detail-grid'>"
+      + "<div class='dfield problem'><div class='dlbl'>🔴 问题是什么</div><div class='dval pending'>⏳ 待补充 — 从原邮件正文提炼</div></div>"
+      + "<div class='dfield investigation'><div class='dlbl'>🟡 排查思路</div><div class='dval pending'>⏳ 待补充</div></div>"
+      + "<div class='dfield solution'><div class='dlbl'>🟢 解决办法</div><div class='dval pending'>⏳ 待补充</div></div>"
+      + "<div class='dfield takeaway'><div class='dlbl'>📎 Takeaway</div><div class='dval pending'>⏳ 待补充</div></div>"
+      + "</div>";
+  }
+  function renderDetail(d){
+    if(!d) return pendingDetail();
+    return "<div class='detail-grid'>"
+      + "<div class='dfield problem'><div class='dlbl'>🔴 问题是什么</div><div class='dval'>"+d.problem+"</div></div>"
+      + "<div class='dfield investigation'><div class='dlbl'>🟡 排查思路</div><div class='dval'>"+d.investigation+"</div></div>"
+      + "<div class='dfield solution'><div class='dlbl'>🟢 解决办法</div><div class='dval'>"+d.solution+"</div></div>"
+      + "<div class='dfield takeaway'><div class='dlbl'>📎 Takeaway</div><div class='dval'>"+d.takeaway+"</div></div>"
+      + "</div>";
+  }
+  document.querySelectorAll('.ts-row').forEach(function(row){
+    row.addEventListener('click', function(){
+      var id = row.getAttribute('data-id');
+      var next = row.nextElementSibling;
+      if(next && next.classList.contains('detail-row') && next.getAttribute('data-detail-for')===id){
+        next.parentNode.removeChild(next);
+        row.classList.remove('expanded');
+        return;
+      }
+      var data = (window.TS_DETAILS||{})[id];
+      var tr = document.createElement('tr');
+      tr.className = 'detail-row show';
+      tr.setAttribute('data-detail-for', id);
+      var td = document.createElement('td');
+      td.colSpan = 3;
+      td.innerHTML = renderDetail(data);
+      tr.appendChild(td);
+      row.parentNode.insertBefore(tr, row.nextSibling);
+      row.classList.add('expanded');
+    });
+  });
+})();
+</script>
+</body>
+</html>
+
