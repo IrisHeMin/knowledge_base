@@ -73,15 +73,15 @@
   <div class="side-header">📡 Topic 列表</div>
   <input id="filter" type="text" placeholder="过滤 topic..." oninput="filterTopics()">
   <ul class="topic-list" id="topicList">
-    <li class="hot" data-name="Cluster / Azure Local"><a href="#sec-cluster"><span class="count">10</span><span class="tname">Cluster / Azure Local</span></a></li>
-    <li class="hot" data-name="网络 / TCPIP"><a href="#sec-network"><span class="count">8</span><span class="tname">网络 / TCPIP</span></a></li>
+    <li class="hot" data-name="Cluster / Azure Local"><a href="#sec-cluster"><span class="count">11</span><span class="tname">Cluster / Azure Local</span></a></li>
+    <li class="hot" data-name="网络 / TCPIP"><a href="#sec-network"><span class="count">10</span><span class="tname">网络 / TCPIP</span></a></li>
     <li class="hot" data-name="SMB / 文件共享"><a href="#sec-smb"><span class="count">7</span><span class="tname">SMB / 文件共享</span></a></li>
     <li class="hot" data-name="DNS"><a href="#sec-dns"><span class="count">6</span><span class="tname">DNS</span></a></li>
-    <li class="hot" data-name="存储 / 备份"><a href="#sec-storage"><span class="count">5</span><span class="tname">存储 / 备份</span></a></li>
-    <li class="warm" data-name="Wi-Fi / 802.1X"><a href="#sec-wifi"><span class="count">4</span><span class="tname">Wi-Fi / 802.1X</span></a></li>
+    <li class="hot" data-name="存储 / 备份"><a href="#sec-storage"><span class="count">6</span><span class="tname">存储 / 备份</span></a></li>
+    <li class="warm" data-name="Wi-Fi / 802.1X"><a href="#sec-wifi"><span class="count">7</span><span class="tname">Wi-Fi / 802.1X</span></a></li>
     <li class="warm" data-name="工具分享"><a href="#sec-tools"><span class="count">4</span><span class="tname">工具分享</span></a></li>
     <li class="warm" data-name="防火墙 / 安全"><a href="#sec-firewall"><span class="count">2</span><span class="tname">防火墙 / 安全</span></a></li>
-    <li class="warm" data-name="其他"><a href="#sec-other"><span class="count">1</span><span class="tname">其他</span></a></li>
+    <li class="warm" data-name="其他"><a href="#sec-other"><span class="count">6</span><span class="tname">其他</span></a></li>
   </ul>
 </aside>
 
@@ -90,10 +90,10 @@
 <p class="subtitle">来自 HANET_Techshare 邮件分类整理 — 点击任一行展开 <b>问题 / 排查思路 / 解决办法 / Takeaway</b></p>
 
 <div class="stats">
-  <div class="stat"><div class="num">48</div><div class="lbl">Tech Share 总数</div></div>
+  <div class="stat"><div class="num">60</div><div class="lbl">Tech Share 总数</div></div>
   <div class="stat"><div class="num">9</div><div class="lbl">Topic 分类</div></div>
   <div class="stat"><div class="num">1</div><div class="lbl">已完成详情 (demo)</div></div>
-  <div class="stat"><div class="num">47</div><div class="lbl">待补充</div></div>
+  <div class="stat"><div class="num">59</div><div class="lbl">待补充</div></div>
 </div>
 
 <!-- ============ DNS ============ -->
@@ -145,6 +145,7 @@
       <tr class="ts-row" data-id="ts-clu-cert-mismatch"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> 群集证书不匹配导致节点无法上线或无法加入群集</td><td><span class="ts-tag">证书</span></td></tr>
       <tr class="ts-row" data-id="ts-clu-2025-netatc"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Windows Server 2025 Cluster Network ATC Management 网络异常</td><td><span class="ts-tag">2025</span></td></tr>
       <tr class="ts-row" data-id="ts-clu-fileshare-fail"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Failover Cluster File Share Creation Failure (DNS Suffix)</td><td><span class="ts-tag">交叉</span></td></tr>
+      <tr class="ts-row" data-id="ts-clu-dfs-ns"><td class="ts-date">2026-04-19</td><td class="ts-title"><span class="arrow">▶</span> TSG: DFS Namespace Cluster Resource Fails to Come Online After Recreation</td><td><span class="ts-tag">DFS-N Cluster</span></td></tr>
     </tbody>
   </table>
 </section>
@@ -163,6 +164,8 @@
       <tr class="ts-row" data-id="ts-net-iwr"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Invoke-Webrequest 失败</td><td><span class="ts-tag">PowerShell</span></td></tr>
       <tr class="ts-row" data-id="ts-net-cmd-shell"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> 网络命令外壳 "抢了" 定位图标</td><td><span class="ts-tag">UI</span></td></tr>
       <tr class="ts-row" data-id="ts-net-netprofm"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Netprofm Memory leak on server 2016</td><td><span class="ts-tag">内存泄漏</span></td></tr>
+      <tr class="ts-row" data-id="ts-net-multinic-dhcp"><td class="ts-date">2026-04-24</td><td class="ts-title"><span class="arrow">▶</span> Windows Multi-NIC Naming Rules &amp; DHCP Initiation Order</td><td><span class="ts-tag">Multi-NIC</span></td></tr>
+      <tr class="ts-row" data-id="ts-net-phantom-nic"><td class="ts-date">2026-04-02</td><td class="ts-title"><span class="arrow">▶</span> The Case of the Phantom NIC Killer — DWPNetworkService NIC Disable</td><td><span class="ts-tag">DWPNetworkService</span></td></tr>
     </tbody>
   </table>
 </section>
@@ -177,6 +180,9 @@
       <tr class="ts-row" data-id="ts-wifi-wired-gpo"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Wired profile via GPO — "Automatically use my Windows logon name and password" 异常解勾</td><td><span class="ts-tag">GPO</span></td></tr>
       <tr class="ts-row" data-id="ts-wifi-id-privacy"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> 802.1X Wi-Fi "Cannot Connect" Caused by Misconfigured Identity Privacy</td><td><span class="ts-tag">PEAP</span></td></tr>
       <tr class="ts-row" data-id="ts-wifi-nps-upgrade"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> NPS 服务器的升级建议和步骤</td><td><span class="ts-tag">NPS</span></td></tr>
+      <tr class="ts-row" data-id="ts-wifi-netwtw14"><td class="ts-date">2026-04-21</td><td class="ts-title"><span class="arrow">▶</span> WiFi Netwtw14 Event ID 65 — Roaming Disconnect</td><td><span class="ts-tag">驱动 / 漫游</span></td></tr>
+      <tr class="ts-row" data-id="ts-wifi-8021x-slow"><td class="ts-date">2026-04-20</td><td class="ts-title"><span class="arrow">▶</span> [Case 2604170040001669] 802.1X 每日早上网络连接缓慢 — 根因分析</td><td><span class="ts-tag">802.1X 慢</span></td></tr>
+      <tr class="ts-row" data-id="ts-wifi-issues-coll"><td class="ts-date">2026-04-14</td><td class="ts-title"><span class="arrow">▶</span> Sharing Several WIFI Connection Issues (Case Card 合集)</td><td><span class="ts-tag">合集</span></td></tr>
     </tbody>
   </table>
 </section>
@@ -192,6 +198,7 @@
       <tr class="ts-row" data-id="ts-stor-disk157"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Disk Event ID 157 / 15 caused by VMWare</td><td><span class="ts-tag">VMWare</span></td></tr>
       <tr class="ts-row" data-id="ts-stor-wbadmin"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> Wbadmin not working in scheduled task as System</td><td><span class="ts-tag">备份</span></td></tr>
       <tr class="ts-row" data-id="ts-stor-efi"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> 重建 EFI 和恢复分区</td><td><span class="ts-tag">EFI</span></td></tr>
+      <tr class="ts-row" data-id="ts-stor-nfs-keepinherit"><td class="ts-date">2026-01-21</td><td class="ts-title"><span class="arrow">▶</span> 一次"权限失踪案"的排查故事 ——Windows 2019 NFS 集群 + KeepInheritance</td><td><span class="ts-tag">NFS / ACL</span></td></tr>
     </tbody>
   </table>
 </section>
@@ -229,6 +236,11 @@
     <thead><tr><th style="width:90px">日期</th><th>主题</th><th style="width:120px">子标签</th></tr></thead>
     <tbody>
       <tr class="ts-row" data-id="ts-other-locator-icon"><td class="ts-date">—</td><td class="ts-title"><span class="arrow">▶</span> 网络命令外壳 "抢了" 定位图标 (UI / Shell)</td><td><span class="ts-tag">Shell</span></td></tr>
+      <tr class="ts-row" data-id="ts-other-pxe-loop"><td class="ts-date">2026-04-22</td><td class="ts-title"><span class="arrow">▶</span> Detailed PXE Boot Loop Analysis (CN+EN)</td><td><span class="ts-tag">PXE / 部署</span></td></tr>
+      <tr class="ts-row" data-id="ts-other-nearby-25h2"><td class="ts-date">2026-04-17</td><td class="ts-title"><span class="arrow">▶</span> Nearby Sharing 大文件传输失败 (Win11 25H2)</td><td><span class="ts-tag">Nearby Share</span></td></tr>
+      <tr class="ts-row" data-id="ts-other-netsha-r4"><td class="ts-date">2026-04-08</td><td class="ts-title"><span class="arrow">▶</span> NETSHA Idea Roaming 第四期 — 随机抽题·即兴分享</td><td><span class="ts-tag">团队活动</span></td></tr>
+      <tr class="ts-row" data-id="ts-other-netsha-r3"><td class="ts-date">2026-02-12</td><td class="ts-title"><span class="arrow">▶</span> NETSHA Idea Roaming 第三期 — 嘿，2036！我们来串门了</td><td><span class="ts-tag">团队活动</span></td></tr>
+      <tr class="ts-row" data-id="ts-other-netsha-r2"><td class="ts-date">2026-01-05</td><td class="ts-title"><span class="arrow">▶</span> NETSHA Idea Roaming 第二期 — 为知识买单：那些年我们下过的单</td><td><span class="ts-tag">团队活动</span></td></tr>
     </tbody>
   </table>
 </section>
@@ -2409,6 +2421,346 @@ Credential Guard 要求 NTLMv2，而 MSCHAPv2 依赖 NT Hash，
 使用 <code>Resolve-DnsName &lt;ClusterName&gt;</code> 验证解析结果</li>
 <li>多域环境（父子域）中的 DNS 后缀顺序是高频问题，建议纳入部署检查清单</li>
 <li><code>klist get host/&lt;name&gt;</code> 是快速验证 Kerberos SPN 解析的好工具</li>
+</ol>`,
+  },
+  "ts-clu-dfs-ns": {
+    problem: `<b>TSG 场景：</b>DFS Namespace 类型为 <code>Domain-based</code>，部署在 Failover Cluster 上的 DFS-N 资源被删除并重新创建后，集群资源始终无法 Online。<br><br>
+事件日志报错指向 DFS-N 服务无法将命名空间根目录绑定到集群虚拟名称。`,
+
+    investigation: `<ol>
+<li>检查集群资源属性：DFS-N Cluster Resource 引用的 <b>Network Name</b> 必须存在且 Online；删除/重建会让 AD 中残留旧 SPN/对象。</li>
+<li>验证 AD：<code>Get-ADComputer &lt;ClusterVCO&gt;</code> 是否还有旧的 <code>msDFSR-RootObject</code> / <code>servicePrincipalName</code> 引用。</li>
+<li>检查 DFS Root：在所有节点 <code>dfsutil root /list</code>，确认共享根目录（如 <code>C:\\DFSRoots\\&lt;NS&gt;</code>）是否存在以及 ACL 正确。</li>
+<li>事件查看器 → DFS Replication / DFS Namespace 通道，观察 Event ID 系列。</li>
+<li>清理重建顺序错位：如果先删除集群资源再删 AD 对象，会留下"幽灵"绑定，导致新建资源时和 AD 元数据冲突。</li>
+</ol>`,
+
+    solution: `<ol>
+<li><b>正确的清理顺序：</b>先 <code>dfsutil root remove</code> 卸载命名空间，再删除集群资源，再删除 AD 中残留的 DFS root 对象。</li>
+<li>用 <code>dfsutil root cleanup</code> / <code>ldp.exe</code> 清掉 AD 里的孤立 DFS-N 对象。</li>
+<li>每个节点本地共享文件夹 <code>C:\\DFSRoots\\&lt;NS&gt;</code> 必须存在并 share 出来；ACL 至少包含集群计算机账户 + Authenticated Users Read。</li>
+<li>重建集群 DFS-N 资源，依赖项指向 Network Name + Storage。</li>
+<li>验证：<code>Get-DfsnRoot</code> + 在客户端 <code>\\\\domain\\&lt;NS&gt;</code> 能解析。</li>
+</ol>`,
+
+    takeaway: `<ol>
+<li><b>DFS-N 集群资源 = 集群资源 + AD 对象 + 本地共享 三件套</b>，缺一不可。</li>
+<li>"删除—重建"流程容易在 AD 留残留，遇到资源 Online 失败优先查 AD 元数据。</li>
+<li><code>dfsutil root cleanup</code> 是清理 DFS-N 孤儿对象的官方姿势。</li>
+</ol>`,
+  },
+
+  "ts-net-multinic-dhcp": {
+    problem: `Windows 终端有多块 NIC（如内网网卡 + Wi-Fi + USB 网卡 + 虚拟网卡）时，网卡接口顺序、命名（Ethernet / Ethernet 2 / ...）和 DHCP 请求发起的先后顺序，会显著影响默认网关、DNS 后缀、路由表和登录脚本行为。<br><br>
+客户报修常见症状：登录慢、域控找不到、DNS 解析走错网卡、跨段连接失败等。`,
+
+    investigation: `<ol>
+<li><b>NIC 命名规则：</b>Windows 按硬件枚举顺序给出 "Ethernet"、"Ethernet 2" ...；NetCfg 重命名后还会受到 NetSetupSvc 在登录早期阶段的处理影响。</li>
+<li><b>DHCP 发起顺序：</b>DHCP Client 服务对所有未配置静态 IP 的接口并行发 DISCOVER，但接口绑定顺序（<code>Get-NetIPInterface</code> 的 InterfaceMetric）决定路由优先级。</li>
+<li><b>检查项：</b>
+<ul>
+<li><code>Get-NetAdapter | Sort-Object ifIndex</code></li>
+<li><code>Get-NetIPInterface -AddressFamily IPv4</code> 看 InterfaceMetric</li>
+<li><code>Get-DnsClient</code> 看每接口 ConnectionSpecificSuffix</li>
+<li><code>route print</code> 看默认网关来自哪个接口</li>
+</ul></li>
+<li>对登录依赖域控的场景，确保"内网"接口的 InterfaceMetric 最低，否则会先走错网卡。</li>
+</ol>`,
+
+    solution: `<ol>
+<li>对关键接口手动设置 <code>Set-NetIPInterface -InterfaceMetric &lt;低值&gt;</code>，覆盖自动算出的优先级。</li>
+<li>不需要 DHCP 的接口（USB 网卡、虚拟网卡）禁用 DHCP 或直接 Disable，避免参与默认路由竞争。</li>
+<li>用 GPO 或部署脚本统一 NIC 命名（<code>Rename-NetAdapter</code>），方便排查。</li>
+<li>如果是 Hyper-V / 虚拟机，注意 vSwitch 与 management OS 的接口顺序。</li>
+</ol>`,
+
+    takeaway: `<ol>
+<li>"网卡名字" 不是简单的 UI 标签——它影响 InterfaceMetric 计算和 DHCP 启动顺序。</li>
+<li>Multi-NIC 系统应把 InterfaceMetric 当成路由优先级的"显式声明"，不要靠默认。</li>
+<li>排查 Multi-NIC 异常时，从 <code>Get-NetIPInterface</code> + <code>route print</code> 双视图入手。</li>
+</ol>`,
+  },
+
+  "ts-net-phantom-nic": {
+    problem: `客户机器上的两块网卡（内网 + Wi-Fi 或 内网 + USB-NIC）会"自动"被禁用一块。事件查看器显示是<b>策略性</b>禁用，而不是物理掉线。<br><br>
+表现：用户连上 Wi-Fi 后内网卡被禁、或同时插两根线一根总是 Down。<br>
+怀疑被某个"看不见的杀手"盯上了。`,
+
+    investigation: `<ol>
+<li>事件视图：<code>Microsoft-Windows-NetworkProfile</code> / <code>NDIS</code> / <code>System</code> 通道追踪 NIC Disable 事件，对应时间戳定位触发者。</li>
+<li>Procmon + Process Tree：抓到 NIC 被禁那一刻的 <code>SetupAPI</code> / <code>SetService</code> 调用栈。</li>
+<li>注册表 <code>HKLM\\SYSTEM\\CurrentControlSet\\Control\\Network\\...</code> 的状态变化。</li>
+<li>定位到 OEM 服务 <b>DWPNetworkService</b>（HP/Dell 等 OEM 自带的 "智能网络切换"）。其逻辑是：检测到上层网络可达后，主动 disable 另一块网卡，号称为了节省功耗或避免环路。</li>
+<li>用 5 个排查阶段（侦探故事方式）+ 6 张 Mermaid 图复盘，明确每一步的关键日志。</li>
+</ol>`,
+
+    solution: `<ol>
+<li>禁用或卸载 OEM 网络管理服务 <b>DWPNetworkService</b>（具体名字按 OEM 不同：HP Smart Network、Dell Optimizer 等）。</li>
+<li>如客户因功耗考虑保留该服务，调整其策略：不在两个有线接口之间二选一；只在 LAN+WLAN 切换时生效。</li>
+<li>在镜像/部署阶段就移除非必须的 OEM 网络管理组件。</li>
+</ol>`,
+
+    takeaway: `<ol>
+<li><b>"网卡被禁" ≠ Windows bug</b>：先排除 OEM 后台服务，是系统外部行为。</li>
+<li><b>侦探式分析 = 时间线 + 调用栈 + 配置变更</b> 三件套，比单看一类日志更高效。</li>
+<li>OEM 软件越来越多内置"网络/电源智能策略"，在企业部署里建议白名单清单管理。</li>
+</ol>`,
+  },
+
+  "ts-wifi-netwtw14": {
+    problem: `客户笔记本在企业 Wi-Fi 漫游过程中频繁断连，重连时延几秒到十几秒。<br><br>
+WLAN 操作日志（<code>netsh wlan show wlanreport</code>）和事件视图 <code>Microsoft-Windows-NDIS / WLAN-AutoConfig</code> 反复出现 <b>Netwtw14 Event ID 65</b>（Intel Wi-Fi 驱动报错），紧跟 Disassociate / Reassociate 流程。`,
+
+    investigation: `<ol>
+<li>查看 WLAN report：定位每次 disconnect 的 reason code（多为 8/4 = STA leaving / inactivity）。</li>
+<li>抓 NetEventPacketCapture + Wireshark：观察 802.11 管理帧；客户端发起 disassociate 还是 AP 主动踢。</li>
+<li>事件 ID 65 (Netwtw14)：Intel 无线网卡驱动对接收到的 BSS Transition Management 请求处理异常，触发主动断开。</li>
+<li>测试切换驱动版本：旧驱动正常，新驱动出现该问题，确认驱动回归 bug。</li>
+<li>对照 Intel Wireless 驱动 Release Notes，找到对应已知问题。</li>
+</ol>`,
+
+    solution: `<ol>
+<li>将 Intel Wi-Fi 驱动回退到稳定版（与 Intel 官网交叉确认 known issue）。</li>
+<li>临时缓解：在企业 AP 控制器上禁用 802.11k/v BSS Transition Management，或限制 minimum RSSI 阈值。</li>
+<li>跟 Intel 渠道提单，等待修复版驱动。</li>
+</ol>`,
+
+    takeaway: `<ol>
+<li>漫游断连不一定是 RF 问题，<b>客户端驱动对 802.11k/v 的兼容</b>是高频根因。</li>
+<li>Netwtw14 / Netwtw06 等驱动事件 ID 直接指向 Intel Wi-Fi 驱动栈，能快速锁定厂商。</li>
+<li>新驱动 ≠ 更稳定，企业批量升级前要灰度。</li>
+</ol>`,
+  },
+
+  "ts-wifi-8021x-slow": {
+    problem: `<b>Case 2604170040001669：</b>客户终端每天早上第一次连企业 Wi-Fi 时，从插上电到能上网要等 30 秒~1 分钟；之后断开重连就秒连。<br><br>
+看似 802.1X 慢，但具体瓶颈在哪个阶段（Association / EAP / DHCP / DNS）需要分层分析。`,
+
+    investigation: `<ol>
+<li>分阶段抓时间戳：
+<ul>
+<li>Association 完成 ← 802.11 management frames</li>
+<li>EAP 开始 ← EAPOL Start</li>
+<li>EAP 完成 ← EAP Success</li>
+<li>DHCP DORA 完成</li>
+<li>DNS / 登录脚本可达</li>
+</ul>
+</li>
+<li>对比"早上第一次" vs "白天断开重连"：发现差异主要在 EAP 完成到能 ping 通这一段。</li>
+<li>NPS 服务器日志：第一次认证时走了完整 PEAP 隧道协商 + 客户端证书校验 + AD 查询，耗时长；后续重连命中 PMK 缓存（fast roaming），跳过完整握手。</li>
+<li>客户端缓存丢失原因：每天早上机器从 S4 hibernate 恢复，PMK 缓存被清。</li>
+</ol>`,
+
+    solution: `<ol>
+<li>启用客户端 PMK 缓存（<code>PMKCacheMode</code>），并延长缓存生命周期。</li>
+<li>NPS 侧启用 Fast Reconnect（<code>Enable Fast Reconnect</code>） + Session Resumption，减少完整 EAP 握手耗时。</li>
+<li>调整客户端电源策略：不强制 hibernate，或在恢复时自动重连前预热网络栈。</li>
+<li>NPS 侧加 LDAP 缓存或直接对接 AD 复制本地副本，缩短 RADIUS-AD 查询。</li>
+</ol>`,
+
+    takeaway: `<ol>
+<li>"802.1X 慢"问题第一步永远是<b>分阶段</b>测量：Association / EAP / DHCP / DNS / 上线。</li>
+<li>"早上第一次慢，之后秒连" 是 PMK 缓存命中的典型特征。</li>
+<li>Fast Reconnect + PMK 缓存是 802.1X 性能优化的双开关。</li>
+</ol>`,
+  },
+
+  "ts-wifi-issues-coll": {
+    problem: `2025 年 NETSHA 团队近期处理的多个 WIFI 连接相关 case 的合集分享（Case Card 形式），覆盖：
+<ul>
+<li>证书选错导致 EAP-TLS 失败</li>
+<li>NPS 升级后客户端断连</li>
+<li>WLAN AutoConfig 服务异常</li>
+<li>Wired Profile 通过 GPO 下发后属性丢失</li>
+<li>漫游过程中驱动报错</li>
+</ul>`,
+
+    investigation: `<ol>
+<li>每张 Case Card 包含：症状 → 关键日志 → 根因 → 解决方案。</li>
+<li>共同的诊断路径：WLAN report (<code>netsh wlan show wlanreport</code>) → NPS 日志 → 客户端事件查看器 WLAN-AutoConfig 通道 → 驱动版本核对。</li>
+<li>建议对每个 case 都先用 wlanreport 一键抓取最近 3 天的连接事件，作为入口。</li>
+</ol>`,
+
+    solution: `<ol>
+<li>详见各子 case 解决方案（证书选择、Fast Reconnect、PMK 缓存、驱动回滚、GPO 修复等）。</li>
+<li>合集的目的是建立"症状 → 已知根因"的快速映射，缩短未来同类 case 排查时间。</li>
+</ol>`,
+
+    takeaway: `<ol>
+<li>WIFI 类 case 高度模式化，建立<b>症状—根因映射表</b>价值很高。</li>
+<li>Case Card 形式（一图一案）适合在团队 Idea Roaming / 分享会上传播。</li>
+<li>合集类分享是个人/团队知识资产化的好抓手。</li>
+</ol>`,
+  },
+
+  "ts-stor-nfs-keepinherit": {
+    problem: `<b>"权限失踪案"：</b>客户 Windows 2019 NFS 集群（Failover Cluster + NFS Server 角色）上的共享，过一段时间后部分子目录的 ACL 莫名"丢失"，业务用户突然访问被拒。<br><br>
+按部就班查发现：问题与 NFS share 的 <code>KeepInheritance</code> 选项相关。`,
+
+    investigation: `<ol>
+<li>对比"丢权限"前后子目录 ACL：发现 inherited 权限被清，只剩 explicit ACE。</li>
+<li>事件视图 + 文件审计：定位到 cluster failover 或 NFS share 重新创建那一刻 ACL 被刷新。</li>
+<li>研究 NFS Server 的 <code>nfsadmin</code> 配置：<code>KeepInheritance</code> 选项控制 NFS share 在 mount/重建时是否保留下游目录的继承属性。</li>
+<li>当 KeepInheritance 为 No（默认）时，每次 share 元数据被重写都会清除继承关系；改成 Yes 才会保留。</li>
+</ol>`,
+
+    solution: `<ol>
+<li>对关键 NFS share 启用 <code>KeepInheritance=Yes</code>：<br><code>nfsadmin server config -KeepInheritance Yes</code></li>
+<li>对已经丢失继承的目录，用 <code>icacls /reset</code> 或显式重新设置继承标志。</li>
+<li>纳入集群部署 checklist：每次新增 NFS share 都验证 KeepInheritance。</li>
+</ol>`,
+
+    takeaway: `<ol>
+<li>NFS on Windows 这个组合天然就有"两套权限模型"碰撞，配置选项细节决定一切。</li>
+<li>"过一段时间权限丢" 大概率是某个事件触发的元数据刷新，不是慢慢腐蚀。</li>
+<li>给文章起一个像故事一样的名字（"权限失踪案"），分享时印象更深。</li>
+</ol>`,
+  },
+
+  "ts-other-pxe-loop": {
+    problem: `<b>Detailed PXE Boot Loop Analysis (CN+EN)：</b>客户使用 SCCM/MDT 通过 PXE 部署 Windows 镜像，发现部分机器进入死循环：<br>
+<code>PXE Boot → 加载 boot.wim → reboot → PXE Boot → ...</code><br>
+始终走不到 OS 安装阶段。`,
+
+    investigation: `<ol>
+<li>PXE 流程分阶段：DHCP Discover → DHCP Offer with PXE option 66/67 → TFTP wdsnbp.com → 选择启动项 → 下载 boot.wim → 加载 WinPE → SMS Task Sequence。</li>
+<li>抓 DHCP/TFTP 抓包：确认 boot.wim 是否完整下载。</li>
+<li>SMS log（smsts.log / smspxe.log）：看任务序列是否真的开始，以及失败点。</li>
+<li>常见根因（按概率）：
+<ul>
+<li>TFTP 大文件传输被中间网络丢包/MTU 截断 → boot.wim 不完整 → 重启</li>
+<li>DHCP 发了多个 PXE 服务器 IP（多 DP）→ 客户端选错失败</li>
+<li>BIOS/UEFI 模式不匹配（boot.wim 是 x64 UEFI 但客户端走 Legacy）</li>
+<li>boot.wim 里嵌入的驱动不识别新硬件 NIC → WinPE 起不来 → 重启</li>
+<li>TS 媒体证书过期</li>
+</ul>
+</li>
+<li>对比"成功机型 vs 失败机型"差异，定位到 NIC 驱动缺失。</li>
+</ol>`,
+
+    solution: `<ol>
+<li>更新 boot.wim 注入新 NIC 驱动（DISM /Add-Driver）。</li>
+<li>修正 BIOS/UEFI 引导模式与镜像匹配。</li>
+<li>在交换机/防火墙关闭对 TFTP/UDP 的限速，或改用 BCDBoot HTTP-based PXE。</li>
+<li>SCCM 上限制每个站点只发一个 PXE Offer，避免客户端选项混乱。</li>
+</ol>`,
+
+    takeaway: `<ol>
+<li>PXE 死循环 ≠ 一定是镜像坏，<b>分阶段切片诊断</b>（DHCP / TFTP / WinPE / TS）是关键。</li>
+<li>boot.wim 驱动注入应纳入硬件刷新的 SOP。</li>
+<li>跨语言（CN+EN）整理分享对国际化团队是巨大加分。</li>
+</ol>`,
+  },
+
+  "ts-other-nearby-25h2": {
+    problem: `Win11 25H2 上使用 <b>Nearby Sharing</b>（就近共享）传输大文件（如 &gt;1GB 视频），在传输过程中接收端会"突然终止共享"或"断开连接"，重新发送也会反复失败。<br><br>
+小文件无问题，问题集中在长时间持续传输场景。`,
+
+    investigation: `<ol>
+<li>抓两端 NetEventPacketCapture：观察 Nearby Sharing 底层用的是 Bluetooth + Wi-Fi Direct（CDP，Connected Devices Platform）。</li>
+<li>事件视图 <code>Microsoft-Windows-CDP</code> 通道：看到长时间传输后 connection token 失效。</li>
+<li>对比 24H2 / 25H2：25H2 引入了新的 CDP 心跳/会话超时策略，长时间空闲（如客户屏幕锁了或电源进入 Modern Standby）会主动断开。</li>
+<li>客户机器的电源/无线策略叠加：Wi-Fi Direct 接口在传输过程中被电源策略 idle 关闭。</li>
+</ol>`,
+
+    solution: `<ol>
+<li>临时规避：传输大文件期间保持屏幕亮 / 关闭 Modern Standby。</li>
+<li>电源策略调整：禁用 Wi-Fi 网卡 "允许计算机关闭此设备以节约电源"，或调整 Connected Standby 配置。</li>
+<li>反馈给 Win11 团队：CDP 在 25H2 的会话超时阈值需要支持配置；目前已确认为产品行为。</li>
+<li>大文件场景建议改用 OneDrive / SMB 传输。</li>
+</ol>`,
+
+    takeaway: `<ol>
+<li>Nearby Sharing 底层是 Bluetooth + Wi-Fi Direct + CDP，三个栈任何一个崩都会断。</li>
+<li>新版本 OS 的 Modern Standby / 节能策略对长时间网络任务不友好。</li>
+<li>对"功能 vs 节能"冲突类问题，先做功能性场景隔离再谈优化。</li>
+</ol>`,
+  },
+
+  "ts-other-netsha-r4": {
+    problem: `NETSHA 团队 Idea Roaming 第四期活动总结。<br><br>
+<b>玩法：</b>选一个感兴趣的类别 → 点按钮随机抽题 → 抽到的人 3 分钟分享 → 其他人 2 分钟好奇追问（不评判、不对错）→ 顺延下一位。<br><br>
+目的：用更轻松、有趣、无压力的方式打破"分享必须正式"的心理门槛，激发跨领域好奇心。`,
+
+    investigation: `<ol>
+<li>第四期沿用前三期框架，但加入了"网页随机抽题工具"，UX 更顺畅。</li>
+<li>题目类别覆盖：技术好奇 / 软技能 / 团队文化 / 个人爱好 等。</li>
+<li>分享时长（3+2）严格计时，避免过载。</li>
+<li>无对错的 Q&amp;A 规则，让追问变成"探索"而非"考核"。</li>
+</ol>`,
+
+    solution: `<ol>
+<li>参与方式：现场或 Teams 会议都支持；提前一周发起报名。</li>
+<li>推荐准备：每人至少 1 个"想被抽到的话题"，避免冷场。</li>
+<li>主持人轮换，每期换不同人主持。</li>
+</ol>`,
+
+    takeaway: `<ol>
+<li>团队知识分享不一定要"长篇技术报告"，<b>3 分钟即兴 + 好奇追问</b>是低门槛高黏性的形式。</li>
+<li>规则化"无对错"能极大降低分享心理负担。</li>
+<li>把 "随机性" 引入分享会，比强制排课表更有活力。</li>
+</ol>`,
+  },
+
+  "ts-other-netsha-r3": {
+    problem: `NETSHA Idea Roaming 第三期活动 —— "嘿，2036！我们来串门了"。<br><br>
+<b>主题：</b>组织一次"未来世界一日游"，提前探秘 10 年后（2036）的世界。<br>
+不分技术领域，而是分"视角"：参与者被分配到 4 个"未来观察团"，从不同角度想象 2036 是什么样子。`,
+
+    investigation: `<ol>
+<li>4 个观察团示例（按视角划分）：
+<ul>
+<li>科技与 AI 发展观察团</li>
+<li>生活方式与文化观察团</li>
+<li>工作与组织形态观察团</li>
+<li>地球与可持续观察团</li>
+</ul>
+</li>
+<li>每团成员先各自做"未来情景设想"，再小组合成 1 张"2036 一日图景"。</li>
+<li>全员投票选出"最有可能成真"和"最希望成真"的两个未来。</li>
+</ol>`,
+
+    solution: `<ol>
+<li>不需要专业知识，强调好奇心和想象力。</li>
+<li>每团有引导问题模板，避免冷场。</li>
+<li>活动产出 → 文字版"2036 备忘录"留作团队记忆。</li>
+</ol>`,
+
+    takeaway: `<ol>
+<li>跨领域想象力训练能反哺工程思维 ——"未来在哪" 决定 "今天该做什么"。</li>
+<li>用"视角"代替"专业领域"做分组，能让所有成员平等参与。</li>
+<li>团队建设型分享，长期看比技术分享更影响留存。</li>
+</ol>`,
+  },
+
+  "ts-other-netsha-r2": {
+    problem: `NETSHA Idea Roaming 第二期 —— "为知识买单：那些年我们下过的单"。<br><br>
+<b>主题：</b>每个人分享自己曾经为某种"知识"付费（书、课、订阅、培训、付费社群、咨询...）的故事 —— 买了什么、为什么买、值不值、最大的收获/教训。`,
+
+    investigation: `<ol>
+<li>分享框架：Why（动机）→ What（买了什么）→ Outcome（实际收获）→ Lesson（如果重来怎么选）。</li>
+<li>类别示例：
+<ul>
+<li>系统化课程（Coursera / Udemy / Pluralsight）</li>
+<li>书籍（中外文技术书 / 思维方法书）</li>
+<li>付费社群（小报童 / 知识星球）</li>
+<li>咨询/教练（1v1 mentor）</li>
+<li>翻车经验（买了没看 / 课不对路）</li>
+</ul>
+</li>
+<li>讨论环节：什么样的"知识付费"在 IT 工程师群体里 ROI 最高？</li>
+</ol>`,
+
+    solution: `<ol>
+<li>整理出一份"团队推荐清单 vs 不推荐清单"。</li>
+<li>分享后允许跨小组借书/拼课。</li>
+<li>建立"读书/学习打卡"角落，把买了的资源用起来。</li>
+</ol>`,
+
+    takeaway: `<ol>
+<li><b>知识付费的真正价值不在购买，而在投入</b>—— 没看完的课等于没买。</li>
+<li>团队互相推荐 / 避坑能极大降低个人选错的成本。</li>
+<li>类似"消费分享"主题在 IT 团队里很有共鸣，人均能开口讲。</li>
 </ol>`,
   },
 };
