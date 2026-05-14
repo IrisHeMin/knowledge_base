@@ -1,0 +1,556 @@
+---
+layout: null
+title: "Idea Roaming #5 · 方法论盲盒 App · 项目实现报告"
+date: 2026-05-14
+categories: [Projects, AI]
+tags: [pwa, idea-roaming, methodology, copilot-cli, project-report]
+type: "project-report"
+description: "从一个团队活动想法到上线 PWA 的完整复盘 —— 怎么构思、用了什么工具、踩过哪些坑"
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Idea Roaming #5 · 方法论盲盒 App · 项目实现报告</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,'PingFang SC','Microsoft YaHei',Segoe UI,Arial,sans-serif}
+body{background:#f7f8fc;color:#1f2937;line-height:1.7;padding:40px 20px}
+.container{max-width:960px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.06);overflow:hidden}
+header{background:linear-gradient(135deg,#0f0c29 0%,#302b63 50%,#24243e 100%);color:#fff;padding:48px 40px;text-align:center}
+header h1{font-size:32px;font-weight:800;line-height:1.3}
+header .sub{font-size:15px;color:#ffe66d;margin-top:8px;font-weight:500}
+header .meta{font-size:13px;color:#cfd2db;font-style:italic;margin-top:14px}
+.toc{background:#fef9e7;padding:20px 32px;border-bottom:1px solid #fde68a}
+.toc-title{font-size:13px;letter-spacing:1px;color:#92400e;font-weight:700;margin-bottom:10px}
+.toc ol{padding-left:22px;font-size:14px;color:#78350f}
+.toc ol li{margin:4px 0}
+.toc a{color:#c2410c;text-decoration:none}
+.toc a:hover{text-decoration:underline}
+main{padding:8px 40px 48px 40px}
+section{margin-top:36px}
+h2{font-size:24px;font-weight:800;color:#1f2937;padding-bottom:10px;border-bottom:3px solid #ff9f43;display:inline-block;margin-bottom:18px}
+h3{font-size:18px;font-weight:700;color:#374151;margin:24px 0 12px 0;border-left:4px solid #6366f1;padding-left:10px}
+h4{font-size:15px;font-weight:700;color:#4b5563;margin:18px 0 8px 0}
+p{margin:10px 0;color:#374151;font-size:15px}
+ul,ol{padding-left:24px;margin:10px 0}
+li{margin:6px 0;color:#374151;font-size:15px}
+.callout{background:#eff6ff;border-left:4px solid #3b82f6;padding:14px 18px;border-radius:8px;margin:16px 0}
+.callout-tip{background:#fffbeb;border-left-color:#f59e0b}
+.callout-warn{background:#fef2f2;border-left-color:#ef4444}
+.callout-success{background:#f0fdf4;border-left-color:#22c55e}
+.callout .title{font-weight:700;color:#1e40af;margin-bottom:6px;font-size:14px}
+.callout-tip .title{color:#92400e}
+.callout-warn .title{color:#991b1b}
+.callout-success .title{color:#166534}
+.callout .body{font-size:14px;color:#374151}
+code{background:#f1f5f9;color:#be185d;padding:2px 6px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:13px}
+pre{background:#1e293b;color:#e2e8f0;padding:16px;border-radius:10px;overflow-x:auto;font-family:Consolas,Monaco,monospace;font-size:13px;line-height:1.6;margin:14px 0}
+pre code{background:none;color:#e2e8f0;padding:0}
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:18px 0}
+.tool-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:18px}
+.tool-card .name{font-weight:700;color:#1f2937;font-size:15px;margin-bottom:4px}
+.tool-card .why{font-size:13px;color:#6b7280;line-height:1.6;margin-top:4px}
+.tool-card .when{font-size:12px;color:#9ca3af;font-style:italic;margin-top:6px}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f3f4f6;color:#1f2937;text-align:left;padding:10px 14px;font-weight:700;border-bottom:2px solid #e5e7eb}
+td{padding:10px 14px;border-bottom:1px solid #f3f4f6;color:#374151;vertical-align:top}
+tr:last-child td{border-bottom:none}
+.timeline{border-left:3px solid #ff9f43;padding-left:24px;margin:20px 0;position:relative}
+.tl-item{position:relative;margin-bottom:24px}
+.tl-item::before{content:'';position:absolute;left:-32px;top:6px;width:14px;height:14px;border-radius:50%;background:#ff9f43;border:3px solid #fff;box-shadow:0 0 0 2px #ff9f43}
+.tl-phase{font-size:12px;letter-spacing:1px;color:#c2410c;font-weight:700;text-transform:uppercase}
+.tl-title{font-size:16px;font-weight:700;color:#1f2937;margin:4px 0 6px 0}
+.tl-body{font-size:14px;color:#4b5563;line-height:1.7}
+.kbd{background:#f3f4f6;border:1px solid #d1d5db;border-radius:4px;padding:1px 6px;font-family:Consolas,monospace;font-size:12px;color:#374151}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:18px 0}
+.stat{background:linear-gradient(135deg,#fff7e0,#ffe6c4);border-radius:10px;padding:16px;text-align:center}
+.stat .num{font-size:26px;font-weight:800;color:#c2410c}
+.stat .label{font-size:12px;color:#78350f;margin-top:4px}
+.flow-step{background:#f8fafc;border-radius:10px;padding:14px 18px;margin:10px 0;display:flex;align-items:flex-start;gap:12px}
+.flow-step .num{background:#6366f1;color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.flow-step .content{flex:1}
+.flow-step .name{font-weight:700;color:#1f2937;font-size:14px}
+.flow-step .desc{font-size:13px;color:#6b7280;margin-top:4px}
+footer{background:#f9fafb;padding:24px 40px;text-align:center;font-size:12px;color:#6b7280;border-top:1px solid #e5e7eb}
+.footer-link{color:#c2410c;text-decoration:none;font-weight:600}
+@media (max-width:640px){
+  body{padding:0}
+  .container{border-radius:0;box-shadow:none}
+  header{padding:32px 20px}
+  header h1{font-size:24px}
+  main{padding:8px 20px 32px 20px}
+  .toc{padding:16px 20px}
+  pre{font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+  <h1>🎲 Idea Roaming #5 · 方法论盲盒 App</h1>
+  <div class="sub">项目实现复盘报告 · Project Implementation Report</div>
+  <div class="meta">From idea to PWA · Built with GitHub Copilot CLI (Claude Opus 4.7)<br>2026-05-14</div>
+</header>
+
+<div class="toc">
+  <div class="toc-title">📑 目录 · TABLE OF CONTENTS</div>
+  <ol>
+    <li><a href="#section-1">起源 —— 你最初的想法</a></li>
+    <li><a href="#section-2">构思阶段 —— 我是怎么想的</a></li>
+    <li><a href="#section-3">技术选型 —— 为什么是单文件 HTML + PWA</a></li>
+    <li><a href="#section-4">实现时间线 —— 一步步怎么走过来的</a></li>
+    <li><a href="#section-5">关键技术点深挖</a></li>
+    <li><a href="#section-6">用到的工具清单</a></li>
+    <li><a href="#section-7">新增的外部资源</a></li>
+    <li><a href="#section-8">数据统计与产物</a></li>
+    <li><a href="#section-9">复盘 —— 哪里走过弯路</a></li>
+  </ol>
+</div>
+
+<main>
+
+<!-- ========== SECTION 1 ========== -->
+<section id="section-1">
+  <h2>1️⃣ 起源 —— 你最初的想法</h2>
+
+  <p>你最初提出的需求很简洁，但信息量非常密集。我把它拆解为五个"需求维度"：</p>
+
+  <table>
+    <thead><tr><th>维度</th><th>你的原话 / 隐含意图</th><th>设计含义</th></tr></thead>
+    <tbody>
+    <tr><td><b>主题</b></td><td>"给大家普及一些有用的方法论"，举例 STAR 写年终总结</td><td>选材要覆盖思考/表达/执行/复盘四大类，且要真正能落地</td></tr>
+    <tr><td><b>场景</b></td><td>"很多时候不会处理不是不会，而是没有系统方法"</td><td>每个方法不能只给名字，必须给"什么时候用"+"怎么用"</td></tr>
+    <tr><td><b>调性</b></td><td>"欢乐地参与的同时，能有所收获"</td><td>不能像培训，要像游戏；不能纯娱乐，要有干货沉淀</td></tr>
+    <tr><td><b>形式</b></td><td>"做一个小型的 app 或者类似的方式"</td><td>需要互动载体，不能 PPT；倾向 Web 而非原生</td></tr>
+    <tr><td><b>价值主张</b></td><td>"体现我们与 AI 与时俱进"</td><td>AI 必须深度融合到玩法里，不是噱头</td></tr>
+    </tbody>
+  </table>
+
+  <p>后续在第二轮对话，你又补了一条关键约束：</p>
+
+  <div class="callout callout-warn">
+    <div class="title">⚠️ 关键约束：I 人友好</div>
+    <div class="body">"我希望可以尽量让大家有参与感，不至于冷场，毕竟团队里面是有很多的 I 人。"<br>这一句直接锁死了后面所有交互设计的方向 —— 不能是"抽到谁谁必须现场即兴"的硬模式。</div>
+  </div>
+</section>
+
+<!-- ========== SECTION 2 ========== -->
+<section id="section-2">
+  <h2>2️⃣ 构思阶段 —— 我是怎么想的</h2>
+
+  <h3>2.1 先看历史：你过去办的活动什么风格</h3>
+  <p>我做的第一件事不是动手写代码，而是先<b>调用 Outlook 工具，从你的 Sent Items 里搜 "idea roaming"</b>，看历史几期是怎么办的：</p>
+  <ul>
+    <li>第 2-4 期：午餐 + 奶茶 · 沪/锡双地连线 · 11:30-13:00</li>
+    <li>第 4 期：已经用 AI 做过 HTML 网页 → 说明你团队对 web 形态接受度高</li>
+    <li>整体调性：轻松、午休时段、跨地连线</li>
+  </ul>
+  <p>这给了我两个锚点：① 时间窗只有 ~1.5 小时，环节不能太多；② 用 HTML 网页有先例，不用解释技术形态。</p>
+
+  <h3>2.2 提炼核心隐喻："方法论盲盒"</h3>
+  <p>三个名字候选过：</p>
+  <ul>
+    <li>❌ "方法论小课堂" —— 太像培训，违反"游戏化"</li>
+    <li>❌ "AI 共创工作坊" —— 太务虚，焦点跑到 AI 上</li>
+    <li>✅ <b>"方法论盲盒"</b> —— 既有"惊喜感"（盲盒），又有"实物感"（每个方法像可收集的小卡片）</li>
+  </ul>
+
+  <h3>2.3 抛出初版玩法 + 用 ask_user 锁定方向</h3>
+  <p>构思了"4 大类 × 扭蛋 × 场景 PK × AI 同台"组合后，<b>没有直接动手写</b>，而是用 <code>ask_user</code> 工具问你 4 个关键问题：</p>
+  <ol>
+    <li>主题方向：要 4 大类混合 还是 单一类深挖？</li>
+    <li>玩法：扭蛋 / 场景 PK / AI 同台 三选哪些？</li>
+    <li>AI 怎么实现：实时调 API 还是预置答案？</li>
+    <li>需不需要附带邀请邮件？</li>
+  </ol>
+
+  <div class="callout callout-tip">
+    <div class="title">💡 设计原则</div>
+    <div class="body">在做大决策前用 <code>ask_user</code> 一次问清楚，比写完了改三遍快。后来这个习惯保留了 —— 双语化范围、PWA 分发方式都用了 ask_user。</div>
+  </div>
+</section>
+
+<!-- ========== SECTION 3 ========== -->
+<section id="section-3">
+  <h2>3️⃣ 技术选型 —— 为什么是单文件 HTML + PWA</h2>
+
+  <h3>3.1 形态选择：为什么不用 React / Vue / 原生 App？</h3>
+  <table>
+    <thead><tr><th>方案</th><th>优点</th><th>致命缺点</th><th>判断</th></tr></thead>
+    <tbody>
+    <tr><td>原生 App (iOS/Android)</td><td>体验最好</td><td>需要双平台开发 + 应用商店审核 + 公司证书</td><td>❌ 完全不可行</td></tr>
+    <tr><td>Electron 桌面 App</td><td>独立窗口</td><td>包大小 100MB+、跨端要打三个版本</td><td>❌ 用户也是这意见</td></tr>
+    <tr><td>React/Vue + 后端</td><td>工程化好</td><td>需要服务器、npm 依赖、构建工具链</td><td>❌ 杀鸡用牛刀</td></tr>
+    <tr><td><b>单文件 HTML (vanilla JS)</b></td><td>零依赖、零构建、邮件能附件发</td><td>代码可读性差</td><td>✅ 初版选这个</td></tr>
+    <tr><td><b>+ PWA 升级</b></td><td>可"装到桌面"、能离线</td><td>需要 HTTPS 托管</td><td>✅ GitHub Pages 解决</td></tr>
+    </tbody>
+  </table>
+
+  <h3>3.2 部署选择：为什么是 GitHub Pages</h3>
+  <ul>
+    <li>你已经有 <code>IrisHeMin/knowledge_base</code> 这个 Jekyll 站点，<b>账号、Pages 配置都现成的</b></li>
+    <li>HTTPS 自动配置（PWA 必须 HTTPS）</li>
+    <li>免费 · 永久托管 · 团队成员一个 URL 直接访问</li>
+    <li>但你后来说"不想暴露 knowledge_base" → 新建了独立 repo <code>idea-roaming-5</code></li>
+  </ul>
+
+  <h3>3.3 渲染策略：服务端 vs 客户端</h3>
+  <p>全部数据（24 个方法、18 个辩题、36 组 AI 救场论据）<b>直接以 JavaScript 字面量写在 HTML 里</b>，没有任何 fetch / API 调用。原因：</p>
+  <ul>
+    <li>数据量小（~130KB），一次性下载完毕</li>
+    <li>离线可用（Service Worker 缓存）</li>
+    <li>无 API key 泄露风险（不调外部 AI）</li>
+    <li>"AI 救场"是预生成的论据库，不是实时调用 —— 你最初就选了"预置 GPT 答案"</li>
+  </ul>
+</section>
+
+<!-- ========== SECTION 4 ========== -->
+<section id="section-4">
+  <h2>4️⃣ 实现时间线 —— 一步步怎么走过来的</h2>
+
+  <div class="timeline">
+
+    <div class="tl-item">
+      <div class="tl-phase">Phase 1 · 构思 & 起手</div>
+      <div class="tl-title">从聊天到首版 HTML</div>
+      <div class="tl-body">
+        调 Outlook 看历史 → 抛盲盒概念 → ask_user 锁 4 件事 → 创建单文件 <code>idea-roaming-5.html</code><br>
+        <b>产出</b>：6 个 tab（开场 / 扭蛋 / PK / AI / 弹幕墙 / 图鉴）、24 方法、10 PK 场景、5 AI duel
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-phase">Phase 2 · 修 bug</div>
+      <div class="tl-title">JS 字符串转义崩溃</div>
+      <div class="tl-body">
+        你截图说"其他 tab 不能用" → grep 定位到 <code>'Occam\\'s Razor'</code> 嵌套转义错误 → 改成 <code>"Occam's Razor"</code> 立刻恢复<br>
+        <b>教训</b>：单引号字符串内出现单引号要么换双引号，要么转义；混用会炸
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-phase">Phase 3 · 引导加强</div>
+      <div class="tl-title">从"抽中你自由发挥"到"抽中你照模板答"</div>
+      <div class="tl-body">
+        你提出关键 insight：<i>"大家可能根本不知道这些方法，要给讲解 → 示例 → 练习题"</i><br>
+        给每个方法补 <code>example</code> + <code>practice</code> 字段。<br>
+        实现细节：用 Node.js 写 <code>patch.js</code> 一次性改 24 个方法（避免 24 次 in-place edit），中间踩了 CRLF/LF 行尾不一致的坑，用 <code>.replace(/\r\n/g,'\n')</code> 解决
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-phase">Phase 4 · 加抽人</div>
+      <div class="tl-title">名单功能 + 沪 ⇄ 锡交替算法</div>
+      <div class="tl-body">
+        roster 数据结构 <code>{sh:[],wx:[]}</code> 存 localStorage。<br>
+        抽人算法：上次抽 sh → 这次必须 wx；同地内随机；记录历史避免短时间重复
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-phase">Phase 5 · 流程重构</div>
+      <div class="tl-title">先过方法 → 抽人 → 抽方法 → 试一道 → AI 救场</div>
+      <div class="tl-body">
+        Walk Through 大节加入（24 张可点开的卡片，按 4 大类分组）。<br>
+        Stage A/B/C 三段式 Play 流程：抽人 → 抽方法 → 练习题 + AI 参考答案
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-phase">Phase 6 · 压轴改造</div>
+      <div class="tl-title">"场景 PK"→ "男女大辩论"</div>
+      <div class="tl-body">
+        你说"两个人的 PK 太单薄，改成男女分队，用方法论辩论"<br>
+        新增：18 辩题、按方法论分组的辩论计时器、回合制双方投票计分。<br>
+        辩论方法池一开始 12 个 → 后来缩到 5 个（剔掉硬思考方法如 5 Why、奥卡姆，这些套不出辩论模板）
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-phase">Phase 7 · AI 救场迭代</div>
+      <div class="tl-title">三次大改</div>
+      <div class="tl-body">
+        v1：硬编码 sample 答案 → v2：method generator 按方法套模板拼接 → v3：<b>直接铺论据 + 30 秒口播稿</b>（论据库 DEBATE_ARGS 36 组 × 5 字段：thesis/reasons/example/root/opponentAssumption）<br>
+        中间你两次截图打脸"AI 给的完全不对"，最后定调："AI 救场的目的是给团队一段能直接念的话，不是教方法论"
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-phase">Phase 8 · 双语化</div>
+      <div class="tl-title">每页加英文</div>
+      <div class="tl-body">
+        用 <code>METHODS_EN</code> 对象 + <code>Object.assign</code> 合并 24 个方法的英文字段（避免改 24 处源数据）。<br>
+        UI 文案手工双语：tabs / intro / walk / play / debate / roster 全部加英文副本（<code>&lt;span class="en"&gt;</code>）
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-phase">Phase 9 · PWA 化</div>
+      <div class="tl-title">从"HTML 文件"到"装到桌面的 App"</div>
+      <div class="tl-body">
+        创建 <code>manifest.webmanifest</code> + <code>sw.js</code> + 图标（SVG + 用 PowerShell + System.Drawing 生成 192/512 PNG）。<br>
+        push 到 GitHub Pages（先在 knowledge_base 子目录 → 你不想暴露 → 新建独立 repo <code>idea-roaming-5</code> + <code>gh repo create</code> + <code>gh api</code> 启用 Pages）
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-phase">Phase 10 · PWA 修坑</div>
+      <div class="tl-title">三个常见 PWA 坑全踩了一遍</div>
+      <div class="tl-body">
+        ① <b>桌面窗口又窄又高</b> → manifest 里 <code>orientation:portrait</code> 强制了手机比例 → 去掉<br>
+        ② <b>找不到安装按钮</b> → <code>beforeinstallprompt</code> 没触发（已装过 / Edge 管控）→ 改成始终显示按钮 + 浏览器分流的图文教学<br>
+        ③ <b>看不到新版本</b> → Service Worker 用了 cache-first → 改成 HTML 用 network-first，静态资源 cache-first
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-phase">Phase 11 · 推广</div>
+      <div class="tl-title">Newsletter 邮件 + 直接发到你邮箱</div>
+      <div class="tl-body">
+        生成中英双语 HTML newsletter（&lt;table&gt; 布局兼容 Outlook）→ 调用 Outlook COM (<code>New-Object -ComObject Outlook.Application</code>) 直接发到你邮箱，方便转发<br>
+        第一版深色背景在 Outlook 暗色模式下不可读 → 改成浅米黄 + 白底高对比度
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ========== SECTION 5 ========== -->
+<section id="section-5">
+  <h2>5️⃣ 关键技术点深挖</h2>
+
+  <h3>5.1 AI 救场的三次重构 —— 最值得拿出来讲的一段</h3>
+  <p>这是整个项目里花时间最多、推翻最多次的部分。三版的核心差异：</p>
+  <table>
+    <thead><tr><th>版本</th><th>实现方式</th><th>问题</th></tr></thead>
+    <tbody>
+    <tr><td>v1</td><td>每个方法硬编码一个 sample 答案</td><td>跟当前辩题完全无关 —— 你截图"用 SCQA 辩 AA 制，给出的却是周报必须写的内容"</td></tr>
+    <tr><td>v2</td><td>方法 × 辩题 generator：把辩题论据按方法套路拼装</td><td>对 STAR/SCQA 等表达方法还行，但 5 Why / 奥卡姆这类硬思考方法套不出有意义的内容</td></tr>
+    <tr><td>v3 ✅</td><td>直接铺 6 块结构化论据 + 30 秒口播稿，方法论降级为底部小字"想按 XX 组织？"</td><td>救场不是教方法，是给团队一段能直接念的话</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-success">
+    <div class="title">✅ 最终方案：DEBATE_ARGS 数据结构</div>
+    <pre><code>{
+  topic: "周报到底该不该写",
+  pro: {
+    thesis: "周报必须写 —— 它是工作可见性的护身符",
+    reasons: ["让老板看到进度，避免被'忘记'", "强迫自己复盘", "对齐期望"],
+    example: "上次 SHA 团队推迟交付，就是因为周报里没提风险...",
+    root: "不写周报 ≠ 没事，而是把'被记住'的机会让给别人",
+    opponentAssumption: "反方会说'周报浪费时间' —— 但前提是写得没结构"
+  },
+  con: {...}
+}</code></pre>
+  </div>
+
+  <h3>5.2 辩论方法收窄：从 12 → 5</h3>
+  <p>原本 12 个方法都可以抽来辩论，但你试用后发现"奥卡姆剃刀 / 5 Why / 第一性原理"在辩论场景毫无用武之地。我做了筛选：</p>
+  <ul>
+    <li>✅ <b>保留 5 个表达类方法</b>：金字塔 / SCQA / PREP / STAR / 黄金圈 —— 都是"先抛结论再展开"的论证型结构</li>
+    <li>❌ <b>剔掉 7 个硬思考方法</b>：5 Why / MECE / 奥卡姆 / 第一性原理 / SWOT / 5W1H / FFC —— 这些要现场列因果链，模板套不出来</li>
+  </ul>
+  <p>但代码里 12 个的生成器都保留着（dead code），以备未来扩回。</p>
+
+  <h3>5.3 Service Worker 策略调整</h3>
+  <p>SW 缓存策略经过两次迭代：</p>
+  <ul>
+    <li><b>v1（cache-first 全包）</b>：所有请求先查缓存 → 用户永远看到旧版，必须手动清缓存才能更新 ❌</li>
+    <li><b>v2（混合策略）</b>：HTML / 导航请求走 <b>network-first</b>（先拿新的，离线才退回缓存）；静态资源 (PNG/SVG/CSS) 走 <b>cache-first</b>（极少变） ✅</li>
+  </ul>
+
+  <pre><code>self.addEventListener('fetch', e => {
+  const isHTML = e.request.mode === 'navigate' ||
+                 (e.request.headers.get('accept') || '').includes('text/html');
+  if (isHTML) {
+    // network-first: updates show up immediately on refresh
+    e.respondWith(fetch(e.request).catch(() => caches.match('./index.html')));
+  } else {
+    // cache-first for static assets
+    e.respondWith(caches.match(e.request).then(hit => hit || fetch(e.request)));
+  }
+});</code></pre>
+
+  <h3>5.4 Outlook 暗色模式踩坑</h3>
+  <p>Newsletter 第一版用深紫色 Hero + 黑色 App 召唤区。在 Outlook 暗色模式下 Outlook 会"自动反色"试图救场，结果：</p>
+  <ul>
+    <li>白字被反色成深色 → 跟原本就深色的背景叠加 → 完全看不到</li>
+  </ul>
+  <p>解决方案：<b>整封邮件全部用浅色背景 + 深色文字</b>，accent 只用饱和度高的橙黄（暗模式反色后仍有对比）。</p>
+</section>
+
+<!-- ========== SECTION 6 ========== -->
+<section id="section-6">
+  <h2>6️⃣ 用到的工具清单</h2>
+
+  <h3>6.1 内置工具（CLI Agent 自带）</h3>
+  <div class="tool-grid">
+    <div class="tool-card">
+      <div class="name">📂 view / create / edit</div>
+      <div class="why">读文件、新建文件、字符串替换 —— 整个项目 95% 的代码改动都靠 edit</div>
+      <div class="when">每一轮迭代都在用</div>
+    </div>
+    <div class="tool-card">
+      <div class="name">🔍 grep / glob</div>
+      <div class="why">在 13 万字符的 HTML 文件里精确定位代码段；比 powershell Select-String 快</div>
+      <div class="when">查找 DOM id、函数名、bug 行号</div>
+    </div>
+    <div class="tool-card">
+      <div class="name">💻 powershell (sync)</div>
+      <div class="why">跑 git / gh / node --check / 文件复制 / Outlook COM / System.Drawing 生成图标</div>
+      <div class="when">所有需要 shell 的事</div>
+    </div>
+    <div class="tool-card">
+      <div class="name">❓ ask_user</div>
+      <div class="why">关键决策点强制阻塞 → 等你确认方向再继续</div>
+      <div class="when">主题方向 / AI 实现方式 / 部署方案 / 双语化范围</div>
+    </div>
+    <div class="tool-card">
+      <div class="name">🌐 web_fetch / Invoke-WebRequest</div>
+      <div class="why">验证 GitHub Pages 部署生效、检查 manifest 能被正确返回</div>
+      <div class="when">PWA 部署后的健康检查</div>
+    </div>
+    <div class="tool-card">
+      <div class="name">📊 report_intent</div>
+      <div class="why">每次切换阶段时告诉你"我正在干什么"</div>
+      <div class="when">阶段切换</div>
+    </div>
+  </div>
+
+  <h3>6.2 系统命令（通过 powershell 调用）</h3>
+  <table>
+    <thead><tr><th>命令</th><th>用途</th></tr></thead>
+    <tbody>
+    <tr><td><code>git</code> (add/commit/push/pull --rebase)</td><td>版本管理 + 同步到 GitHub</td></tr>
+    <tr><td><code>gh repo create</code></td><td>命令行直接建 GitHub repo，省去网页操作</td></tr>
+    <tr><td><code>gh api -X POST /repos/.../pages</code></td><td>用 GitHub REST API 开启 Pages，比网页设置快</td></tr>
+    <tr><td><code>node --check</code></td><td>每次大改后校验 JS 语法（避免 HTML 里嵌套引号炸掉）</td></tr>
+    <tr><td><code>Add-Type System.Drawing</code></td><td>用 .NET 在本地生成 192/512 PNG 图标（没装 ImageMagick）</td></tr>
+    <tr><td><code>New-Object -ComObject Outlook.Application</code></td><td>直接调本地 Outlook 发邮件 / 读 Sent Items</td></tr>
+    </tbody>
+  </table>
+
+  <h3>6.3 决策原则：什么时候用什么</h3>
+  <div class="callout">
+    <div class="title">📋 我的工具选择逻辑</div>
+    <div class="body">
+      <ul>
+        <li><b>能 view/edit 解决就不写 powershell</b>：单点的字符串改动 → edit；批量重命名或要执行逻辑 → powershell</li>
+        <li><b>能 grep 就不 Get-Content + Select-String</b>：grep 跨平台、对大文件更快</li>
+        <li><b>大决策一定 ask_user</b>：减少返工。这个项目我估计 ask_user 至少救了 2-3 次大改</li>
+        <li><b>能在本地解决就不调外部 API</b>：图标用 System.Drawing 生成 vs 调 OpenAI DALL-E；前者零成本零延迟</li>
+        <li><b>能用现成账号就不要新建</b>：先想到用你的 IrisHeMin GitHub 账号 + 现成的 Pages 配置</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SECTION 7 ========== -->
+<section id="section-7">
+  <h2>7️⃣ 新增的外部资源</h2>
+
+  <p>项目过程中确实"新增"了一些资源，但都是<b>免费 + 已有账号能用</b>的：</p>
+
+  <table>
+    <thead><tr><th>新增项</th><th>位置</th><th>性质</th></tr></thead>
+    <tbody>
+    <tr><td>GitHub Repo</td><td><a href="https://github.com/IrisHeMin/idea-roaming-5">github.com/IrisHeMin/idea-roaming-5</a></td><td>新建 · 公开 · 永久免费</td></tr>
+    <tr><td>GitHub Pages 站点</td><td><a href="https://irishemin.github.io/idea-roaming-5/">irishemin.github.io/idea-roaming-5</a></td><td>新启用 · 自动 HTTPS</td></tr>
+    <tr><td>本地工作目录</td><td><code>C:\Users\minh\Projects\idea-roaming-5\</code></td><td>新建 · 268 KB</td></tr>
+    <tr><td>Session 文件</td><td><code>.copilot\session-state\...\files\idea-roaming-5.html</code></td><td>新建 · 130 KB</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-success">
+    <div class="title">✅ 没有引入任何付费 / 新平台账号</div>
+    <div class="body">没用 Vercel / Netlify / Firebase / OpenAI API / 任何商业 SaaS。整个项目"运行时成本 = 0 元 / 月"。</div>
+  </div>
+</section>
+
+<!-- ========== SECTION 8 ========== -->
+<section id="section-8">
+  <h2>8️⃣ 数据统计与产物</h2>
+
+  <div class="stat-row">
+    <div class="stat"><div class="num">24</div><div class="label">方法论</div></div>
+    <div class="stat"><div class="num">18</div><div class="label">辩论题目</div></div>
+    <div class="stat"><div class="num">36</div><div class="label">AI 救场论据组</div></div>
+    <div class="stat"><div class="num">5</div><div class="label">辩论用方法</div></div>
+    <div class="stat"><div class="num">~130KB</div><div class="label">主 HTML</div></div>
+    <div class="stat"><div class="num">268KB</div><div class="label">整个 PWA</div></div>
+  </div>
+
+  <h3>8.1 文件清单</h3>
+  <table>
+    <thead><tr><th>文件</th><th>大小</th><th>作用</th></tr></thead>
+    <tbody>
+    <tr><td><code>index.html</code></td><td>~130 KB</td><td>主 App，CSS/JS/数据全在里面</td></tr>
+    <tr><td><code>manifest.webmanifest</code></td><td>0.6 KB</td><td>PWA 元数据（名字/图标/启动模式）</td></tr>
+    <tr><td><code>sw.js</code></td><td>1.1 KB</td><td>Service Worker，混合缓存策略</td></tr>
+    <tr><td><code>icon.svg / icon-192.png / icon-512.png</code></td><td>36 KB</td><td>App 图标（黑底 + 黄色礼盒 + 问号）</td></tr>
+    <tr><td><code>README.md</code></td><td>0.3 KB</td><td>repo 介绍 + 链接</td></tr>
+    <tr><td><code>idea-roaming-5-newsletter.html</code></td><td>12 KB</td><td>推广邮件，Outlook 兼容布局</td></tr>
+    </tbody>
+  </table>
+
+  <h3>8.2 功能 Section 一览</h3>
+  <div class="flow-step"><div class="num">1</div><div class="content"><div class="name">🏠 开场</div><div class="desc">欢迎语 + 6 个流程步骤 + 跳转按钮</div></div></div>
+  <div class="flow-step"><div class="num">2</div><div class="content"><div class="name">📚 Walk Through · 24 方法</div><div class="desc">按 4 大类分组，点卡片展开详细 + 示例</div></div></div>
+  <div class="flow-step"><div class="num">3</div><div class="content"><div class="name">🎲 Play · 抽人 → 抽方法 → 试一题</div><div class="desc">Stage A/B/C 三段式 + AI 参考答案</div></div></div>
+  <div class="flow-step"><div class="num">4</div><div class="content"><div class="name">🆚 男女大辩论</div><div class="desc">18 辩题、回合计时、AI 救场、计分</div></div></div>
+  <div class="flow-step"><div class="num">5</div><div class="content"><div class="name">👥 名单管理</div><div class="desc">沪/锡两地名单 localStorage 持久化</div></div></div>
+</section>
+
+<!-- ========== SECTION 9 ========== -->
+<section id="section-9">
+  <h2>9️⃣ 复盘 —— 哪里走过弯路</h2>
+
+  <h3>9.1 弯路清单</h3>
+  <ol>
+    <li><b>JS 字符串转义错误炸全场</b>：单引号嵌套写错一处导致整个 script 块不执行，5 个 tab 全废。<br>→ 教训：每次大改后必须跑 <code>node --check</code></li>
+    <li><b>AI 救场绕弯子绕了三圈</b>：以为方法越多越好、模板套得越严越好。实际用户要的就是"给我一段能念的话"。<br>→ 教训：先听用户原始诉求，别自作主张抽象</li>
+    <li><b>PWA 上来就用 cache-first</b>：导致用户看不到任何更新。<br>→ 教训：HTML 永远应该 network-first</li>
+    <li><b>manifest 写 portrait orientation</b>：桌面也按手机尺寸开窗 → 用户截图反馈窗口奇怪。<br>→ 教训：orientation 对桌面端是干扰项</li>
+    <li><b>Newsletter 用深色背景</b>：Outlook 暗色模式破坏可读性。<br>→ 教训：邮件 HTML 永远首选浅色高对比度</li>
+    <li><b>Jekyll 重复部署污染 knowledge_base</b>：把 PWA 放在私人 knowledge_base 子目录 → 你不想暴露。<br>→ 教训：项目应该有独立的部署目录</li>
+  </ol>
+
+  <h3>9.2 做对的几件事</h3>
+  <ul>
+    <li>✅ <b>开始之前 ask_user 锁方向</b> —— 省了至少两次大返工</li>
+    <li>✅ <b>用 Outlook 看历史活动风格</b> —— 调性一开始就对了</li>
+    <li>✅ <b>渐进式增强</b>：先单文件 HTML 跑通 → 再 PWA 化 → 再 Newsletter，每步可单独发布</li>
+    <li>✅ <b>数据和渲染分离</b>：24 方法 / 18 辩题 / 36 论据都是数据对象，渲染靠模板字符串，改文案不动 UI</li>
+    <li>✅ <b>每个决策都说明 why</b>：你能看懂"为什么这么做"，下次想自己改也容易</li>
+  </ul>
+
+  <h3>9.3 如果重来一次，会怎么改进</h3>
+  <ul>
+    <li>第一版就上 PWA，省得后面再补 manifest/sw</li>
+    <li>AI 救场直接做 v3 版本（论据库），跳过 v1/v2</li>
+    <li>独立 repo 一步到位，不要先放 knowledge_base</li>
+    <li>Newsletter 直接用浅色模板</li>
+  </ul>
+
+  <div class="callout callout-tip">
+    <div class="title">🎯 总结一句话</div>
+    <div class="body">这个项目的核心不是"用了什么花哨技术"，而是"<b>用最朴素的工具（HTML/CSS/JS + Git + Outlook COM）+ 频繁的用户校对</b>"，把一个模糊的活动想法落成一个能装到桌面、能 forward 给团队的可分发产品。"与 AI 与时俱进"不是噱头 —— 整个过程都是你想、AI 写、你验、AI 改的协作循环。</div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  📂 项目仓库：<a href="https://github.com/IrisHeMin/idea-roaming-5" class="footer-link">github.com/IrisHeMin/idea-roaming-5</a><br>
+  🌐 在线访问：<a href="https://irishemin.github.io/idea-roaming-5/" class="footer-link">irishemin.github.io/idea-roaming-5</a><br>
+  📅 Event: 5 月 19 日（周一）11:30–13:30 · NETSHA Idea Roaming #5<br>
+  <span style="color:#9ca3af;font-style:italic">Report generated by GitHub Copilot CLI · Claude Opus 4.7 · 2026-05-14</span>
+</footer>
+
+</div>
+
+</body>
+</html>
