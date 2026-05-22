@@ -4,8 +4,8 @@ title: AI Deep Dive
 permalink: /ai-deep-dive/
 ---
 
-<h2>🔬 AI深度解析播客</h2>
-<p class="page-description">每期聚焦一个AI主题，做20-30分钟的深度分析。不追热点，追本质。像跟一个懂行的朋友深聊——有数据、有观点、有预判。</p>
+<h2>🔬 AI 深度解析专栏</h2>
+<p class="page-description">每期聚焦一个 AI 主题，深度分析不追热点，只追本质。短段落、强观点、有数据，3-5 分钟读完一个领域。</p>
 
 <ul class="post-list">
   {% assign deepdive_posts = site.posts | where_exp: "post", "post.path contains 'ai-deep-dive/'" | sort: "date" | reverse %}
