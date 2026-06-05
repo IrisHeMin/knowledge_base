@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Troubleshoot Buddy & CaseNote — AI Community Share</title>
+<style>
+/* ============ Base ============ */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0e1a;
+  --bg-2:#0f1424;
+  --card:#151a2e;
+  --card-2:#1a2140;
+  --border:#243056;
+  --text:#e8ecf5;
+  --muted:#8b95b3;
+  --accent:#4a9eff;
+  --accent-2:#7b5cff;
+  --accent-3:#00d4aa;
+  --warn:#ffb74d;
+  --danger:#ff5a7a;
+  --grad: linear-gradient(135deg,#4a9eff 0%, #7b5cff 50%, #00d4aa 100%);
+  --grad-soft: linear-gradient(135deg, rgba(74,158,255,.15), rgba(123,92,255,.15));
+}
+html,body{background:var(--bg);color:var(--text);font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;overflow-x:hidden}
+body{
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(74,158,255,.18), transparent 60%),
+    radial-gradient(900px 500px at 110% 10%, rgba(123,92,255,.18), transparent 60%),
+    radial-gradient(800px 400px at 50% 120%, rgba(0,212,170,.12), transparent 60%),
+    var(--bg);
+}
+a{color:var(--accent);text-decoration:none}
+::selection{background:rgba(123,92,255,.35);color:#fff}
+
+/* ============ Layout ============ */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  backdrop-filter:blur(14px);
+  background:rgba(10,14,26,.75);
+  border-bottom:1px solid var(--border);
+}
+.nav-inner{
+  max-width:1280px;margin:0 auto;padding:14px 32px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+}
+.brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.5px;flex-shrink:0}
+.brand-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--grad);
+  box-shadow:0 0 12px var(--accent);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 8px var(--accent)}
+  50%{box-shadow:0 0 20px var(--accent-2)}
+}
+.nav-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.nav-tabs a{
+  padding:8px 12px;border-radius:8px;color:var(--muted);font-size:13px;font-weight:500;
+  transition:all .25s;
+}
+.nav-tabs a:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.nav-tabs a.active{color:#fff;background:var(--grad-soft);border:1px solid rgba(74,158,255,.4)}
+
+section{
+  max-width:1280px;margin:0 auto;padding:120px 32px 80px;
+  scroll-margin-top:80px;
+}
+.section-tag{
+  display:inline-block;padding:6px 14px;border-radius:999px;
+  background:var(--grad-soft);border:1px solid rgba(74,158,255,.3);
+  font-size:12px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;font-weight:600;
+  margin-bottom:18px;
+}
+h1,h2,h3{font-weight:700;letter-spacing:-.5px}
+h2{font-size:42px;margin-bottom:14px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block}
+.sub{color:var(--muted);font-size:17px;max-width:760px;margin-bottom:50px}
+
+/* ============ HERO ============ */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  position:relative;padding-top:80px;
+}
+.hero-grid{
+  position:absolute;inset:0;z-index:0;opacity:.4;
+  background-image:
+    linear-gradient(rgba(74,158,255,.08) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(74,158,255,.08) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse at center, black 30%, transparent 75%);
+}
+.hero-inner{position:relative;z-index:1}
+.hero h1{
+  font-size:84px;line-height:1.05;margin-bottom:24px;
+}
+.hero h1 .grad{
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  background-size:200% 100%;
+  animation:flow 6s linear infinite;
+}
+@keyframes flow{
+  0%{background-position:0% 50%}
+  100%{background-position:200% 50%}
+}
+.hero p.lead{font-size:22px;color:var(--muted);max-width:780px;margin-bottom:40px}
+.hero-meta{
+  display:flex;gap:24px;flex-wrap:wrap;align-items:center;margin-bottom:40px;
+  font-size:14px;color:var(--muted);
+}
+.hero-meta .chip{
+  padding:8px 16px;border-radius:999px;background:var(--card);border:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.hero-meta .chip svg{width:16px;height:16px;color:var(--accent)}
+.hero-cta{display:flex;gap:16px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border-radius:12px;
+  font-weight:600;font-size:15px;cursor:pointer;border:none;transition:all .25s;text-decoration:none;
+}
+.btn-primary{background:var(--grad);color:#fff;box-shadow:0 8px 30px rgba(74,158,255,.35)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(123,92,255,.5)}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--card);border-color:var(--accent)}
+.scroll-indicator{
+  position:absolute;bottom:30px;left:50%;transform:translateX(-50%);
+  color:var(--muted);font-size:12px;letter-spacing:3px;display:flex;flex-direction:column;align-items:center;gap:8px;
+  animation:bob 2.4s ease-in-out infinite;
+}
+@keyframes bob{
+  0%,100%{transform:translate(-50%,0)}
+  50%{transform:translate(-50%,8px)}
+}
+
+/* ============ Cards ============ */
+.grid{display:grid;gap:20px}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+@media (max-width:980px){
+  .grid-3,.grid-2,.grid-4{grid-template-columns:1fr}
+  .hero h1{font-size:54px}
+  h2{font-size:32px}
+}
+.card{
+  background:var(--card);border:1px solid var(--border);border-radius:18px;
+  padding:28px;transition:all .35s;position:relative;overflow:hidden;
+}
+.card::before{
+  content:"";position:absolute;inset:0;border-radius:18px;padding:1px;
+  background:linear-gradient(135deg,transparent,rgba(74,158,255,.3),transparent);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .35s;
+}
+.card:hover{transform:translateY(-6px);background:var(--card-2);border-color:rgba(74,158,255,.4)}
+.card:hover::before{opacity:1}
+.card .icon{
+  width:48px;height:48px;border-radius:12px;background:var(--grad-soft);
+  display:flex;align-items:center;justify-content:center;margin-bottom:18px;
+  font-size:24px;
+}
+.card h3{font-size:18px;margin-bottom:10px}
+.card p{color:var(--muted);font-size:14px;line-height:1.7}
+
+/* ============ Highlight Scene Box ============ */
+.scene-box{
+  background:var(--grad-soft);
+  border:1px solid rgba(74,158,255,.35);
+  border-radius:18px;padding:30px 36px;margin-bottom:40px;
+  position:relative;overflow:hidden;
+}
+.scene-box::after{
+  content:"";position:absolute;top:-40%;right:-10%;width:300px;height:300px;
+  background:radial-gradient(circle, rgba(123,92,255,.25), transparent 70%);
+  pointer-events:none;
+}
+.scene-box .label{
+  font-size:11px;letter-spacing:3px;color:var(--accent);font-weight:700;margin-bottom:12px;text-transform:uppercase;
+}
+.scene-box .scene-text{font-size:22px;font-weight:600;line-height:1.5;position:relative;z-index:1}
+.scene-box .scene-text .hi{color:var(--accent-3)}
+
+/* ============ Block divider with letter ============ */
+.why-block{margin-bottom:80px}
+.why-block-title{
+  display:flex;align-items:center;gap:14px;margin-bottom:24px;
+}
+.why-block-title .num{
+  width:44px;height:44px;border-radius:12px;background:var(--grad);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#fff;
+  box-shadow:0 6px 20px rgba(74,158,255,.4);
+}
+.why-block-title h3{font-size:26px}
+
+/* ============ vs Table ============ */
+.vs-wrap{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:stretch;border-radius:18px;overflow:hidden;border:1px solid var(--border)}
+.vs-col{padding:28px}
+.vs-col h4{font-size:16px;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.vs-left{background:rgba(255,90,122,.05)}
+.vs-left h4{color:var(--danger)}
+.vs-right{background:rgba(0,212,170,.06)}
+.vs-right h4{color:var(--accent-3)}
+.vs-divider{width:1px;background:var(--border);position:relative}
+.vs-divider::before{
+  content:"VS";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:var(--bg);padding:8px 12px;border-radius:999px;font-size:11px;font-weight:700;color:var(--muted);border:1px solid var(--border)
+}
+.vs-row{
+  display:flex;align-items:flex-start;gap:10px;padding:10px 0;
+  font-size:14px;color:var(--text);border-bottom:1px dashed rgba(255,255,255,.06);
+}
+.vs-row:last-child{border-bottom:none}
+.vs-row .dot{flex-shrink:0;margin-top:8px;width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.6}
+.vs-left .vs-row{color:#d8a0aa}
+.vs-right .vs-row{color:#a0e0cc}
+@media (max-width:980px){
+  .vs-wrap{grid-template-columns:1fr}
+  .vs-divider{width:auto;height:1px}
+  .vs-divider::before{position:relative;top:0;left:0;transform:none;display:inline-block}
+}
+
+/* ============ Quote ============ */
+.quote{
+  margin-top:28px;padding:22px 26px;
+  background:var(--card);border-left:4px solid var(--accent);border-radius:8px;
+  font-size:17px;color:var(--text);
+}
+.quote .em{color:var(--accent-3);font-weight:600}
+
+/* ============ Thinking principles ============ */
+.principle-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:20px}
+@media (max-width:980px){.principle-grid{grid-template-columns:1fr}}
+.principle{
+  background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px;
+  position:relative;overflow:hidden;
+}
+.principle .big-num{
+  position:absolute;top:-20px;right:-10px;font-size:140px;font-weight:900;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  opacity:.18;line-height:1;
+}
+.principle h4{font-size:20px;margin-bottom:10px;position:relative;z-index:1}
+.principle p{color:var(--muted);font-size:14px;line-height:1.7;position:relative;z-index:1}
+.principle .tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.principle .tag{padding:4px 10px;border-radius:6px;background:var(--card-2);font-size:12px;color:var(--accent)}
+
+/* ============ How it works (split) ============ */
+.impl-wrap{
+  background:var(--card);border:1px solid var(--border);border-radius:18px;padding:32px;margin-bottom:30px;
+}
+.impl-head{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.impl-head .ic{
+  width:48px;height:48px;border-radius:12px;background:var(--grad);
+  display:flex;align-items:center;justify-content:center;font-size:24px;
+  box-shadow:0 8px 24px rgba(74,158,255,.35);
+}
+.impl-head h3{font-size:22px}
+.impl-head .meta{color:var(--muted);font-size:13px;margin-top:2px}
+
+.impl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+@media(max-width:980px){.impl-grid{grid-template-columns:1fr}}
+.impl-card{
+  background:var(--card-2);border:1px solid var(--border);border-radius:12px;padding:18px;
+}
+.impl-card .impl-tag{
+  display:inline-block;font-size:11px;font-weight:700;letter-spacing:1.5px;
+  color:var(--accent);background:rgba(74,158,255,.12);padding:3px 10px;border-radius:6px;margin-bottom:10px;
+}
+.impl-card h5{font-size:15px;margin-bottom:8px;color:var(--text)}
+.impl-card p{font-size:13px;color:var(--muted);line-height:1.7}
+.impl-card ul{font-size:13px;color:var(--muted);line-height:1.8;padding-left:18px;margin-top:6px}
+.impl-card ul li::marker{color:var(--accent)}
+.impl-card code{
+  background:#0c1020;padding:2px 8px;border-radius:5px;font-family:Menlo,Consolas,monospace;
+  font-size:12px;color:var(--accent-3);
+}
+
+/* usage pair inside impl card */
+.usage-pair{
+  margin-top:14px;padding-top:14px;border-top:1px dashed var(--border);
+  display:flex;flex-direction:column;gap:10px;
+}
+.usage-row{
+  background:#0c1020;border:1px solid var(--border);border-radius:8px;padding:10px 12px;
+}
+.usage-cmd{
+  font-family:Menlo,Consolas,monospace;font-size:12.5px;color:var(--text);
+  margin-bottom:6px;word-break:break-all;
+}
+.usage-cmd .p{color:var(--muted);margin-right:6px}
+.usage-cmd .hl{color:var(--accent-3);background:rgba(0,212,170,.1);padding:1px 6px;border-radius:4px}
+.usage-effect{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.usage-effect .tag-on{
+  background:rgba(74,158,255,.15);color:var(--accent);
+  padding:2px 8px;border-radius:5px;font-weight:700;font-size:11px;
+}
+.usage-effect .plus{color:var(--accent);font-weight:700}
+
+.flow-line{
+  display:flex;align-items:center;gap:12px;justify-content:center;
+  padding:14px 18px;background:var(--bg);border:1px dashed var(--border);border-radius:10px;
+  font-size:13px;color:var(--muted);margin-top:8px;
+}
+.flow-line .pill{
+  background:var(--card);padding:6px 12px;border-radius:8px;border:1px solid var(--border);
+  color:var(--text);font-weight:600;font-size:13px;
+}
+.flow-line .arr{color:var(--accent);font-weight:700}
+
+/* Layered table */
+.layer-table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13px}
+.layer-table th,.layer-table td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.layer-table th{color:var(--muted);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700}
+.layer-table tr:last-child td{border-bottom:none}
+.layer-table .badge{display:inline-block;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:700}
+.badge.s{background:rgba(255,90,122,.15);color:var(--danger)}
+.badge.n{background:rgba(255,183,77,.15);color:var(--warn)}
+.badge.c{background:rgba(74,158,255,.15);color:var(--accent)}
+.layer-table code{font-family:Menlo,Consolas,monospace;font-size:12px;color:var(--accent-3)}
+
+/* ============ Demo (Section 5) ============ */
+.demo-tabs{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.demo-tab{
+  padding:10px 20px;border-radius:10px;background:var(--card);border:1px solid var(--border);
+  cursor:pointer;font-size:14px;font-weight:600;color:var(--muted);transition:all .25s;
+}
+.demo-tab.active{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 6px 24px rgba(74,158,255,.35)}
+.demo-stage{display:none}
+.demo-stage.active{display:block}
+
+.terminal{
+  background:#0c1020;border:1px solid var(--border);border-radius:14px;overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+.terminal-head{
+  display:flex;align-items:center;gap:8px;padding:12px 16px;
+  background:#070a14;border-bottom:1px solid var(--border);
+}
+.terminal-head .dot{width:12px;height:12px;border-radius:50%}
+.terminal-head .dot.r{background:#ff5f56}
+.terminal-head .dot.y{background:#ffbd2e}
+.terminal-head .dot.g{background:#27c93f}
+.terminal-head .title{margin-left:auto;font-size:12px;color:var(--muted);font-family:Menlo,Consolas,monospace}
+
+/* Click-driven avatar row */
+.avatar-bar{
+  display:flex;justify-content:space-around;align-items:center;
+  padding:18px;background:#070a14;border-bottom:1px solid var(--border);gap:18px;
+}
+.av-btn{
+  display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;
+  padding:12px 22px;border-radius:14px;background:transparent;border:2px dashed transparent;
+  transition:all .3s;min-width:160px;
+}
+.av-btn:hover{background:rgba(255,255,255,.04)}
+.av-btn .big-av{
+  width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:30px;font-weight:700;
+}
+.av-btn .lbl{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:1.5px}
+.av-btn .hint{font-size:11px;color:var(--muted);opacity:.6}
+.av-btn.you .big-av{background:var(--card-2);color:var(--accent);border:2px solid var(--border)}
+.av-btn.bot .big-av{background:var(--grad);color:#fff}
+.av-btn.next{
+  border-color:var(--accent);
+  background:rgba(74,158,255,.08);
+  animation:nextPulse 1.6s ease-in-out infinite;
+}
+.av-btn.next .hint{color:var(--accent);opacity:1;font-weight:700}
+@keyframes nextPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(74,158,255,.5)}
+  50%{box-shadow:0 0 0 10px rgba(74,158,255,0)}
+}
+.av-btn.disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+.av-btn.done .big-av{opacity:.7}
+
+.chat{padding:20px;min-height:420px;max-height:520px;overflow-y:auto;font-family:Menlo,Consolas,"Microsoft YaHei",monospace;font-size:14px}
+.msg{margin-bottom:16px;display:flex;gap:12px;opacity:0;transform:translateY(8px);transition:all .4s}
+.msg.show{opacity:1;transform:translateY(0)}
+.avatar{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;
+}
+.avatar.you{background:var(--card-2);color:var(--accent)}
+.avatar.bot{background:var(--grad);color:#fff}
+.bubble{
+  background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;
+  max-width:100%;flex:1;
+}
+.bubble.bot{background:var(--card-2)}
+.bubble .name{font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:700;letter-spacing:1px}
+.bubble .body{color:var(--text);line-height:1.7;font-size:13.5px;white-space:pre-wrap}
+.bubble .body .h{color:var(--accent-3);font-weight:700}
+.bubble .body .layer{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;margin-right:6px}
+.bubble .body .layer.s{background:rgba(255,90,122,.15);color:var(--danger)}
+.bubble .body .layer.n{background:rgba(255,183,77,.15);color:var(--warn)}
+.bubble .body .layer.c{background:rgba(74,158,255,.15);color:var(--accent)}
+
+.demo-side{margin-top:0}
+.prob-panel{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;
+  position:sticky;top:90px;
+}
+.prob-panel h5{font-size:12px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:14px}
+.prob-row{margin-bottom:12px}
+.prob-row:last-child{margin-bottom:0}
+.prob-label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
+.prob-label .name{color:var(--text)}
+.prob-label .pct{font-weight:700;color:var(--accent)}
+.prob-bar{height:6px;background:var(--card-2);border-radius:999px;overflow:hidden}
+.prob-fill{
+  height:100%;background:var(--grad);border-radius:999px;width:0;
+  transition:width 1s cubic-bezier(.4,0,.2,1);
+}
+.prob-row.confirmed .pct{color:var(--accent-3)}
+.prob-row.confirmed .prob-fill{background:linear-gradient(90deg,#00d4aa,#4ae3a0)}
+.prob-row.ruled .name{text-decoration:line-through;opacity:.5}
+.prob-row.ruled .pct{color:var(--danger);text-decoration:line-through}
+
+.demo-controls{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+
+/* CaseNote progress */
+.cn-progress{padding:30px;min-height:480px}
+.cn-input{
+  background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;
+  font-family:Menlo,Consolas,monospace;font-size:14px;margin-bottom:24px;display:flex;align-items:center;gap:10px;
+}
+.cn-input .prompt{color:var(--accent-3)}
+.cn-input .typed{color:var(--text)}
+.cn-input .cursor{width:8px;height:16px;background:var(--accent);display:inline-block;animation:blink 1s infinite}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+.cn-step{
+  display:flex;align-items:center;gap:14px;padding:14px 18px;
+  background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;
+  opacity:.4;transition:all .4s;
+}
+.cn-step.done{opacity:1;border-color:var(--accent-3)}
+.cn-step .ic{
+  width:24px;height:24px;border-radius:50%;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;
+  transition:all .3s;
+}
+.cn-step.done .ic{background:var(--accent-3);border-color:var(--accent-3);color:#000;font-weight:900}
+.cn-step.active .ic{
+  border-color:var(--accent);
+  border-top-color:transparent;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cn-step .label{flex:1;font-size:14px}
+.cn-step .meta{color:var(--muted);font-size:12px}
+
+.cn-result{
+  margin-top:24px;background:var(--card);border:1px solid var(--accent-3);border-radius:12px;
+  padding:24px;opacity:0;transform:translateY(10px);transition:all .5s;
+}
+.cn-result.show{opacity:1;transform:translateY(0)}
+.cn-result .file-bar{
+  display:flex;align-items:center;gap:10px;font-family:Menlo,Consolas,monospace;font-size:12px;
+  color:var(--muted);padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:18px;flex-wrap:wrap;
+}
+.cn-result .file-bar .dot{width:8px;height:8px;border-radius:50%;background:var(--accent-3)}
+.cn-section{margin-bottom:18px}
+.cn-section:last-child{margin-bottom:0}
+.cn-section h6{
+  font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);
+  font-weight:700;margin-bottom:8px;
+}
+.cn-section p{font-size:13.5px;color:var(--text);line-height:1.7}
+
+.callout{
+  margin-top:24px;padding:18px 22px;border-radius:12px;
+  background:rgba(255,183,77,.08);border:1px solid rgba(255,183,77,.3);
+}
+.callout .ct{font-size:12px;font-weight:700;letter-spacing:2px;color:var(--warn);margin-bottom:8px;text-transform:uppercase}
+.callout p{font-size:14px;color:var(--text);line-height:1.7}
+.callout code{background:#0c1020;padding:2px 8px;border-radius:5px;font-family:Menlo,Consolas,monospace;font-size:12.5px;color:var(--accent-3)}
+
+/* ============ How to Use ============ */
+.howto-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:30px}
+@media(max-width:980px){.howto-grid{grid-template-columns:1fr}}
+.howto{
+  background:var(--card);border:1px solid var(--border);border-radius:18px;padding:30px;
+  position:relative;transition:all .35s;
+}
+.howto:hover{transform:translateY(-4px);border-color:var(--accent)}
+.howto .step{
+  font-size:11px;letter-spacing:3px;font-weight:700;color:var(--accent);margin-bottom:12px;
+}
+.howto h4{font-size:18px;margin-bottom:10px}
+.howto p{color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:14px}
+.howto .cmd{
+  background:#0c1020;border:1px solid var(--border);border-radius:8px;
+  padding:10px 14px;font-family:Menlo,Consolas,monospace;font-size:13px;color:var(--accent-3);word-break:break-all;
+}
+
+/* ============ How to Get ============ */
+.get-hero{
+  background:linear-gradient(135deg, rgba(74,158,255,.15), rgba(0,212,170,.15));
+  border:1px solid rgba(74,158,255,.4);border-radius:20px;padding:36px;margin-bottom:30px;
+}
+.get-hero .repo{
+  display:inline-flex;align-items:center;gap:10px;padding:10px 18px;
+  background:#0c1020;border:1px solid var(--border);border-radius:10px;
+  font-family:Menlo,Consolas,monospace;font-size:14px;color:var(--accent);margin-bottom:18px;
+}
+.install-block{
+  background:#0c1020;border:1px solid var(--border);border-radius:14px;padding:24px;margin-top:18px;
+  position:relative;
+}
+.install-block .lbl{
+  font-size:11px;letter-spacing:2px;color:var(--muted);font-weight:700;margin-bottom:10px;text-transform:uppercase;
+}
+.install-block .cmd-line{
+  font-family:Menlo,Consolas,monospace;font-size:16px;color:var(--accent-3);
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.install-block .cmd-line .p{color:var(--muted)}
+.install-block .copy-btn{
+  position:absolute;top:18px;right:18px;
+  padding:6px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);
+  color:var(--text);font-size:12px;cursor:pointer;transition:all .2s;
+}
+.install-block .copy-btn:hover{background:var(--accent);color:#fff;border-color:transparent}
+.install-block .copy-btn.copied{background:var(--accent-3);color:#000;border-color:transparent}
+
+.get-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px}
+@media(max-width:980px){.get-steps{grid-template-columns:1fr 1fr}}
+.get-step{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;
+  position:relative;
+}
+.get-step .n{
+  position:absolute;top:-12px;left:18px;
+  width:28px;height:28px;border-radius:50%;background:var(--grad);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;
+  box-shadow:0 4px 12px rgba(74,158,255,.4);
+}
+.get-step h5{font-size:14px;margin:8px 0;color:var(--text)}
+.get-step p{font-size:12.5px;color:var(--muted);line-height:1.6}
+
+/* ============ Footer ============ */
+footer{
+  text-align:center;padding:60px 32px;color:var(--muted);font-size:13px;
+  border-top:1px solid var(--border);margin-top:60px;
+}
+footer .qa{
+  font-size:32px;margin-bottom:14px;background:var(--grad);
+  -webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700;
+}
+
+/* ============ Reveal on scroll ============ */
+.reveal{opacity:0;transform:translateY(24px);transition:all .8s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <span>Troubleshoot Buddy × CaseNote</span>
+    </div>
+    <div class="nav-tabs">
+      <a href="#hero" class="active">Cover</a>
+      <a href="#why">Why</a>
+      <a href="#think">Thinking</a>
+      <a href="#how">How it works</a>
+      <a href="#demo">Demo</a>
+      <a href="#use">How to Use</a>
+      <a href="#get">How to Get</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section id="hero" class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="section-tag reveal">AI COMMUNITY · 2026</div>
+    <h1 class="reveal">
+      <span class="grad">加速</span> case 排查和记录<br/>
+      的两个搭档
+    </h1>
+    <p class="lead reveal">
+      TroubleshootBuddy 帮你在 Critical Sit 时<strong>30 秒理清排查思路</strong>，<br/>
+      CaseNote Skill 帮你把<strong>几十封邮件一键变成结构化 Note</strong>。
+    </p>
+    <div class="hero-meta reveal">
+      <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Min He · Windows Networking</span>
+      <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h18"/></svg> 6 Sections</span>
+      <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> Click-to-play Demo</span>
+    </div>
+    <div class="hero-cta reveal">
+      <a href="#why" class="btn btn-primary">开始阅读 ↓</a>
+      <a href="#demo" class="btn btn-ghost">▶ 直接看 Demo</a>
+    </div>
+  </div>
+  <div class="scroll-indicator">SCROLL ↓</div>
+</section>
+
+<!-- ============ WHY ============ -->
+<section id="why">
+  <div class="section-tag reveal">01 · WHY</div>
+  <h2 class="reveal">为什么要做这两个东西</h2>
+  <p class="sub reveal">不是为了"用 AI 而用 AI"，是把两个真实痛点解决掉。</p>
+
+  <!-- BLOCK A: Troubleshoot Buddy -->
+  <div class="why-block">
+    <div class="why-block-title reveal">
+      <div class="num">A</div>
+      <h3>Troubleshoot Buddy — 解决"思路卡壳"的痛</h3>
+    </div>
+
+    <div class="scene-box reveal">
+      <div class="label">SCENARIO · 使用场景</div>
+      <div class="scene-text">
+        当你做 <span class="hi">Critical Sit</span>、面对一个自己不熟的方向，<br/>
+        <span class="hi">一时半会儿不知道该问客户什么、该看什么</span>的时候 ——<br/>
+        让 troubleshootBuddy 帮你 <span class="hi">30 秒</span>内理清排查思路。
+      </div>
+    </div>
+
+    <div class="grid grid-3 reveal">
+      <div class="card">
+        <div class="icon">🧊</div>
+        <h3>思路卡壳</h3>
+        <p>复杂 case 涉及多个产品线，遇到经验盲区时问题问不到点上，时间一分一秒过去客户在催。</p>
+      </div>
+      <div class="card">
+        <div class="icon">⏱️</div>
+        <h3>Critical Sit 压力大</h3>
+        <p>客户在等，没时间慢慢翻 KB、问同事、做实验，必须立刻 narrow down 出最可能的 1–2 个方向。</p>
+      </div>
+      <div class="card">
+        <div class="icon">🧩</div>
+        <h3>零散问几句不成体系</h3>
+        <p>想到哪问哪，容易漏掉服务端、漏掉网络层，事后才发现一开始就问错方向，全部重来。</p>
+      </div>
+    </div>
+
+    <div class="quote reveal" style="margin-top:30px;font-size:20px;">
+      🤔 <strong>那直接问 ChatGPT / Copilot 不行吗？</strong>
+    </div>
+
+    <div class="vs-wrap reveal" style="margin-top:20px;">
+      <div class="vs-col vs-left">
+        <h4>❌ 直接问通用 AI</h4>
+        <div class="vs-row"><span class="dot"></span>回答风格随机，有时长篇大论，有时点到为止</div>
+        <div class="vs-row"><span class="dot"></span>想到哪问哪，可能上来就让你查客户端</div>
+        <div class="vs-row"><span class="dot"></span>答案没有固定结构，要自己消化二次组织</div>
+        <div class="vs-row"><span class="dot"></span>命令不一定能直接跑，没考虑收集输出</div>
+        <div class="vs-row"><span class="dot"></span>你给反馈后它不一定"更新结论"</div>
+        <div class="vs-row"><span class="dot"></span>没有 Microsoft 内部 KB / Wiki 检索能力</div>
+      </div>
+      <div class="vs-divider"></div>
+      <div class="vs-col vs-right">
+        <h4>✅ Troubleshoot Buddy</h4>
+        <div class="vs-row"><span class="dot"></span>固定 <strong>Senior MS TSE</strong> 角色，专业一致的口吻</div>
+        <div class="vs-row"><span class="dot"></span>强制 <strong>服务端 → 网络 → 客户端</strong> 三层提问</div>
+        <div class="vs-row"><span class="dot"></span>固定输出：澄清问题 + 诊断命令 + 概率排序</div>
+        <div class="vs-row"><span class="dot"></span>每条命令 copy-paste 即可执行，自带 Out-File 收集</div>
+        <div class="vs-row"><span class="dot"></span>你喂证据 → 它自动更新概率、收窄方向</div>
+        <div class="vs-row"><span class="dot"></span>挂载 CSS Wiki / Internal KB / MS Learn 等知识源</div>
+      </div>
+    </div>
+
+    <div class="quote reveal" style="margin-top:24px;">
+      💡 我不是在造一个"更聪明的 AI"，<span class="em">我是把一个 Senior TSE 的排查脑回路写成了 prompt</span>，让它每次都按这个套路工作。
+    </div>
+  </div>
+
+  <!-- BLOCK B: CaseNote -->
+  <div class="why-block">
+    <div class="why-block-title reveal">
+      <div class="num">B</div>
+      <h3>CaseNote — 解决"邮件一长就抓瞎"的痛</h3>
+    </div>
+
+    <div class="scene-box reveal">
+      <div class="label">SCENARIO · 使用场景</div>
+      <div class="scene-text">
+        当你和客户来回邮件 <span class="hi">20+ 封</span>、<br/>
+        自己都记不清做过什么、要写 case note 交接或汇报的时候 ——<br/>
+        <span class="hi">一行命令、30 秒</span>生成结构化笔记。
+      </div>
+    </div>
+
+    <div class="grid grid-3 reveal">
+      <div class="card">
+        <div class="icon">📬</div>
+        <h3>邮件太长翻不动</h3>
+        <p>几十封 thread 来回找证据，半小时过去笔记还没动笔，关键时间点容易漏掉。</p>
+      </div>
+      <div class="card">
+        <div class="icon">📂</div>
+        <h3>本地证据散乱</h3>
+        <p>TSS 分析、Procmon 笔记、ETL 摘要分散在 case 文件夹里，要手动拼起来很费时间。</p>
+      </div>
+      <div class="card">
+        <div class="icon">📐</div>
+        <h3>格式不统一</h3>
+        <p>每次写的结构都不一样，自己回头看吃力，交接给同事或者发给 manager 更费劲。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THINKING ============ -->
+<section id="think">
+  <div class="section-tag reveal">02 · THINKING</div>
+  <h2 class="reveal">我的思考逻辑</h2>
+  <p class="sub reveal">两个工具背后的思考方式不一样 —— 一个是"模仿专家的脑回路"，一个是"把人工整理流水线化"。</p>
+
+  <!-- Thinking A: Troubleshoot Buddy -->
+  <div class="why-block">
+    <div class="why-block-title reveal">
+      <div class="num">A</div>
+      <h3>Troubleshoot Buddy 的思考逻辑</h3>
+    </div>
+    <p class="sub reveal" style="margin-bottom:20px">核心一句话：<strong style="color:var(--text)">不是让 AI 更聪明，而是把"专家怎么想"显式地写成规则。</strong></p>
+    <div class="principle-grid">
+      <div class="principle reveal">
+        <div class="big-num">01</div>
+        <h4>角色 = 思考边界</h4>
+        <p>给 agent 钉死角色：<strong>Senior MS TSE</strong>，专精 Windows / Azure / M365 / Networking / Security。角色一旦明确，它就不会跨界乱答、不会用消费级口吻，回答风格自然收敛。</p>
+        <div class="tag-row"><span class="tag">Role-First</span><span class="tag">专业一致</span></div>
+      </div>
+      <div class="principle reveal">
+        <div class="big-num">02</div>
+        <h4>分层 = 流程铁律</h4>
+        <p>所有 C/S 问题都强制 <strong>服务端 → 网络 → 客户端</strong> 三层顺序。先确认"服务还活着"，再查其他一切。这是 TSE 多年沉淀下来的铁律，AI 不能跳层。</p>
+        <div class="tag-row"><span class="tag">Server First</span><span class="tag">No Skip</span></div>
+      </div>
+      <div class="principle reveal">
+        <div class="big-num">03</div>
+        <h4>概率 = 透明思考</h4>
+        <p>每个可能原因都标概率，新证据进来就重新打分，错了立刻 pivot。思考过程<strong>可追溯、可挑战、可纠错</strong>，不是黑盒。</p>
+        <div class="tag-row"><span class="tag">Probability</span><span class="tag">Pivot Fast</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Thinking B: CaseNote -->
+  <div class="why-block">
+    <div class="why-block-title reveal">
+      <div class="num">B</div>
+      <h3>CaseNote 的思考逻辑</h3>
+    </div>
+    <p class="sub reveal" style="margin-bottom:20px">核心一句话：<strong style="color:var(--text)">不要 AI 自由发挥，要把人工整理动作拆成可重复的流水线。</strong></p>
+    <div class="principle-grid">
+      <div class="principle reveal">
+        <div class="big-num">01</div>
+        <h4>触发 = 确定性</h4>
+        <p>只在 <code style="background:#0c1020;padding:2px 6px;border-radius:4px;color:var(--accent-3)">/casenote &lt;id&gt;</code> 显式调用时跑。不"猜"用户意图、不"顺手"生成。一个命令对应一种产出，<strong>边界清晰</strong>。</p>
+        <div class="tag-row"><span class="tag">Explicit</span><span class="tag">Deterministic</span></div>
+      </div>
+      <div class="principle reveal">
+        <div class="big-num">02</div>
+        <h4>多源融合 = 单一来源不够</h4>
+        <p>邮件只有客户视角，本地日志只有技术视角。<strong>邮件 + 本地分析文件</strong>同时喂进来，AI 才能给出既有上下文又有技术深度的笔记。</p>
+        <div class="tag-row"><span class="tag">Mailbox + Files</span><span class="tag">Dual Source</span></div>
+      </div>
+      <div class="principle reveal">
+        <div class="big-num">03</div>
+        <h4>模板 = 可交接的资产</h4>
+        <p>固定三段：<strong>Issue / Troubleshooting / Status</strong>。今天给自己看，明天交接给同事，下周回头复盘 —— 格式一致，<strong>不用每次重新理解</strong>。</p>
+        <div class="tag-row"><span class="tag">3-Section</span><span class="tag">Handover-Ready</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section id="how">
+  <div class="section-tag reveal">03 · HOW IT WORKS</div>
+  <h2 class="reveal">实现逻辑</h2>
+  <p class="sub reveal">露一点核心内容，方便理解 —— 但不贴代码，全是"东西怎么串起来的"。</p>
+
+  <!-- Impl A: Troubleshoot Buddy -->
+  <div class="impl-wrap reveal">
+    <div class="impl-head">
+      <div class="ic">🧠</div>
+      <div>
+        <h3>Troubleshoot Buddy Agent</h3>
+        <div class="meta">一个 .agent.md 文件 = 角色 prompt + 工作流 prompt + 工具挂载</div>
+      </div>
+    </div>
+
+    <div class="impl-grid">
+      <div class="impl-card">
+        <div class="impl-tag">⓵ 角色定义</div>
+        <h5>Senior Microsoft TSE</h5>
+        <p>专精领域显式列出来：</p>
+        <ul>
+          <li>Windows：DS / UEX / SHA / Net / Perf / Sec / Storage / Deploy</li>
+          <li>Azure：VM / Network / Identity / AKS</li>
+          <li>M365：Exchange / Teams / Intune / Entra</li>
+          <li>跨产品：Wireshark / TLS / PKI</li>
+        </ul>
+      </div>
+
+      <div class="impl-card">
+        <div class="impl-tag">⓶ 三阶段工作流</div>
+        <h5>Phase 1 / 2 / 3</h5>
+        <ul>
+          <li><strong>Phase 1</strong>：初始评估 — 出澄清问题 + 诊断命令 + 初步概率</li>
+          <li><strong>Phase 2</strong>：迭代诊断 — 收到反馈就更新概率、标 ❌ 或 ✅</li>
+          <li><strong>Phase 3</strong>：根因 + 修复 — 给出 fix / workaround / rollback</li>
+        </ul>
+      </div>
+
+      <div class="impl-card">
+        <div class="impl-tag">⓷ 分层提问铁律</div>
+        <h5>Server → Network → Client</h5>
+        <p>所有 C/S 问题强制按这个顺序问。内置一张「第一个该问的服务」速查表，比如：</p>
+        <ul>
+          <li>DFS 故障 → 先查 <code>Dfs</code></li>
+          <li>RDP 故障 → 先查 <code>TermService</code></li>
+          <li>打印故障 → 先查 <code>Spooler</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impl-grid" style="margin-bottom:0">
+      <div class="impl-card">
+        <div class="impl-tag">⓸ 命令质量规则</div>
+        <h5>直接可执行 + 自带收集</h5>
+        <ul>
+          <li>没有占位符，copy-paste 即可跑</li>
+          <li>每条命令都加 <code>| Out-File</code> 落盘</li>
+          <li>统一输出目录 <code>$env:USERPROFILE\Desktop\Diag_*</code></li>
+          <li>方便客户一键打包回传</li>
+        </ul>
+      </div>
+
+      <div class="impl-card">
+        <div class="impl-tag">⓹ 视觉标记</div>
+        <h5>概率一目了然</h5>
+        <p>固定一套 emoji 语义：</p>
+        <ul>
+          <li>🔴 高概率 / 🟠 中 / 🟡 低 / ⚪ 可能</li>
+          <li>❌ 已排除 / ✅ 已确认</li>
+          <li>表格 + 简易 ASCII 图，避免长篇大论</li>
+        </ul>
+      </div>
+
+      <div class="impl-card">
+        <div class="impl-tag">⓺ 挂载知识源</div>
+        <h5>不是孤岛 AI</h5>
+        <ul>
+          <li><strong>CSS Wiki</strong> — 内部 TSG / SOP</li>
+          <li><strong>Internal KB</strong> — 已发布 KB</li>
+          <li><strong>OSBugs</strong> — 已知 bug 库</li>
+          <li><strong>MS Learn</strong> — 公开文档</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="flow-line" style="margin-top:18px;">
+      <span class="pill">你输入症状</span>
+      <span class="arr">→</span>
+      <span class="pill">分层提问 + 命令 + 概率</span>
+      <span class="arr">→</span>
+      <span class="pill">你喂反馈</span>
+      <span class="arr">→</span>
+      <span class="pill">更新概率 / pivot</span>
+      <span class="arr">→</span>
+      <span class="pill">根因 + 修复</span>
+    </div>
+  </div>
+
+  <!-- Impl B: CaseNote -->
+  <div class="impl-wrap reveal">
+    <div class="impl-head">
+      <div class="ic">📝</div>
+      <div>
+        <h3>CaseNote Skill</h3>
+        <div class="meta">一个 skill = 触发条件 + 工作流步骤 + 输出模板</div>
+      </div>
+    </div>
+
+    <div class="impl-grid">
+      <div class="impl-card">
+        <div class="impl-tag">⓵ 严格触发</div>
+        <h5>只认 /casenote &lt;id&gt;</h5>
+        <p>用户必须显式带斜杠命令才触发。聊 case 进展、问"总结一下"都不会被误触发。</p>
+        <ul>
+          <li>必填：case id（默认 16 位）</li>
+          <li>可选：本地日志路径</li>
+          <li>可选：输出根目录</li>
+        </ul>
+      </div>
+
+      <div class="impl-card">
+        <div class="impl-tag">⓶ 工作目录策略</div>
+        <h5>每个 case 一个文件夹</h5>
+        <p>在输出根目录下查找以 case id 开头的子文件夹，找到就复用，没有就新建：</p>
+        <ul>
+          <li>默认输出根目录：<code>C:\temp\Cli_files</code></li>
+          <li>查找：根目录下名字以 <code>&lt;case id&gt;</code> 开头的子文件夹</li>
+          <li>新建：<code>C:\temp\Cli_files\&lt;case id&gt;\</code></li>
+          <li>自定义：调用时加 <code>output: D:\xxx</code> 改根目录</li>
+          <li><strong>根目录不存在时自动创建</strong>（不报错、不要求手动准备）</li>
+        </ul>
+      </div>
+
+      <div class="impl-card">
+        <div class="impl-tag">⓷ 邮件抓取顺序</div>
+        <h5>Sent Items 优先</h5>
+        <ul>
+          <li>先搜 Sent Items（你的视角最全）</li>
+          <li>用 DASL filter 按 subject 包含 case id</li>
+          <li>按时间正序，单条 body 截断到 5000 字</li>
+          <li>Sent Items 为空才回退 Inbox</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="impl-grid" style="margin-bottom:0">
+      <div class="impl-card">
+        <div class="impl-tag">⓸ 本地证据合并</div>
+        <h5>用户指定路径才读</h5>
+        <ul>
+          <li>只读用户传入的文件 / 文件夹</li>
+          <li>支持 .txt / .md / .log / .csv / .json / .xml / .html</li>
+          <li>大文件按关键字段优先读</li>
+          <li>不动用户源文件</li>
+        </ul>
+        <div class="usage-pair">
+          <div class="usage-row">
+            <div class="usage-cmd"><span class="p">$</span> /casenote 2606010040001261</div>
+            <div class="usage-effect"><span class="tag-on">只抓邮件</span> · 不读任何本地文件</div>
+          </div>
+          <div class="usage-row">
+            <div class="usage-cmd"><span class="p">$</span> /casenote 2606010040001261 <span class="hl">log: C:\temp\Cli_files\xxx\analysis.md</span></div>
+            <div class="usage-effect"><span class="tag-on">抓邮件</span> <span class="plus">+</span> <span class="tag-on">读你指定的 analysis.md</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="impl-card">
+        <div class="impl-tag">⓹ 证据融合规则</div>
+        <h5>新证据优先 + 冲突标注</h5>
+        <ul>
+          <li>按时间排序，新 > 旧</li>
+          <li>邮件 vs 本地分析冲突 → 在 Status 段标注</li>
+          <li>缺失字段写 <code>Not identified from available data</code></li>
+          <li>不编造、不脑补</li>
+        </ul>
+      </div>
+
+      <div class="impl-card">
+        <div class="impl-tag">⓺ 固定输出模板</div>
+        <h5>三段纯文本</h5>
+        <ul>
+          <li><strong>Issue Definition</strong> — 症状 + 环境 + 影响</li>
+          <li><strong>Troubleshooting Done</strong> — 时间线 + 动作 + 证据</li>
+          <li><strong>Current Status</strong> — 根因 + 下一步 + 负责人</li>
+          <li>文件名：<code>case_note_summary_&lt;时间戳&gt;.txt</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="flow-line" style="margin-top:18px;">
+      <span class="pill">/casenote &lt;id&gt;</span>
+      <span class="arr">→</span>
+      <span class="pill">找/建工作目录</span>
+      <span class="arr">→</span>
+      <span class="pill">抓邮件 + 读本地</span>
+      <span class="arr">→</span>
+      <span class="pill">融合 + 去重</span>
+      <span class="arr">→</span>
+      <span class="pill">三段模板</span>
+      <span class="arr">→</span>
+      <span class="pill">.txt 落盘</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DEMO ============ -->
+<section id="demo">
+  <div class="section-tag reveal">04 · LIVE DEMO</div>
+  <h2 class="reveal">动态演示</h2>
+  <p class="sub reveal">Buddy demo 是手动驱动 —— 点头像就出下一句；CaseNote demo 是自动播放完整流水线。</p>
+
+  <div class="demo-tabs reveal">
+    <div class="demo-tab active" data-tab="tb">🧠 Troubleshoot Buddy · DFS 0x80070035</div>
+    <div class="demo-tab" data-tab="cn">📝 CaseNote · 一键生成笔记</div>
+  </div>
+
+  <!-- TB Demo -->
+  <div class="demo-stage active reveal" data-stage="tb">
+    <div class="grid grid-2" style="grid-template-columns:1.6fr 1fr;gap:24px;">
+      <div class="terminal">
+        <div class="terminal-head">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="title">Troubleshoot Buddy — 点头像驱动对话</span>
+        </div>
+        <div class="avatar-bar">
+          <div class="av-btn you next" id="av-you">
+            <div class="big-av">🧑</div>
+            <div class="lbl">YOU</div>
+            <div class="hint">👆 点我提问</div>
+          </div>
+          <div class="av-btn bot disabled" id="av-bot">
+            <div class="big-av">🤖</div>
+            <div class="lbl">BUDDY</div>
+            <div class="hint">等你先开口</div>
+          </div>
+        </div>
+        <div class="chat" id="tb-chat"></div>
+      </div>
+      <div class="demo-side">
+        <div class="prob-panel">
+          <h5>📊 实时概率排序</h5>
+          <div id="tb-prob"></div>
+          <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.6">
+            提示：每次点 <strong style="color:var(--accent)">BUDDY</strong> 头像，<br/>概率会根据新证据自动更新。
+          </div>
+        </div>
+        <div class="demo-controls">
+          <button class="btn btn-ghost" id="tb-replay">↻ Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CN Demo -->
+  <div class="demo-stage reveal" data-stage="cn">
+    <div class="terminal">
+      <div class="terminal-head">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="title">CaseNote Skill — pipeline 自动播放</span>
+      </div>
+      <div class="cn-progress">
+        <div class="cn-input">
+          <span class="prompt">$</span>
+          <span class="typed" id="cn-typed"></span>
+          <span class="cursor"></span>
+        </div>
+        <div id="cn-steps"></div>
+        <div class="cn-result" id="cn-result">
+          <div class="file-bar">
+            <span class="dot"></span>
+            <span>📄 case_note_summary_20260605-193215.txt · 已保存到 C:\temp\Cli_files\&lt;case&gt;\</span>
+          </div>
+          <div class="cn-section">
+            <h6>Issue Definition</h6>
+            <p>客户报告内网 DFS 共享路径 <strong>\\corp.local\public</strong> 无法访问，报错 0x80070035 网络路径找不到。影响全公司约 200 个客户端，UNC 直连主服务器可以访问。</p>
+          </div>
+          <div class="cn-section">
+            <h6>Troubleshooting Done</h6>
+            <p>2026-05-30 客户提供 nslookup 输出，DFSN root 名字解析正常；2026-06-01 收集 DFS 服务事件日志，发现 DFS Namespace 服务在 2026-05-28 03:14 异常停止；2026-06-02 客户重启服务后部分客户端恢复；2026-06-03 收集 Procmon trace 定位到 GPO 推送的安全策略阻止了 DFS 端口。</p>
+          </div>
+          <div class="cn-section">
+            <h6>Current Status</h6>
+            <p>根因已确认为新部署的安全 GPO 阻止 TCP 445。Workaround：将 DFS 服务器加入例外组。永久 fix 等待客户安全团队审批新 GPO，预计本周内推送。下一步：客户审批通过后远程协助验证。</p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <div class="ct">💡 输出路径说明</div>
+          <p>
+            默认保存到 <code>C:\temp\Cli_files\&lt;case id&gt;\</code>。<br/>
+            <strong>如果你本地没有 <code>C:\temp\Cli_files</code> 这个目录，skill 会自动帮你创建</strong>，不会报错。<br/>
+            如果想改保存位置，调用时加 <code>output: D:\my-cases</code> 即可，比如：<br/>
+            <code>/casenote 2606010040001261 output: D:\my-cases</code>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="demo-controls">
+      <button class="btn btn-ghost" id="cn-replay">▶ Replay</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW TO USE ============ -->
+<section id="use">
+  <div class="section-tag reveal">05 · HOW TO USE</div>
+  <h2 class="reveal">怎么用</h2>
+  <p class="sub reveal">从拿到 case 到归档，三步走，每步对应一个能力。</p>
+
+  <div class="howto-grid">
+    <div class="howto reveal">
+      <div class="step">STEP 01 · 拿到新 case</div>
+      <h4>🚀 启动 Troubleshoot Buddy</h4>
+      <p>在 Clawpilot 里 @TroubleshootBuddy，把客户报的现象一句话扔给它，立刻拿到 <strong>分层澄清问题 + 可执行诊断命令 + 初步概率排序</strong>。</p>
+      <div class="cmd">@TroubleshootBuddy 客户 DFS 0x80070035</div>
+      <p style="margin-top:14px;margin-bottom:8px;font-size:13px;color:var(--text)">💻 <strong>如果用的是 CLI</strong>：先跑 <code style="background:#0c1020;padding:2px 6px;border-radius:4px;color:var(--accent-3);font-family:Menlo,Consolas,monospace">/agents</code>，然后在下拉列表里选 <strong>TroubleshootBuddy</strong> 即可。</p>
+      <div class="cmd">/agents  →  ↓ 选择 TroubleshootBuddy</div>
+    </div>
+    <div class="howto reveal">
+      <div class="step">STEP 02 · 排查中</div>
+      <h4>🔁 边查边喂证据</h4>
+      <p>客户回了日志、命令有了输出 —— 直接贴回去。Buddy 会 <strong>更新每个可能原因的概率</strong>，标记已排除的方向，给出下一步收窄的命令。</p>
+      <div class="cmd">"这是客户的事件日志，看看怎么解读"</div>
+    </div>
+    <div class="howto reveal">
+      <div class="step">STEP 03 · 收尾归档</div>
+      <h4>📝 一键生成 Case Note</h4>
+      <p>case 处理告一段落，调用 CaseNote 自动抓邮件 + 合并本地日志，输出 <strong>结构化 .txt</strong>，可直接粘到 case 系统、邮件、交接文档。</p>
+      <div class="cmd">/casenote 2606010040001261</div>
+    </div>
+  </div>
+
+  <div class="scene-box reveal" style="margin-top:50px">
+    <div class="label">ONE MORE THING</div>
+    <div class="scene-text">
+      两个搭档不是替代你，<span class="hi">是把你从重复劳动里解放出来</span>，<br/>
+      让你把脑力留给真正需要思考的部分。
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW TO GET ============ -->
+<section id="get">
+  <div class="section-tag reveal">06 · HOW TO GET</div>
+  <h2 class="reveal">怎么装到你自己的环境</h2>
+  <p class="sub reveal">两个东西都已经发布到内部 cnwin plugins 仓库，一行命令就能装。</p>
+
+  <div class="get-hero reveal">
+    <a class="repo" href="https://github.com/gim-home/cnwin/tree/main/plugins" target="_blank">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.55v-1.92c-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.83 1.18 3.09 0 4.42-2.7 5.39-5.26 5.68.42.36.78 1.08.78 2.18v3.23c0 .31.21.66.8.55A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+      github.com/gim-home/cnwin/tree/main/plugins
+    </a>
+    <p style="color:var(--muted);font-size:15px;margin-bottom:0;line-height:1.7">
+      这个仓库里收录了 cnwin 团队的所有 Copilot plugins（包括 troubleshoot-buddy、pcap-analysis、casenote 等）。
+      你只需要一行 <code style="background:#0c1020;padding:2px 8px;border-radius:5px;font-family:Menlo,Consolas,monospace;color:var(--accent-3)">copilot plugin install</code> 就能把对应 plugin 拉到本地。
+    </p>
+  </div>
+
+  <div class="grid grid-2 reveal" style="gap:20px">
+    <div class="install-block">
+      <button class="copy-btn" data-copy="copilot plugin install gim-home/cnwin:plugins/troubleshoot-buddy">复制</button>
+      <div class="lbl">▶ 安装 TROUBLESHOOT BUDDY</div>
+      <div class="cmd-line">
+        <span class="p">$</span>
+        <span>copilot plugin install gim-home/cnwin:plugins/troubleshoot-buddy</span>
+      </div>
+    </div>
+    <div class="install-block">
+      <button class="copy-btn" data-copy="copilot plugin install gim-home/cnwin:plugins/casenote">复制</button>
+      <div class="lbl">▶ 安装 CASENOTE</div>
+      <div class="cmd-line">
+        <span class="p">$</span>
+        <span>copilot plugin install gim-home/cnwin:plugins/casenote</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="get-steps reveal">
+    <div class="get-step">
+      <div class="n">1</div>
+      <h5>打开 Clawpilot 终端</h5>
+      <p>任意 PowerShell / WT 都行，登录态保持着即可。</p>
+    </div>
+    <div class="get-step">
+      <div class="n">2</div>
+      <h5>跑安装命令</h5>
+      <p>复制上方对应 plugin 的命令直接粘贴。</p>
+    </div>
+    <div class="get-step">
+      <div class="n">3</div>
+      <h5>重启 Clawpilot</h5>
+      <p>让新 agent / skill 注册到当前会话。</p>
+    </div>
+    <div class="get-step">
+      <div class="n">4</div>
+      <h5>开始用</h5>
+      <p><code>@TroubleshootBuddy ...</code> 或 <code>/casenote &lt;id&gt;</code></p>
+    </div>
+  </div>
+
+  <div class="callout reveal" style="margin-top:30px">
+    <div class="ct">📦 Plugin 命名规则</div>
+    <p>
+      所有 plugin 都遵循 <code>copilot plugin install gim-home/cnwin:plugins/&lt;plugin-name&gt;</code> 格式。<br/>
+      比如装 pcap 分析工具就是 <code>copilot plugin install gim-home/cnwin:plugins/pcap-analysis</code>。<br/>
+      去 <a href="https://github.com/gim-home/cnwin/tree/main/plugins" target="_blank">仓库</a> 里看到喜欢的，把 plugin 文件夹名替换上去就行。
+    </p>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="qa">Q & A</div>
+  <p>欢迎随时拍砖、提建议、想要哪个场景的 demo 也可以喊一声。</p>
+  <p style="margin-top:14px;opacity:.6">AI Community · 2026.06 · Min He · Windows Networking</p>
+</footer>
+
+<script>
+/* ============ Scroll reveal ============ */
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ============ Nav active ============ */
+const navLinks = document.querySelectorAll('.nav-tabs a');
+const sections = [...document.querySelectorAll('section')];
+const navIo = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      navLinks.forEach(a=>a.classList.toggle('active', a.getAttribute('href') === '#'+e.target.id));
+    }
+  });
+},{rootMargin:'-40% 0px -55% 0px'});
+sections.forEach(s=>navIo.observe(s));
+
+/* ============ Demo Tabs ============ */
+document.querySelectorAll('.demo-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.demo-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    const target = tab.dataset.tab;
+    document.querySelectorAll('.demo-stage').forEach(s=>s.classList.toggle('active', s.dataset.stage===target));
+    if(target==='cn' && !cnStarted){ playCN(); cnStarted=true; }
+  });
+});
+
+/* ============ Troubleshoot Buddy Demo (click-driven) ============ */
+const tbChat = document.getElementById('tb-chat');
+const tbProb = document.getElementById('tb-prob');
+const avYou  = document.getElementById('av-you');
+const avBot  = document.getElementById('av-bot');
+
+const tbScript = [
+  { who:'you', name:'YOU · ENGINEER',
+    body:`客户反馈：内网 \\\\corp.local\\public 突然访问不了，报 0x80070035。今早开始，约 200 台机器受影响。`},
+  { who:'bot', name:'TROUBLESHOOT BUDDY',
+    body:`收到。先按 <span class="h">服务端 → 网络 → 客户端</span> 三层来：
+
+<span class="layer s">SERVER</span> Q1. DFS Namespace 服务 (Dfs) 在 root server 上是 Running 吗？最近重启过吗？
+<span class="layer s">SERVER</span> Q2. Namespace 是 standalone 还是 domain-based？有几台 root server？
+<span class="layer n">NETWORK</span> Q3. 受影响客户端能 ping 通 root server 的 FQDN 吗？telnet 445 通吗？
+<span class="layer c">CLIENT</span> Q4. 受影响客户端是不是有共同特征？同一个 OU / 同一个 site？
+
+📊 初步概率见右侧面板，等你的反馈。`},
+  { who:'you', name:'YOU · ENGINEER',
+    body:`Q1: Dfs 服务今早 03:14 自动停止了！客户重启之后，部分客户端恢复，但还有约 80 台不行。`},
+  { who:'bot', name:'TROUBLESHOOT BUDDY',
+    body:`✅ <span class="h">服务端有异常</span>，但重启后部分客户端没恢复 → 说明<strong>不止一个原因</strong>。
+
+更新概率（右侧 → "服务挂掉"已确认 ✅）。
+接下来锁定剩余 80 台为什么没恢复：
+
+<span class="layer n">NETWORK</span> Q5. 这 80 台和恢复的 120 台，是不是在<strong>不同的 site</strong>？
+<span class="layer c">CLIENT</span> Q6. 这 80 台最近有没有新部署的 GPO？特别是安全 / 防火墙相关？
+
+建议立刻跑：<code>gpresult /h gpo.html</code> 对比两组客户端的 GPO 差异。`},
+  { who:'you', name:'YOU · ENGINEER',
+    body:`Q6 命中！80 台都在新部署的 "Security Hardening" GPO 范围里，里面有一条规则禁了出站 TCP 445。`},
+  { who:'bot', name:'TROUBLESHOOT BUDDY',
+    body:`🎯 <span class="h">根因锁定</span>：新 GPO 阻止 TCP 445 出站 → DFS referral 后客户端连不上 root server。
+
+<strong>Workaround</strong>：在该 GPO 加 DFS root server IP 到例外。
+<strong>Fix</strong>：联系客户安全团队修订 GPO，对 DFS 服务器放行 445。
+<strong>验证</strong>：在一台样本机上 <code>gpupdate /force</code> 后 <code>Test-NetConnection -Port 445</code>。
+
+现在可以 /casenote 把整个过程归档了 ✅`}
+];
+
+const tbProbStates = [
+  [ // initial — before any reveal
+    {name:'服务端 DFS 服务异常',pct:40},
+    {name:'网络/防火墙阻断',pct:30},
+    {name:'GPO/策略变更',pct:20},
+    {name:'客户端缓存/凭据',pct:10}
+  ],
+  [ // after BOT reply 1 (msg index 1)
+    {name:'服务端 DFS 服务异常',pct:50},
+    {name:'网络/防火墙阻断',pct:25},
+    {name:'GPO/策略变更',pct:15},
+    {name:'客户端缓存/凭据',pct:10}
+  ],
+  [ // after BOT reply 2 (msg index 3) — service confirmed
+    {name:'服务端 DFS 服务异常',pct:100,state:'confirmed'},
+    {name:'GPO/策略变更',pct:65},
+    {name:'网络/防火墙阻断',pct:25},
+    {name:'客户端缓存/凭据',pct:10}
+  ],
+  [ // after BOT reply 3 (msg index 5) — GPO confirmed too
+    {name:'GPO 阻断 TCP 445',pct:100,state:'confirmed'},
+    {name:'服务端 DFS 服务异常',pct:100,state:'confirmed'},
+    {name:'网络/防火墙阻断',pct:0,state:'ruled'},
+    {name:'客户端缓存/凭据',pct:0,state:'ruled'}
+  ]
+];
+
+function renderProb(state){
+  tbProb.innerHTML = state.map(r=>`
+    <div class="prob-row ${r.state||''}">
+      <div class="prob-label"><span class="name">${r.name}</span><span class="pct">${r.state==='ruled'?'❌':r.pct+'%'}</span></div>
+      <div class="prob-bar"><div class="prob-fill" style="width:0"></div></div>
+    </div>`).join('');
+  requestAnimationFrame(()=>{
+    tbProb.querySelectorAll('.prob-fill').forEach((f,i)=>{
+      f.style.width = state[i].pct+'%';
+    });
+  });
+}
+
+function addMsg(m){
+  const el = document.createElement('div');
+  el.className = 'msg';
+  el.innerHTML = `
+    <div class="avatar ${m.who}">${m.who==='you'?'🧑':'🤖'}</div>
+    <div class="bubble ${m.who==='bot'?'bot':''}">
+      <div class="name">${m.name}</div>
+      <div class="body">${m.body}</div>
+    </div>`;
+  tbChat.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('show'));
+  tbChat.scrollTop = tbChat.scrollHeight;
+}
+
+let tbIndex = 0;
+let tbProbStep = 0;
+function tbSetTurn(){
+  // Decide which avatar is "next"
+  avYou.classList.remove('next','disabled');
+  avBot.classList.remove('next','disabled');
+  if(tbIndex >= tbScript.length){
+    avYou.classList.add('disabled','done');
+    avBot.classList.add('disabled','done');
+    avYou.querySelector('.hint').textContent = '已完成 ✓';
+    avBot.querySelector('.hint').textContent = '已完成 ✓';
+    return;
+  }
+  const nextWho = tbScript[tbIndex].who;
+  if(nextWho==='you'){
+    avYou.classList.add('next');
+    avYou.querySelector('.hint').textContent='👆 点我提问';
+    avBot.classList.add('disabled');
+    avBot.querySelector('.hint').textContent='等你先开口';
+  } else {
+    avBot.classList.add('next');
+    avBot.querySelector('.hint').textContent='👆 点我回答';
+    avYou.classList.add('disabled');
+    avYou.querySelector('.hint').textContent='Buddy 思考中...';
+  }
+}
+function tbAdvance(expectedWho){
+  if(tbIndex>=tbScript.length) return;
+  const m = tbScript[tbIndex];
+  if(m.who!==expectedWho) return;
+  addMsg(m);
+  // update probability after each BOT reply
+  if(m.who==='bot'){
+    tbProbStep++;
+    if(tbProbStep < tbProbStates.length){
+      setTimeout(()=>renderProb(tbProbStates[tbProbStep]), 400);
+    }
+  }
+  tbIndex++;
+  tbSetTurn();
+}
+function tbReset(){
+  tbChat.innerHTML='';
+  tbIndex=0; tbProbStep=0;
+  renderProb(tbProbStates[0]);
+  tbSetTurn();
+}
+avYou.addEventListener('click', ()=>tbAdvance('you'));
+avBot.addEventListener('click', ()=>tbAdvance('bot'));
+document.getElementById('tb-replay').addEventListener('click', tbReset);
+tbReset();
+
+/* ============ CaseNote Demo ============ */
+const cnTyped = document.getElementById('cn-typed');
+const cnSteps = document.getElementById('cn-steps');
+const cnResult = document.getElementById('cn-result');
+
+const cnSteps_data = [
+  {label:'扫描 Outlook Sent Items', meta:'按 case id 过滤 · 命中 8 封邮件'},
+  {label:'读取本地分析文件', meta:'2 个文件：dfs_analysis.md, procmon_notes.txt'},
+  {label:'提取关键证据', meta:'去重、按时间排序、聚合 timeline'},
+  {label:'合并双源信息', meta:'邮件 + 本地日志，按证据优先级排序'},
+  {label:'生成结构化 Note', meta:'Issue / Troubleshooting / Status 三段格式'},
+  {label:'写入文件并清理临时数据', meta:'case_note_summary_20260605-193215.txt'}
+];
+
+let cnTimer=null, cnStarted=false;
+function playCN(){
+  if(cnTimer) clearTimeout(cnTimer);
+  cnTyped.textContent='';
+  cnSteps.innerHTML='';
+  cnResult.classList.remove('show');
+  const cmd = '/casenote 2606010040001261';
+  let ci=0;
+  function type(){
+    if(ci<=cmd.length){
+      cnTyped.textContent = cmd.slice(0,ci);
+      ci++;
+      cnTimer=setTimeout(type, 60);
+    } else {
+      runSteps();
+    }
+  }
+  function runSteps(){
+    cnSteps.innerHTML = cnSteps_data.map(s=>`
+      <div class="cn-step">
+        <div class="ic"></div>
+        <div class="label">${s.label}</div>
+        <div class="meta">${s.meta}</div>
+      </div>`).join('');
+    const nodes = cnSteps.querySelectorAll('.cn-step');
+    let si=0;
+    function step(){
+      if(si>0) {
+        nodes[si-1].classList.remove('active');
+        nodes[si-1].classList.add('done');
+        nodes[si-1].querySelector('.ic').textContent='✓';
+      }
+      if(si<nodes.length){
+        nodes[si].classList.add('active');
+        si++;
+        cnTimer=setTimeout(step, 900);
+      } else {
+        setTimeout(()=>cnResult.classList.add('show'), 400);
+      }
+    }
+    setTimeout(step, 300);
+  }
+  type();
+}
+document.getElementById('cn-replay').addEventListener('click', playCN);
+
+/* ============ Copy buttons ============ */
+document.querySelectorAll('.copy-btn').forEach(btn=>{
+  btn.addEventListener('click', async ()=>{
+    try{
+      await navigator.clipboard.writeText(btn.dataset.copy);
+      const orig = btn.textContent;
+      btn.classList.add('copied');
+      btn.textContent='✓ 已复制';
+      setTimeout(()=>{ btn.classList.remove('copied'); btn.textContent=orig; }, 1800);
+    }catch(e){ /* noop */ }
+  });
+});
+</script>
+</body>
+</html>
