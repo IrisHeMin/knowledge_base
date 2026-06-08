@@ -644,6 +644,64 @@ footer .qa{
     </div>
   </div>
 
+  <div class="why-block" style="margin-top:40px">
+    <div class="why-block-title reveal">
+      <div class="num" style="background: linear-gradient(135deg, #4a9eff, #7b5cff);">🧠</div>
+      <h3>Troubleshoot Buddy 的思考逻辑</h3>
+    </div>
+    <p class="sub reveal" style="margin-bottom:20px">核心一句话：<strong style="color:var(--text)">不是让 AI 更聪明，而是把"专家怎么想"显式地写成规则。</strong></p>
+    <div class="principle-grid">
+      <div class="principle reveal">
+        <div class="big-num">01</div>
+        <h4>角色 = 思考边界</h4>
+        <p>给 agent 钉死角色：<strong>Senior MS TSE</strong>，专精 Windows / Azure / M365 / Networking / Security。角色一旦明确，它就不会跨界乱答、不会用消费级口吻，回答风格自然收敛。</p>
+        <div class="tag-row"><span class="tag">Role-First</span><span class="tag">专业一致</span></div>
+      </div>
+      <div class="principle reveal">
+        <div class="big-num">02</div>
+        <h4>分层 = 流程铁律</h4>
+        <p>所有 C/S 问题都强制 <strong>服务端 → 网络 → 客户端</strong> 三层顺序。先确认"服务还活着"，再查其他一切。这是 TSE 多年沉淀下来的铁律，AI 不能跳层。</p>
+        <div class="tag-row"><span class="tag">Server First</span><span class="tag">No Skip</span></div>
+      </div>
+      <div class="principle reveal">
+        <div class="big-num">03</div>
+        <h4>概率 = 透明思考</h4>
+        <p>每个可能原因都标概率，新证据进来就重新打分，错了立刻 pivot。思考过程<strong>可追溯、可挑战、可纠错</strong>，不是黑盒。</p>
+        <div class="tag-row"><span class="tag">Probability</span><span class="tag">Pivot Fast</span></div>
+      </div>
+    </div>
+
+    <div class="quote reveal" style="margin-top:30px;font-size:20px;">
+      🤔 <strong>那直接问 ChatGPT / Copilot 不行吗？</strong>
+    </div>
+
+    <div class="vs-wrap reveal" style="margin-top:20px;">
+      <div class="vs-col vs-left">
+        <h4>❌ 直接问通用 AI</h4>
+        <div class="vs-row"><span class="dot"></span>回答风格随机，有时长篇大论，有时点到为止</div>
+        <div class="vs-row"><span class="dot"></span>想到哪问哪，可能上来就让你查客户端</div>
+        <div class="vs-row"><span class="dot"></span>答案没有固定结构，要自己消化二次组织</div>
+        <div class="vs-row"><span class="dot"></span>命令不一定能直接跑，没考虑收集输出</div>
+        <div class="vs-row"><span class="dot"></span>你给反馈后它不一定"更新结论"</div>
+        <div class="vs-row"><span class="dot"></span>没有 Microsoft 内部 KB / Wiki 检索能力</div>
+      </div>
+      <div class="vs-divider"></div>
+      <div class="vs-col vs-right">
+        <h4>✅ Troubleshoot Buddy</h4>
+        <div class="vs-row"><span class="dot"></span>固定 <strong>Senior MS TSE</strong> 角色，专业一致的口吻</div>
+        <div class="vs-row"><span class="dot"></span>强制 <strong>服务端 → 网络 → 客户端</strong> 三层提问</div>
+        <div class="vs-row"><span class="dot"></span>固定输出：澄清问题 + 诊断命令 + 概率排序</div>
+        <div class="vs-row"><span class="dot"></span>每条命令 copy-paste 即可执行，自带 Out-File 收集</div>
+        <div class="vs-row"><span class="dot"></span>你喂证据 → 它自动更新概率、收窄方向</div>
+        <div class="vs-row"><span class="dot"></span>挂载 CSS Wiki / Internal KB / MS Learn 等知识源</div>
+      </div>
+    </div>
+
+    <div class="quote reveal" style="margin-top:24px;">
+      💡 我不是在造一个"更聪明的 AI"，<span class="em">我是把一个 Senior TSE 的排查脑回路写成了 prompt</span>，让它每次都按这个套路工作。
+    </div>
+  </div>
+
   <!-- BLOCK B: CaseNote -->
   <div class="why-block">
     <div class="why-block-title reveal">
@@ -675,6 +733,34 @@ footer .qa{
         <div class="icon">📐</div>
         <h3>格式不统一</h3>
         <p>每次写的结构都不一样，自己回头看吃力，交接给同事或者发给 manager 更费劲。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="why-block" style="margin-top:40px">
+    <div class="why-block-title reveal">
+      <div class="num" style="background: linear-gradient(135deg, #7b5cff, #00d4aa);">💡</div>
+      <h3>CaseNote 的思考逻辑</h3>
+    </div>
+    <p class="sub reveal" style="margin-bottom:20px">核心一句话：<strong style="color:var(--text)">不要 AI 自由发挥，要把人工整理动作拆成可重复的流水线。</strong></p>
+    <div class="principle-grid">
+      <div class="principle reveal">
+        <div class="big-num">01</div>
+        <h4>触发 = 确定性</h4>
+        <p>只在 <code style="background:#0c1020;padding:2px 6px;border-radius:4px;color:var(--accent-3)">/casenote &lt;id&gt;</code> 显式调用时跑。不"猜"用户意图、不"顺手"生成。一个命令对应一种产出，<strong>边界清晰</strong>。</p>
+        <div class="tag-row"><span class="tag">Explicit</span><span class="tag">Deterministic</span></div>
+      </div>
+      <div class="principle reveal">
+        <div class="big-num">02</div>
+        <h4>多源融合 = 单一来源不够</h4>
+        <p>邮件只有客户视角，本地日志只有技术视角。<strong>邮件 + 本地分析文件</strong>同时喂进来，AI 才能给出既有上下文又有技术深度的笔记。</p>
+        <div class="tag-row"><span class="tag">Mailbox + Files</span><span class="tag">Dual Source</span></div>
+      </div>
+      <div class="principle reveal">
+        <div class="big-num">03</div>
+        <h4>模板 = 可交接的资产</h4>
+        <p>固定三段：<strong>Issue / Troubleshooting / Status</strong>。今天给自己看，明天交接给同事，下周回头复盘 —— 格式一致，<strong>不用每次重新理解</strong>。</p>
+        <div class="tag-row"><span class="tag">3-Section</span><span class="tag">Handover-Ready</span></div>
       </div>
     </div>
   </div>
