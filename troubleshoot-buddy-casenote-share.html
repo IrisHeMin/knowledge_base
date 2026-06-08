@@ -568,8 +568,7 @@ footer .qa{
     </div>
     <div class="nav-tabs">
       <a href="#hero" class="active">Cover</a>
-      <a href="#why">Why</a>
-      <a href="#think">Thinking</a>
+      <a href="#why">Why + Thinking</a>
       <a href="#how">How it works</a>
       <a href="#demo">Demo</a>
       <a href="#use">How to Use</a>
@@ -604,11 +603,11 @@ footer .qa{
   <div class="scroll-indicator">SCROLL ↓</div>
 </section>
 
-<!-- ============ WHY ============ -->
+<!-- ============ WHY + THINKING ============ -->
 <section id="why">
-  <div class="section-tag reveal">01 · WHY</div>
-  <h2 class="reveal">为什么要做这两个东西</h2>
-  <p class="sub reveal">不是为了"用 AI 而用 AI"，是把两个真实痛点解决掉。</p>
+  <div class="section-tag reveal">01 · WHY + THINKING</div>
+  <h2 class="reveal">为什么要做这两个东西，以及背后的思考逻辑</h2>
+  <p class="sub reveal">不是为了"用 AI 而用 AI"，是把两个真实痛点解决掉 —— 一个是"模仿专家的脑回路"，一个是"把人工整理流水线化"。</p>
 
   <!-- BLOCK A: Troubleshoot Buddy -->
   <div class="why-block">
@@ -642,36 +641,6 @@ footer .qa{
         <h3>零散问几句不成体系</h3>
         <p>想到哪问哪，容易漏掉服务端、漏掉网络层，事后才发现一开始就问错方向，全部重来。</p>
       </div>
-    </div>
-
-    <div class="quote reveal" style="margin-top:30px;font-size:20px;">
-      🤔 <strong>那直接问 ChatGPT / Copilot 不行吗？</strong>
-    </div>
-
-    <div class="vs-wrap reveal" style="margin-top:20px;">
-      <div class="vs-col vs-left">
-        <h4>❌ 直接问通用 AI</h4>
-        <div class="vs-row"><span class="dot"></span>回答风格随机，有时长篇大论，有时点到为止</div>
-        <div class="vs-row"><span class="dot"></span>想到哪问哪，可能上来就让你查客户端</div>
-        <div class="vs-row"><span class="dot"></span>答案没有固定结构，要自己消化二次组织</div>
-        <div class="vs-row"><span class="dot"></span>命令不一定能直接跑，没考虑收集输出</div>
-        <div class="vs-row"><span class="dot"></span>你给反馈后它不一定"更新结论"</div>
-        <div class="vs-row"><span class="dot"></span>没有 Microsoft 内部 KB / Wiki 检索能力</div>
-      </div>
-      <div class="vs-divider"></div>
-      <div class="vs-col vs-right">
-        <h4>✅ Troubleshoot Buddy</h4>
-        <div class="vs-row"><span class="dot"></span>固定 <strong>Senior MS TSE</strong> 角色，专业一致的口吻</div>
-        <div class="vs-row"><span class="dot"></span>强制 <strong>服务端 → 网络 → 客户端</strong> 三层提问</div>
-        <div class="vs-row"><span class="dot"></span>固定输出：澄清问题 + 诊断命令 + 概率排序</div>
-        <div class="vs-row"><span class="dot"></span>每条命令 copy-paste 即可执行，自带 Out-File 收集</div>
-        <div class="vs-row"><span class="dot"></span>你喂证据 → 它自动更新概率、收窄方向</div>
-        <div class="vs-row"><span class="dot"></span>挂载 CSS Wiki / Internal KB / MS Learn 等知识源</div>
-      </div>
-    </div>
-
-    <div class="quote reveal" style="margin-top:24px;">
-      💡 我不是在造一个"更聪明的 AI"，<span class="em">我是把一个 Senior TSE 的排查脑回路写成了 prompt</span>，让它每次都按这个套路工作。
     </div>
   </div>
 
@@ -711,74 +680,9 @@ footer .qa{
   </div>
 </section>
 
-<!-- ============ THINKING ============ -->
-<section id="think">
-  <div class="section-tag reveal">02 · THINKING</div>
-  <h2 class="reveal">我的思考逻辑</h2>
-  <p class="sub reveal">两个工具背后的思考方式不一样 —— 一个是"模仿专家的脑回路"，一个是"把人工整理流水线化"。</p>
-
-  <!-- Thinking A: Troubleshoot Buddy -->
-  <div class="why-block">
-    <div class="why-block-title reveal">
-      <div class="num">A</div>
-      <h3>Troubleshoot Buddy 的思考逻辑</h3>
-    </div>
-    <p class="sub reveal" style="margin-bottom:20px">核心一句话：<strong style="color:var(--text)">不是让 AI 更聪明，而是把"专家怎么想"显式地写成规则。</strong></p>
-    <div class="principle-grid">
-      <div class="principle reveal">
-        <div class="big-num">01</div>
-        <h4>角色 = 思考边界</h4>
-        <p>给 agent 钉死角色：<strong>Senior MS TSE</strong>，专精 Windows / Azure / M365 / Networking / Security。角色一旦明确，它就不会跨界乱答、不会用消费级口吻，回答风格自然收敛。</p>
-        <div class="tag-row"><span class="tag">Role-First</span><span class="tag">专业一致</span></div>
-      </div>
-      <div class="principle reveal">
-        <div class="big-num">02</div>
-        <h4>分层 = 流程铁律</h4>
-        <p>所有 C/S 问题都强制 <strong>服务端 → 网络 → 客户端</strong> 三层顺序。先确认"服务还活着"，再查其他一切。这是 TSE 多年沉淀下来的铁律，AI 不能跳层。</p>
-        <div class="tag-row"><span class="tag">Server First</span><span class="tag">No Skip</span></div>
-      </div>
-      <div class="principle reveal">
-        <div class="big-num">03</div>
-        <h4>概率 = 透明思考</h4>
-        <p>每个可能原因都标概率，新证据进来就重新打分，错了立刻 pivot。思考过程<strong>可追溯、可挑战、可纠错</strong>，不是黑盒。</p>
-        <div class="tag-row"><span class="tag">Probability</span><span class="tag">Pivot Fast</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Thinking B: CaseNote -->
-  <div class="why-block">
-    <div class="why-block-title reveal">
-      <div class="num">B</div>
-      <h3>CaseNote 的思考逻辑</h3>
-    </div>
-    <p class="sub reveal" style="margin-bottom:20px">核心一句话：<strong style="color:var(--text)">不要 AI 自由发挥，要把人工整理动作拆成可重复的流水线。</strong></p>
-    <div class="principle-grid">
-      <div class="principle reveal">
-        <div class="big-num">01</div>
-        <h4>触发 = 确定性</h4>
-        <p>只在 <code style="background:#0c1020;padding:2px 6px;border-radius:4px;color:var(--accent-3)">/casenote &lt;id&gt;</code> 显式调用时跑。不"猜"用户意图、不"顺手"生成。一个命令对应一种产出，<strong>边界清晰</strong>。</p>
-        <div class="tag-row"><span class="tag">Explicit</span><span class="tag">Deterministic</span></div>
-      </div>
-      <div class="principle reveal">
-        <div class="big-num">02</div>
-        <h4>多源融合 = 单一来源不够</h4>
-        <p>邮件只有客户视角，本地日志只有技术视角。<strong>邮件 + 本地分析文件</strong>同时喂进来，AI 才能给出既有上下文又有技术深度的笔记。</p>
-        <div class="tag-row"><span class="tag">Mailbox + Files</span><span class="tag">Dual Source</span></div>
-      </div>
-      <div class="principle reveal">
-        <div class="big-num">03</div>
-        <h4>模板 = 可交接的资产</h4>
-        <p>固定三段：<strong>Issue / Troubleshooting / Status</strong>。今天给自己看，明天交接给同事，下周回头复盘 —— 格式一致，<strong>不用每次重新理解</strong>。</p>
-        <div class="tag-row"><span class="tag">3-Section</span><span class="tag">Handover-Ready</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ============ HOW IT WORKS ============ -->
 <section id="how">
-  <div class="section-tag reveal">03 · HOW IT WORKS</div>
+  <div class="section-tag reveal">02 · HOW IT WORKS</div>
   <h2 class="reveal">实现逻辑</h2>
   <p class="sub reveal">露一点核心内容，方便理解 —— 但不贴代码，全是"东西怎么串起来的"。</p>
 
@@ -985,7 +889,7 @@ footer .qa{
 
 <!-- ============ DEMO ============ -->
 <section id="demo">
-  <div class="section-tag reveal">04 · LIVE DEMO</div>
+  <div class="section-tag reveal">03 · LIVE DEMO</div>
   <h2 class="reveal">动态演示</h2>
   <p class="sub reveal">Buddy demo 是手动驱动 —— 点头像就出下一句；CaseNote demo 是自动播放完整流水线。</p>
 
@@ -1083,7 +987,7 @@ footer .qa{
 
 <!-- ============ HOW TO USE ============ -->
 <section id="use">
-  <div class="section-tag reveal">05 · HOW TO USE</div>
+  <div class="section-tag reveal">04 · HOW TO USE</div>
   <h2 class="reveal">怎么用</h2>
   <p class="sub reveal">从拿到 case 到归档，三步走，每步对应一个能力。</p>
 
@@ -1121,7 +1025,7 @@ footer .qa{
 
 <!-- ============ HOW TO GET ============ -->
 <section id="get">
-  <div class="section-tag reveal">06 · HOW TO GET</div>
+  <div class="section-tag reveal">05 · HOW TO GET</div>
   <h2 class="reveal">怎么装到你自己的环境</h2>
   <p class="sub reveal">两个东西都已经发布到内部 cnwin plugins 仓库，一行命令就能装。</p>
 
