@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>"AI in Action" Campaign · Windows Commercial China</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0e1a; --bg-2:#0f1424;
+  --card:#151a2e; --card-2:#1a2140;
+  --border:#243056;
+  --text:#e8ecf5; --muted:#8b95b3;
+  --accent:#4a9eff; --accent-2:#7b5cff; --accent-3:#00d4aa;
+  --warn:#ffb74d; --danger:#ff5a7a; --done:#00d4aa;
+  --grad: linear-gradient(135deg,#4a9eff 0%, #7b5cff 50%, #00d4aa 100%);
+  --grad-soft: linear-gradient(135deg, rgba(74,158,255,.15), rgba(123,92,255,.15));
+  --grad-warm: linear-gradient(135deg, rgba(255,90,122,.15), rgba(255,183,77,.15));
+}
+html,body{background:var(--bg);color:var(--text);font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;overflow-x:hidden}
+body{
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(74,158,255,.18), transparent 60%),
+    radial-gradient(900px 500px at 110% 10%, rgba(123,92,255,.18), transparent 60%),
+    radial-gradient(800px 400px at 50% 120%, rgba(0,212,170,.12), transparent 60%),
+    var(--bg);
+  min-height:100vh;
+}
+::selection{background:rgba(123,92,255,.35);color:#fff}
+
+/* Nav */
+.nav{position:fixed;top:0;left:0;right:0;z-index:50;backdrop-filter:blur(14px);background:rgba(10,14,26,.8);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:1280px;margin:0 auto;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.5px}
+.brand-dot{width:10px;height:10px;border-radius:50%;background:var(--grad);box-shadow:0 0 12px var(--accent);animation:pulse 2s infinite}
+.brand-text{font-size:15px}
+.brand-sub{color:var(--muted);font-weight:400;font-size:12px;margin-left:6px}
+@keyframes pulse{0%,100%{box-shadow:0 0 8px var(--accent)}50%{box-shadow:0 0 20px var(--accent-2)}}
+.nav-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.nav-tabs button{
+  background:transparent;border:1px solid transparent;color:var(--muted);
+  padding:8px 16px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;
+  transition:all .25s;font-family:inherit;letter-spacing:.3px;
+}
+.nav-tabs button:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav-tabs button.active{color:#fff;background:var(--grad-soft);border-color:rgba(74,158,255,.4)}
+.nav-tabs button .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--danger);margin-right:6px;vertical-align:middle;animation:pulse 1.2s infinite;display:none}
+.nav-tabs button.has-live .dot{display:inline-block}
+
+/* Layout */
+.page{max-width:1280px;margin:0 auto;padding:110px 32px 80px;display:none;animation:fadein .35s ease}
+.page.active{display:block}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.section-tag{display:inline-block;padding:6px 14px;border-radius:999px;background:var(--grad-soft);border:1px solid rgba(74,158,255,.3);font-size:11px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;font-weight:700;margin-bottom:18px}
+h1,h2,h3,h4{font-weight:700;letter-spacing:-.5px}
+h2{font-size:42px;margin-bottom:14px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block}
+.sub{color:var(--muted);font-size:16px;max-width:780px;margin-bottom:40px}
+
+/* HERO */
+.hero{padding-top:60px}
+.hero-grid-bg{position:absolute;inset:0;z-index:0;opacity:.35;background-image:linear-gradient(rgba(74,158,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(74,158,255,.08) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse at center, black 30%, transparent 75%);pointer-events:none}
+.hero-inner{position:relative;z-index:1}
+.hero h1{font-size:72px;line-height:1.05;margin-bottom:22px;font-weight:800}
+.hero h1 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% 100%;animation:flow 6s linear infinite}
+@keyframes flow{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+.hero p.lead{font-size:20px;color:var(--muted);max-width:820px;margin-bottom:32px}
+.hero-meta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:36px}
+.hero-meta .chip{padding:10px 18px;border-radius:999px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;gap:10px;font-size:14px}
+.hero-meta .chip .ico{font-size:16px}
+
+/* Live banner */
+.live-banner{
+  margin-top:28px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px 28px;
+  display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;position:relative;overflow:hidden;
+}
+.live-banner::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--muted);transition:background .3s}
+.live-banner.live::before{background:var(--danger)}
+.live-banner.upcoming::before{background:var(--accent)}
+.live-banner.break::before{background:var(--warn)}
+.live-banner.done::before{background:var(--done)}
+.live-status{font-size:11px;font-weight:800;letter-spacing:2.5px;padding:8px 14px;border-radius:8px;background:rgba(255,255,255,.06);color:var(--muted);text-transform:uppercase;white-space:nowrap}
+.live-banner.live .live-status{background:var(--danger);color:#fff;animation:pulse2 1.4s infinite}
+.live-banner.upcoming .live-status{background:rgba(74,158,255,.18);color:var(--accent);border:1px solid rgba(74,158,255,.3)}
+.live-banner.break .live-status{background:rgba(255,183,77,.18);color:var(--warn)}
+.live-banner.done .live-status{background:rgba(0,212,170,.18);color:var(--done)}
+@keyframes pulse2{0%,100%{opacity:1}50%{opacity:.6}}
+.live-info .who{font-size:22px;font-weight:700;margin-bottom:2px}
+.live-info .what{font-size:13px;color:var(--muted)}
+.live-timer{font-family:"Cascadia Code","Consolas",monospace;font-size:36px;font-weight:700;color:var(--text);min-width:120px;text-align:right;letter-spacing:-1px}
+.live-banner.live .live-timer{color:var(--danger)}
+.live-banner.upcoming .live-timer{color:var(--accent)}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:28px 0}
+@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}.hero h1{font-size:44px}}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.stat-card .num{font-size:32px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
+.stat-card .label{font-size:12px;color:var(--muted);margin-top:6px;letter-spacing:1px;text-transform:uppercase}
+
+/* Progress */
+.progress-wrap{margin:8px 0 0;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px}
+.progress-wrap .label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px;letter-spacing:1px;text-transform:uppercase}
+.progress{height:8px;background:rgba(255,255,255,.05);border-radius:99px;overflow:hidden}
+.progress > div{height:100%;background:var(--grad);transition:width .8s;border-radius:99px;box-shadow:0 0 12px rgba(74,158,255,.5)}
+
+/* Day page */
+.day-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:30px;gap:20px;flex-wrap:wrap}
+.day-header .date{font-size:14px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
+.day-header h2{margin-bottom:0}
+.day-header .meta{font-size:13px;color:var(--muted);background:var(--card);padding:8px 16px;border-radius:99px;border:1px solid var(--border)}
+
+.timeline{position:relative;padding-left:0}
+.slot{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px 26px;margin-bottom:14px;
+  display:grid;grid-template-columns:140px 1fr auto;gap:24px;align-items:center;
+  transition:all .3s;position:relative;overflow:hidden;
+}
+.slot::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:background .3s}
+.slot.done{opacity:.55}
+.slot.done::before{background:var(--done)}
+.slot.live{border-color:rgba(255,90,122,.5);background:linear-gradient(135deg,rgba(255,90,122,.08),var(--card))}
+.slot.live::before{background:var(--danger)}
+.slot.next{border-color:rgba(74,158,255,.4)}
+.slot.next::before{background:var(--accent)}
+.slot:hover{transform:translateX(4px);border-color:rgba(74,158,255,.4)}
+.slot-time{font-family:"Cascadia Code","Consolas",monospace}
+.slot-time .start{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.5px}
+.slot-time .end{font-size:12px;color:var(--muted);margin-top:2px}
+.slot-time .arrow{color:var(--muted);margin-right:4px}
+.slot-main .speaker{font-size:18px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+.slot-main .idx{font-size:12px;font-weight:600;color:var(--muted);background:rgba(255,255,255,.05);padding:2px 8px;border-radius:6px;letter-spacing:.5px}
+.slot-main .topic{font-size:13px;color:var(--accent);font-family:"Cascadia Code","Consolas",monospace;word-break:break-all;margin-bottom:8px}
+.slot-main .segments{display:flex;gap:8px;flex-wrap:wrap}
+.seg{font-size:11px;padding:3px 10px;border-radius:99px;font-weight:600;letter-spacing:.5px}
+.seg.talk{background:rgba(74,158,255,.15);color:var(--accent);border:1px solid rgba(74,158,255,.25)}
+.seg.qa{background:rgba(255,183,77,.15);color:var(--warn);border:1px solid rgba(255,183,77,.25)}
+.slot-badge{padding:8px 14px;border-radius:10px;font-size:11px;font-weight:800;letter-spacing:1.5px;white-space:nowrap;text-align:center;min-width:90px}
+.slot-badge.done{background:rgba(0,212,170,.15);color:var(--done);border:1px solid rgba(0,212,170,.3)}
+.slot-badge.live{background:var(--danger);color:#fff;animation:pulse2 1.4s infinite}
+.slot-badge.next{background:rgba(74,158,255,.18);color:var(--accent);border:1px solid rgba(74,158,255,.35)}
+.slot-badge.pending{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--border)}
+
+.slot.break-slot{
+  grid-template-columns:140px 1fr;background:var(--grad-warm);border:1px dashed rgba(255,183,77,.4);
+}
+.slot.break-slot::before{display:none}
+.slot.break-slot .slot-main{color:var(--warn);font-style:italic;font-weight:600;font-size:15px}
+
+/* Overview cards */
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-bottom:30px}
+@media(max-width:900px){.cards{grid-template-columns:1fr}.slot{grid-template-columns:100px 1fr;}.slot-badge{grid-column:1/3}}
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 28px;position:relative;overflow:hidden}
+.info-card .icon{width:44px;height:44px;border-radius:12px;background:var(--grad-soft);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px}
+.info-card h3{font-size:18px;margin-bottom:8px}
+.info-card p{color:var(--muted);font-size:14px;line-height:1.7}
+
+.scene-box{background:var(--grad-soft);border:1px solid rgba(74,158,255,.35);border-radius:18px;padding:28px 32px;margin-bottom:30px;position:relative;overflow:hidden}
+.scene-box::after{content:"";position:absolute;top:-40%;right:-10%;width:300px;height:300px;background:radial-gradient(circle, rgba(123,92,255,.25), transparent 70%);pointer-events:none}
+.scene-box .label{font-size:11px;letter-spacing:3px;color:var(--accent);font-weight:700;margin-bottom:10px;text-transform:uppercase}
+.scene-box .scene-text{font-size:18px;font-weight:500;line-height:1.7;position:relative;z-index:1;color:var(--text)}
+.scene-box .scene-text .hi{color:var(--accent-3);font-weight:700}
+
+/* Past speakers */
+.past-block{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 28px;margin-top:20px}
+.past-block h3{font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:14px;font-weight:700}
+.past-block .chips{display:flex;gap:10px;flex-wrap:wrap}
+.past-block .chip{padding:8px 16px;border-radius:99px;background:rgba(0,212,170,.12);color:var(--done);border:1px solid rgba(0,212,170,.3);font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.past-block .chip::before{content:"✓";font-weight:800}
+
+/* Config */
+.config-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 28px;margin-top:24px}
+.config-box summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--text);letter-spacing:.5px;list-style:none;display:flex;align-items:center;gap:10px}
+.config-box summary::before{content:"⚙";color:var(--accent);font-size:18px}
+.config-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:18px}
+.config-grid label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase}
+.config-grid input{width:100%;padding:10px 12px;background:var(--bg-2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px}
+.config-grid input:focus{outline:none;border-color:var(--accent)}
+.config-box button{margin-top:14px;background:var(--grad);color:#fff;border:none;padding:10px 24px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;letter-spacing:.5px;transition:transform .2s}
+.config-box button:hover{transform:translateY(-2px)}
+
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:50px;padding-top:24px;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <span class="brand-text">"AI in Action"<span class="brand-sub">Windows Commercial China</span></span>
+    </div>
+    <div class="nav-tabs" id="navTabs">
+      <button data-page="overview" class="active">📋 Overview</button>
+      <button data-page="day1"><span class="dot"></span>Day 1 · 6/24</button>
+      <button data-page="day2"><span class="dot"></span>Day 2 · 6/25</button>
+      <button data-page="live">⚡ Live Now</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ========== OVERVIEW ========== -->
+<section class="page active" id="page-overview">
+  <div class="hero-grid-bg"></div>
+  <div class="hero hero-inner">
+    <span class="section-tag">Campaign · 2026</span>
+    <h1><span class="grad">"AI in Action"</span><br>Campaign</h1>
+    <p class="lead">拥抱 AI · 用 AI 为自己所用 —— 让每个人都能把 AI 变成自己的工具。</p>
+    <div class="hero-meta">
+      <div class="chip"><span class="ico">📅</span> 6/24 – 6/25</div>
+      <div class="chip"><span class="ico">🕐</span> 11:30 – 14:30</div>
+      <div class="chip"><span class="ico">👥</span> Windows Commercial China Team</div>
+      <div class="chip"><span class="ico">🎤</span> <span id="totalSpeakers">12</span> Speakers</div>
+    </div>
+  </div>
+
+  <div class="live-banner" id="liveBanner">
+    <span class="live-status" id="liveStatus">STANDBY</span>
+    <div class="live-info">
+      <div class="who" id="liveWho">Session 尚未开始</div>
+      <div class="what" id="liveWhat">第一位 speaker 即将上场</div>
+    </div>
+    <div class="live-timer" id="liveTimer">--:--</div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="label"><span>Session 进度</span><span id="progressPct">0%</span></div>
+    <div class="progress"><div id="progressBar" style="width:0%"></div></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card"><div class="num" id="stDone">0</div><div class="label">Completed</div></div>
+    <div class="stat-card"><div class="num" id="stLive">0</div><div class="label">Live Now</div></div>
+    <div class="stat-card"><div class="num" id="stPending">12</div><div class="label">Upcoming</div></div>
+    <div class="stat-card"><div class="num">2</div><div class="label">Days</div></div>
+  </div>
+
+  <div class="scene-box" style="margin-top:36px">
+    <div class="label">为什么办这场</div>
+    <div class="scene-text">希望大家更多地<span class="hi">拥抱 AI</span>，把 AI 当成<span class="hi">自己手里的工具</span> —— 不只是听别人讲，而是动手做、解决自己手边的问题。每一位 speaker 用 12 分钟讲清楚一个项目，再留 5 分钟给大家 QA 和讨论，节奏紧凑、彼此启发。</div>
+  </div>
+
+  <div class="cards">
+    <div class="info-card">
+      <div class="icon">⏱️</div>
+      <h3>每位 12 + 5</h3>
+      <p>每位 speaker 12 分钟讲清楚自己的项目，5 分钟留给 QA 与讨论 —— 既保证节奏，也让大家学到东西。</p>
+    </div>
+    <div class="info-card">
+      <div class="icon">☕</div>
+      <h3>10 min 休息</h3>
+      <p>每天中段安排一次 10 分钟休息，让大家放松、补充水分、互相聊一聊。</p>
+    </div>
+    <div class="info-card">
+      <div class="icon">🎯</div>
+      <h3>动态时间表</h3>
+      <p>页面会根据当前时间自动判断哪位在讲、谁讲完了、谁是下一位 —— 现场参与的同学一眼就能看清楚流程。</p>
+    </div>
+    <div class="info-card">
+      <div class="icon">📈</div>
+      <h3>持续欢迎新提交</h3>
+      <p>如果两天内还有人提交项目，我们会随时把新的 speaker 加进来。让分享成为持续的事，而不是只发生在这两天。</p>
+    </div>
+  </div>
+
+  <div class="past-block">
+    <h3>往期分享 · Hall of Fame</h3>
+    <div class="chips">
+      <span class="chip">Min He</span>
+      <span class="chip">Nicole Huang</span>
+      <span class="chip">YangHong</span>
+    </div>
+  </div>
+
+  <details class="config-box">
+    <summary>时间配置（可调整）</summary>
+    <div class="config-grid">
+      <div><label>Talk 时长 (分钟)</label><input type="number" id="cfgTalk" value="12"></div>
+      <div><label>QA 时长 (分钟)</label><input type="number" id="cfgQA" value="5"></div>
+      <div><label>休息时长 (分钟)</label><input type="number" id="cfgBreak" value="10"></div>
+      <div><label>休息插入位置</label><input type="number" id="cfgBreakAfter" value="3"></div>
+      <div><label>每天起始时间</label><input type="text" id="cfgStart" value="11:30"></div>
+    </div>
+    <button onclick="rebuild()">应用配置</button>
+  </details>
+
+  <div class="footer">Auto-refresh · 当前时间 <span id="nowText"></span></div>
+</section>
+
+<!-- ========== DAY 1 ========== -->
+<section class="page" id="page-day1">
+  <span class="section-tag">Day One</span>
+  <div class="day-header">
+    <div>
+      <div class="date">2026 · 6 月 24 日 · 周三</div>
+      <h2>Day 1</h2>
+    </div>
+    <div class="meta" id="day1Meta">6 speakers · 11:30 起</div>
+  </div>
+  <div class="timeline" id="day1List"></div>
+</section>
+
+<!-- ========== DAY 2 ========== -->
+<section class="page" id="page-day2">
+  <span class="section-tag">Day Two</span>
+  <div class="day-header">
+    <div>
+      <div class="date">2026 · 6 月 25 日 · 周四</div>
+      <h2>Day 2</h2>
+    </div>
+    <div class="meta" id="day2Meta">6 speakers · 11:30 起</div>
+  </div>
+  <div class="timeline" id="day2List"></div>
+</section>
+
+<!-- ========== LIVE NOW ========== -->
+<section class="page" id="page-live">
+  <span class="section-tag">Real-time</span>
+  <h2>Live Now</h2>
+  <p class="sub">实时监控当前正在进行的 session — 自动刷新每秒一次。</p>
+
+  <div class="live-banner" id="liveBannerBig" style="padding:36px 40px;margin-bottom:24px">
+    <span class="live-status" id="liveStatusBig" style="font-size:13px;padding:10px 18px">STANDBY</span>
+    <div class="live-info">
+      <div class="who" id="liveWhoBig" style="font-size:32px">Session 尚未开始</div>
+      <div class="what" id="liveWhatBig" style="font-size:15px;margin-top:6px">第一位 speaker 即将上场</div>
+    </div>
+    <div class="live-timer" id="liveTimerBig" style="font-size:56px;min-width:200px">--:--</div>
+  </div>
+
+  <div class="progress-wrap"><div class="label"><span>Session 进度</span><span id="progressPctBig">0%</span></div><div class="progress"><div id="progressBarBig" style="width:0%"></div></div></div>
+
+  <div class="cards" style="margin-top:30px">
+    <div class="info-card" id="liveNextCard">
+      <div class="icon">⏭️</div>
+      <h3>下一位 Speaker</h3>
+      <p id="nextInfo">—</p>
+    </div>
+    <div class="info-card">
+      <div class="icon">📊</div>
+      <h3>进展概览</h3>
+      <p>已完成 <b id="liveDone" style="color:var(--done)">0</b> 位 · 进行中 <b id="liveLive" style="color:var(--danger)">0</b> 位 · 剩余 <b id="livePending" style="color:var(--accent)">12</b> 位</p>
+    </div>
+  </div>
+</section>
+
+<script>
+const SPEAKERS = {
+  day1: [
+    { name:"Eric Chen",        topic:"azure-local-mooncake-assistant" },
+    { name:"Bin Hua",          topic:"case-plan, pcap-analysis, wiresharkanalyzer" },
+    { name:"Yali Wang",        topic:"build-voice-model" },
+    { name:"Kevin Zheng",      topic:"case-to-playbook" },
+    { name:"Penny Ma",         topic:"css-tools / hyperv-cluster" },
+    { name:"James Li",         topic:"pml-analyzer" },
+  ],
+  day2: [
+    { name:"Yihuang Qu",       topic:"case-email" },
+    { name:"Charis Ji",        topic:"sba-ops" },
+    { name:"Karis (kepxiang)", topic:"business-impact-collector / tcp-syn-drop-analyzer / tech-sharing" },
+    { name:"Stella Sun",       topic:"dfm-case-triage" },
+    { name:"Jay Wang",         topic:"mbr-prep" },
+    { name:"Victor Mei / Clover Fan", topic:"general troubleshooting agent" },
+  ],
+};
+const DAY_DATES = { day1:"2026-06-24", day2:"2026-06-25" };
+
+let SCHEDULE = [];
+
+function buildSchedule(){
+  const talk    = +document.getElementById('cfgTalk').value || 12;
+  const qa      = +document.getElementById('cfgQA').value || 5;
+  const brk     = +document.getElementById('cfgBreak').value || 10;
+  const brkAfter= +document.getElementById('cfgBreakAfter').value || 3;
+  const startStr= document.getElementById('cfgStart').value || "11:30";
+  SCHEDULE = [];
+  for (const dayKey of ['day1','day2']) {
+    const date = DAY_DATES[dayKey];
+    let cur = parseTime(date, startStr);
+    SPEAKERS[dayKey].forEach((sp, idx) => {
+      const tStart = new Date(cur);
+      const tEnd   = addMin(tStart, talk);
+      SCHEDULE.push({day:dayKey,date,type:'talk',name:sp.name,topic:sp.topic,idx:idx+1,start:tStart,end:tEnd});
+      const qEnd = addMin(tEnd, qa);
+      SCHEDULE.push({day:dayKey,date,type:'qa',  name:sp.name,topic:sp.topic,idx:idx+1,start:tEnd,end:qEnd});
+      cur = qEnd;
+      if (idx+1 === brkAfter && idx+1 < SPEAKERS[dayKey].length) {
+        const bEnd = addMin(cur, brk);
+        SCHEDULE.push({day:dayKey,date,type:'break',start:cur,end:bEnd});
+        cur = bEnd;
+      }
+    });
+  }
+}
+function parseTime(date,hhmm){const [h,m]=hhmm.split(':').map(Number);return new Date(`${date}T${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:00+08:00`);}
+function addMin(d,m){return new Date(d.getTime()+m*60000);}
+function fmtTime(d){return d.toTimeString().slice(0,5);}
+function fmtDur(ms){const s=Math.max(0,Math.floor(ms/1000));return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
+
+function renderDay(dayKey){
+  const root = document.getElementById(dayKey+'List');
+  const now = new Date();
+  const items = SCHEDULE.filter(s=>s.day===dayKey);
+  const rows = [];
+  for (let i=0;i<items.length;i++){
+    const it = items[i];
+    if (it.type==='break'){ rows.push({kind:'break',start:it.start,end:it.end}); }
+    else if (it.type==='talk'){
+      const qa = items[i+1];
+      rows.push({kind:'speaker',idx:it.idx,name:it.name,topic:it.topic,talkStart:it.start,talkEnd:it.end,qaEnd:qa.end});
+      i++;
+    }
+  }
+  let html='';
+  let nextMarked=false;
+  rows.forEach(r=>{
+    if (r.kind==='break'){
+      html += `<div class="slot break-slot"><div class="slot-time"><div class="start">${fmtTime(r.start)}</div><div class="end">→ ${fmtTime(r.end)}</div></div><div class="slot-main">☕ Break · ${Math.round((r.end-r.start)/60000)} min · 休息一下</div></div>`;
+      return;
+    }
+    let status, badge;
+    if (now >= r.qaEnd){ status='done'; badge='<div class="slot-badge done">✓ DONE</div>'; }
+    else if (now >= r.talkStart){ status='live'; badge='<div class="slot-badge live">● LIVE</div>'; }
+    else if (!nextMarked){ status='next'; badge='<div class="slot-badge next">NEXT</div>'; nextMarked=true; }
+    else { status='pending'; badge='<div class="slot-badge pending">UPCOMING</div>'; }
+    html += `<div class="slot ${status}">
+      <div class="slot-time"><div class="start">${fmtTime(r.talkStart)}</div><div class="end"><span class="arrow">→</span>${fmtTime(r.qaEnd)}</div></div>
+      <div class="slot-main">
+        <div class="speaker"><span class="idx">#${r.idx}</span>${r.name}</div>
+        <div class="topic">${r.topic}</div>
+        <div class="segments">
+          <span class="seg talk">🎤 Talk · ${Math.round((r.talkEnd-r.talkStart)/60000)}m</span>
+          <span class="seg qa">💬 QA · ${Math.round((r.qaEnd-r.talkEnd)/60000)}m</span>
+        </div>
+      </div>
+      ${badge}
+    </div>`;
+  });
+  root.innerHTML = html;
+}
+
+function render(){
+  const now = new Date();
+  document.getElementById('nowText').textContent = now.toLocaleString('zh-CN',{hour12:false});
+  renderDay('day1'); renderDay('day2');
+
+  const total = SPEAKERS.day1.length + SPEAKERS.day2.length;
+  document.getElementById('totalSpeakers').textContent = total;
+  let done=0, live=0;
+  SCHEDULE.forEach(s=>{ if (s.type==='qa' && now>=s.end) done++; });
+  const current = SCHEDULE.find(s=>now>=s.start && now<s.end);
+  if (current && (current.type==='talk' || current.type==='qa')) live=1;
+  document.getElementById('stDone').textContent = done;
+  document.getElementById('stLive').textContent = live;
+  document.getElementById('stPending').textContent = total - done - live;
+  document.getElementById('liveDone').textContent = done;
+  document.getElementById('liveLive').textContent = live;
+  document.getElementById('livePending').textContent = total - done - live;
+
+  // tab live-dot
+  document.querySelectorAll('.nav-tabs button').forEach(b=>b.classList.remove('has-live'));
+  if (current && (current.type==='talk' || current.type==='qa')){
+    const btn = document.querySelector(`.nav-tabs button[data-page="${current.day}"]`);
+    if (btn) btn.classList.add('has-live');
+    document.querySelector('.nav-tabs button[data-page="live"]').classList.add('has-live');
+  }
+
+  // live banners (overview + live page)
+  setLiveBanners(now, current);
+
+  // progress
+  const first = SCHEDULE[0].start, last = SCHEDULE[SCHEDULE.length-1].end;
+  const pct = Math.max(0, Math.min(100, (now-first)/(last-first)*100));
+  document.getElementById('progressBar').style.width = pct+'%';
+  document.getElementById('progressBarBig').style.width = pct+'%';
+  document.getElementById('progressPct').textContent = pct.toFixed(1)+'%';
+  document.getElementById('progressPctBig').textContent = pct.toFixed(1)+'%';
+
+  // next card on live page
+  const next = SCHEDULE.find(s => s.start>now && (s.type==='talk'));
+  document.getElementById('nextInfo').innerHTML = next
+    ? `<b>${next.name}</b> · <span style="color:var(--accent);font-family:monospace">${next.topic}</span><br><span style="color:var(--muted)">${fmtTime(next.start)} 开始 · ${next.day==='day1'?'Day 1 · 6/24':'Day 2 · 6/25'}</span>`
+    : '已经是最后一位 / 全部结束 🎉';
+}
+
+function setLiveBanners(now, current){
+  const sets = [
+    { wrap:'liveBanner', st:'liveStatus', who:'liveWho', what:'liveWhat', timer:'liveTimer' },
+    { wrap:'liveBannerBig', st:'liveStatusBig', who:'liveWhoBig', what:'liveWhatBig', timer:'liveTimerBig' },
+  ];
+  let cls='', stTxt='', whoTxt='', whatTxt='', tTxt='--:--';
+  if (current){
+    if (current.type==='break'){
+      cls='break'; stTxt='BREAK'; whoTxt='☕ 休息时间';
+      whatTxt = `休息到 ${fmtTime(current.end)}`;
+      tTxt = fmtDur(current.end-now);
+    } else {
+      cls='live';
+      stTxt = current.type==='qa' ? 'Q & A' : 'LIVE';
+      whoTxt = current.name;
+      whatTxt = `${current.topic} · ${current.type==='qa'?'QA / 讨论中':'Talking now'} · ${fmtTime(current.start)}–${fmtTime(current.end)}`;
+      tTxt = fmtDur(current.end-now);
+    }
+  } else {
+    const next = SCHEDULE.find(s => s.start>now && s.type!=='break');
+    if (next){
+      cls='upcoming'; stTxt='UP NEXT'; whoTxt = next.name;
+      whatTxt = `${next.topic} · ${fmtTime(next.start)} 开始 · ${next.day==='day1'?'Day 1':'Day 2'}`;
+      tTxt = fmtDur(next.start-now);
+    } else if (SCHEDULE.length && now >= SCHEDULE[SCHEDULE.length-1].end){
+      cls='done'; stTxt='WRAPPED'; whoTxt='🎉 Session 已圆满结束'; whatTxt='感谢所有 speakers 与现场参与者'; tTxt='--:--';
+    }
+  }
+  sets.forEach(s=>{
+    const el = document.getElementById(s.wrap);
+    el.className = 'live-banner ' + cls;
+    document.getElementById(s.st).textContent = stTxt || 'STANDBY';
+    document.getElementById(s.who).textContent = whoTxt || 'Session 尚未开始';
+    document.getElementById(s.what).textContent = whatTxt || '第一位 speaker 即将上场';
+    document.getElementById(s.timer).textContent = tTxt;
+  });
+}
+
+// Tab nav
+document.querySelectorAll('.nav-tabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const target = btn.dataset.page;
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-'+target).classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+});
+
+function rebuild(){ buildSchedule(); render(); }
+buildSchedule(); render();
+setInterval(render, 1000);
+</script>
+</body>
+</html>
