@@ -1,540 +1,892 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>"AI in Action" Campaign · Windows Commercial China</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI in Action Campaign</title>
+<script>
+  (() => {
+    const param = new URLSearchParams(window.location.search).get("scoutTheme");
+    const theme =
+      param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme", theme);
+  })();
+</script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0a0e1a; --bg-2:#0f1424;
-  --card:#151a2e; --card-2:#1a2140;
-  --border:#243056;
-  --text:#e8ecf5; --muted:#8b95b3;
-  --accent:#4a9eff; --accent-2:#7b5cff; --accent-3:#00d4aa;
-  --warn:#ffb74d; --danger:#ff5a7a; --done:#00d4aa;
-  --grad: linear-gradient(135deg,#4a9eff 0%, #7b5cff 50%, #00d4aa 100%);
-  --grad-soft: linear-gradient(135deg, rgba(74,158,255,.15), rgba(123,92,255,.15));
-  --grad-warm: linear-gradient(135deg, rgba(255,90,122,.15), rgba(255,183,77,.15));
+:root {
+  color-scheme: light;
+  --cp-bg: #f7f4ef;
+  --cp-bg-elevated: #fcfbf8;
+  --cp-surface: #ffffff;
+  --cp-surface-soft: #f5f5f5;
+  --cp-border: #dedede;
+  --cp-border-strong: #919191;
+  --cp-text: #242424;
+  --cp-text-muted: #5c5c5c;
+  --cp-text-soft: #6f6f6f;
+  --cp-accent: #b11f4b;
+  --cp-accent-hover: #9a1a41;
+  --cp-accent-soft: rgba(177, 31, 75, 0.08);
+  --cp-accent-fg: #ffffff;
+  --cp-success: #16a34a;
+  --cp-danger: #dc2626;
+  --cp-warning: #f59e0b;
+  --cp-link: #0078d4;
+  --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+  --cp-overlay: rgba(255, 255, 255, 0.8);
+  --cp-panel: rgba(255, 255, 255, 0.86);
+  --cp-panel-strong: rgba(255, 255, 255, 0.96);
+  --cp-sheen: rgba(255, 255, 255, 0.55);
+  --cp-highlight: rgba(177, 31, 75, 0.12);
 }
-html,body{background:var(--bg);color:var(--text);font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;overflow-x:hidden}
-body{
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --cp-bg: #3d3b3a;
+  --cp-bg-elevated: #343231;
+  --cp-surface: #292929;
+  --cp-surface-soft: #2e2e2e;
+  --cp-border: #474747;
+  --cp-border-strong: #5f5f5f;
+  --cp-text: #dedede;
+  --cp-text-muted: #919191;
+  --cp-text-soft: #b0b0b0;
+  --cp-accent: #fd8ea1;
+  --cp-accent-hover: #fb7b91;
+  --cp-accent-soft: rgba(253, 142, 161, 0.14);
+  --cp-accent-fg: #1a1a1a;
+  --cp-success: #4ade80;
+  --cp-danger: #f87171;
+  --cp-warning: #fbbf24;
+  --cp-link: #4da6ff;
+  --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+  --cp-overlay: rgba(41, 41, 41, 0.88);
+  --cp-panel: rgba(41, 41, 41, 0.72);
+  --cp-panel-strong: rgba(41, 41, 41, 0.96);
+  --cp-sheen: rgba(255, 255, 255, 0.04);
+  --cp-highlight: rgba(253, 142, 161, 0.12);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--cp-bg);
+  color: var(--cp-text);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
   background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(74,158,255,.18), transparent 60%),
-    radial-gradient(900px 500px at 110% 10%, rgba(123,92,255,.18), transparent 60%),
-    radial-gradient(800px 400px at 50% 120%, rgba(0,212,170,.12), transparent 60%),
-    var(--bg);
-  min-height:100vh;
+    linear-gradient(90deg, var(--cp-border) 1px, transparent 1px),
+    linear-gradient(var(--cp-border) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
 }
-::selection{background:rgba(123,92,255,.35);color:#fff}
-
-/* Nav */
-.nav{position:fixed;top:0;left:0;right:0;z-index:50;backdrop-filter:blur(14px);background:rgba(10,14,26,.8);border-bottom:1px solid var(--border)}
-.nav-inner{max-width:1280px;margin:0 auto;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.5px}
-.brand-dot{width:10px;height:10px;border-radius:50%;background:var(--grad);box-shadow:0 0 12px var(--accent);animation:pulse 2s infinite}
-.brand-text{font-size:15px}
-.brand-sub{color:var(--muted);font-weight:400;font-size:12px;margin-left:6px}
-@keyframes pulse{0%,100%{box-shadow:0 0 8px var(--accent)}50%{box-shadow:0 0 20px var(--accent-2)}}
-.nav-tabs{display:flex;gap:6px;flex-wrap:wrap}
-.nav-tabs button{
-  background:transparent;border:1px solid transparent;color:var(--muted);
-  padding:8px 16px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;
-  transition:all .25s;font-family:inherit;letter-spacing:.3px;
+body::after {
+  content: '';
+  position: fixed;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(ellipse at 30% 20%, rgba(0,120,212,0.06) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 80%, rgba(0,180,216,0.05) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: 0;
+  animation: drift 20s ease-in-out infinite alternate;
 }
-.nav-tabs button:hover{color:var(--text);background:rgba(255,255,255,.04)}
-.nav-tabs button.active{color:#fff;background:var(--grad-soft);border-color:rgba(74,158,255,.4)}
-.nav-tabs button .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--danger);margin-right:6px;vertical-align:middle;animation:pulse 1.2s infinite;display:none}
-.nav-tabs button.has-live .dot{display:inline-block}
-
-/* Layout */
-.page{max-width:1280px;margin:0 auto;padding:110px 32px 80px;display:none;animation:fadein .35s ease}
-.page.active{display:block}
-@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.section-tag{display:inline-block;padding:6px 14px;border-radius:999px;background:var(--grad-soft);border:1px solid rgba(74,158,255,.3);font-size:11px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;font-weight:700;margin-bottom:18px}
-h1,h2,h3,h4{font-weight:700;letter-spacing:-.5px}
-h2{font-size:42px;margin-bottom:14px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block}
-.sub{color:var(--muted);font-size:16px;max-width:780px;margin-bottom:40px}
-
-/* HERO */
-.hero{padding-top:60px}
-.hero-grid-bg{position:absolute;inset:0;z-index:0;opacity:.35;background-image:linear-gradient(rgba(74,158,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(74,158,255,.08) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse at center, black 30%, transparent 75%);pointer-events:none}
-.hero-inner{position:relative;z-index:1}
-.hero h1{font-size:72px;line-height:1.05;margin-bottom:22px;font-weight:800}
-.hero h1 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% 100%;animation:flow 6s linear infinite}
-@keyframes flow{0%{background-position:0% 50%}100%{background-position:200% 50%}}
-.hero p.lead{font-size:20px;color:var(--muted);max-width:820px;margin-bottom:32px}
-.hero-meta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:36px}
-.hero-meta .chip{padding:10px 18px;border-radius:999px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;gap:10px;font-size:14px}
-.hero-meta .chip .ico{font-size:16px}
-
-/* Live banner */
-.live-banner{
-  margin-top:28px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px 28px;
-  display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;position:relative;overflow:hidden;
+@keyframes drift {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(-30px, 20px) rotate(2deg); }
 }
-.live-banner::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--muted);transition:background .3s}
-.live-banner.live::before{background:var(--danger)}
-.live-banner.upcoming::before{background:var(--accent)}
-.live-banner.break::before{background:var(--warn)}
-.live-banner.done::before{background:var(--done)}
-.live-status{font-size:11px;font-weight:800;letter-spacing:2.5px;padding:8px 14px;border-radius:8px;background:rgba(255,255,255,.06);color:var(--muted);text-transform:uppercase;white-space:nowrap}
-.live-banner.live .live-status{background:var(--danger);color:#fff;animation:pulse2 1.4s infinite}
-.live-banner.upcoming .live-status{background:rgba(74,158,255,.18);color:var(--accent);border:1px solid rgba(74,158,255,.3)}
-.live-banner.break .live-status{background:rgba(255,183,77,.18);color:var(--warn)}
-.live-banner.done .live-status{background:rgba(0,212,170,.18);color:var(--done)}
-@keyframes pulse2{0%,100%{opacity:1}50%{opacity:.6}}
-.live-info .who{font-size:22px;font-weight:700;margin-bottom:2px}
-.live-info .what{font-size:13px;color:var(--muted)}
-.live-timer{font-family:"Cascadia Code","Consolas",monospace;font-size:36px;font-weight:700;color:var(--text);min-width:120px;text-align:right;letter-spacing:-1px}
-.live-banner.live .live-timer{color:var(--danger)}
-.live-banner.upcoming .live-timer{color:var(--accent)}
 
-/* Stats */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:28px 0}
-@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}.hero h1{font-size:44px}}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
-.stat-card .num{font-size:32px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
-.stat-card .label{font-size:12px;color:var(--muted);margin-top:6px;letter-spacing:1px;text-transform:uppercase}
-
-/* Progress */
-.progress-wrap{margin:8px 0 0;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px}
-.progress-wrap .label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px;letter-spacing:1px;text-transform:uppercase}
-.progress{height:8px;background:rgba(255,255,255,.05);border-radius:99px;overflow:hidden}
-.progress > div{height:100%;background:var(--grad);transition:width .8s;border-radius:99px;box-shadow:0 0 12px rgba(74,158,255,.5)}
-
-/* Day page */
-.day-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:30px;gap:20px;flex-wrap:wrap}
-.day-header .date{font-size:14px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
-.day-header h2{margin-bottom:0}
-.day-header .meta{font-size:13px;color:var(--muted);background:var(--card);padding:8px 16px;border-radius:99px;border:1px solid var(--border)}
-
-.timeline{position:relative;padding-left:0}
-.slot{
-  background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px 26px;margin-bottom:14px;
-  display:grid;grid-template-columns:140px 1fr auto;gap:24px;align-items:center;
-  transition:all .3s;position:relative;overflow:hidden;
+.app-header {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(135deg, var(--cp-surface) 0%, var(--cp-bg-elevated) 100%);
+  border-bottom: 1px solid var(--cp-border);
+  padding: 32px 32px 28px;
+  text-align: center;
+  overflow: hidden;
 }
-.slot::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:background .3s}
-.slot.done{opacity:.55}
-.slot.done::before{background:var(--done)}
-.slot.live{border-color:rgba(255,90,122,.5);background:linear-gradient(135deg,rgba(255,90,122,.08),var(--card))}
-.slot.live::before{background:var(--danger)}
-.slot.next{border-color:rgba(74,158,255,.4)}
-.slot.next::before{background:var(--accent)}
-.slot:hover{transform:translateX(4px);border-color:rgba(74,158,255,.4)}
-.slot-time{font-family:"Cascadia Code","Consolas",monospace}
-.slot-time .start{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.5px}
-.slot-time .end{font-size:12px;color:var(--muted);margin-top:2px}
-.slot-time .arrow{color:var(--muted);margin-right:4px}
-.slot-main .speaker{font-size:18px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:10px}
-.slot-main .idx{font-size:12px;font-weight:600;color:var(--muted);background:rgba(255,255,255,.05);padding:2px 8px;border-radius:6px;letter-spacing:.5px}
-.slot-main .topic{font-size:13px;color:var(--accent);font-family:"Cascadia Code","Consolas",monospace;word-break:break-all;margin-bottom:8px}
-.slot-main .segments{display:flex;gap:8px;flex-wrap:wrap}
-.seg{font-size:11px;padding:3px 10px;border-radius:99px;font-weight:600;letter-spacing:.5px}
-.seg.talk{background:rgba(74,158,255,.15);color:var(--accent);border:1px solid rgba(74,158,255,.25)}
-.seg.qa{background:rgba(255,183,77,.15);color:var(--warn);border:1px solid rgba(255,183,77,.25)}
-.slot-badge{padding:8px 14px;border-radius:10px;font-size:11px;font-weight:800;letter-spacing:1.5px;white-space:nowrap;text-align:center;min-width:90px}
-.slot-badge.done{background:rgba(0,212,170,.15);color:var(--done);border:1px solid rgba(0,212,170,.3)}
-.slot-badge.live{background:var(--danger);color:#fff;animation:pulse2 1.4s infinite}
-.slot-badge.next{background:rgba(74,158,255,.18);color:var(--accent);border:1px solid rgba(74,158,255,.35)}
-.slot-badge.pending{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--border)}
-
-.slot.break-slot{
-  grid-template-columns:140px 1fr;background:var(--grad-warm);border:1px dashed rgba(255,183,77,.4);
+.app-header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(0,120,212,0.06) 0%, transparent 60%);
+  pointer-events: none;
 }
-.slot.break-slot::before{display:none}
-.slot.break-slot .slot-main{color:var(--warn);font-style:italic;font-weight:600;font-size:15px}
+.app-header .header-top {
+  position: relative;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--cp-text-muted);
+  margin-bottom: 4px;
+}
+.app-header h1 {
+  position: relative;
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #0078d4 0%, #00b4d8 50%, var(--cp-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 6px;
+  letter-spacing: -0.5px;
+}
+.app-header .slogan {
+  position: relative;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--cp-text);
+  margin: 8px 0;
+  letter-spacing: 1px;
+}
+.app-header .subtitle {
+  position: relative;
+  color: var(--cp-text-muted);
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+.app-header .ai-badge {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 6px 18px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, rgba(0,120,212,0.1) 0%, rgba(0,180,216,0.1) 100%);
+  color: var(--cp-link);
+  border: 1px solid var(--cp-link);
+  position: relative;
+}
 
-/* Overview cards */
-.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-bottom:30px}
-@media(max-width:900px){.cards{grid-template-columns:1fr}.slot{grid-template-columns:100px 1fr;}.slot-badge{grid-column:1/3}}
-.info-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 28px;position:relative;overflow:hidden}
-.info-card .icon{width:44px;height:44px;border-radius:12px;background:var(--grad-soft);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px}
-.info-card h3{font-size:18px;margin-bottom:8px}
-.info-card p{color:var(--muted);font-size:14px;line-height:1.7}
+/* Navigation Tabs */
+.nav-tabs {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  background: var(--cp-surface);
+  border-bottom: 1px solid var(--cp-border);
+  padding: 0 32px;
+  overflow-x: auto;
+  backdrop-filter: blur(8px);
+}
+.nav-tab {
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--cp-text-muted);
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+.nav-tab:hover { color: var(--cp-text); background: var(--cp-accent-soft); }
+.nav-tab.active {
+  color: var(--cp-accent);
+  border-bottom-color: var(--cp-accent);
+  font-weight: 600;
+  text-shadow: 0 0 20px var(--cp-accent-soft);
+}
 
-.scene-box{background:var(--grad-soft);border:1px solid rgba(74,158,255,.35);border-radius:18px;padding:28px 32px;margin-bottom:30px;position:relative;overflow:hidden}
-.scene-box::after{content:"";position:absolute;top:-40%;right:-10%;width:300px;height:300px;background:radial-gradient(circle, rgba(123,92,255,.25), transparent 70%);pointer-events:none}
-.scene-box .label{font-size:11px;letter-spacing:3px;color:var(--accent);font-weight:700;margin-bottom:10px;text-transform:uppercase}
-.scene-box .scene-text{font-size:18px;font-weight:500;line-height:1.7;position:relative;z-index:1;color:var(--text)}
-.scene-box .scene-text .hi{color:var(--accent-3);font-weight:700}
+/* Page Content */
+.page { display: none; padding: 32px; max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+.page.active { display: block; animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Past speakers */
-.past-block{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 28px;margin-top:20px}
-.past-block h3{font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:14px;font-weight:700}
-.past-block .chips{display:flex;gap:10px;flex-wrap:wrap}
-.past-block .chip{padding:8px 16px;border-radius:99px;background:rgba(0,212,170,.12);color:var(--done);border:1px solid rgba(0,212,170,.3);font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
-.past-block .chip::before{content:"✓";font-weight:800}
+/* Cards */
+.card {
+  background: var(--cp-panel-strong);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--cp-border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.14);
+  transition: box-shadow 0.3s, border-color 0.3s;
+}
+.card:hover {
+  border-color: var(--cp-accent);
+  box-shadow: 0 0 0 1px var(--cp-accent-soft), 0 4px 16px rgba(0,0,0,0.08);
+}
+.card h2 {
+  font-size: 1.3rem;
+  margin-bottom: 12px;
+  color: var(--cp-text);
+}
+.card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: var(--cp-text);
+}
 
-/* Config */
-.config-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 28px;margin-top:24px}
-.config-box summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--text);letter-spacing:.5px;list-style:none;display:flex;align-items:center;gap:10px}
-.config-box summary::before{content:"⚙";color:var(--accent);font-size:18px}
-.config-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:18px}
-.config-grid label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase}
-.config-grid input{width:100%;padding:10px 12px;background:var(--bg-2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px}
-.config-grid input:focus{outline:none;border-color:var(--accent)}
-.config-box button{margin-top:14px;background:var(--grad);color:#fff;border:none;padding:10px 24px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;letter-spacing:.5px;transition:transform .2s}
-.config-box button:hover{transform:translateY(-2px)}
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+.stat-card {
+  background: var(--cp-bg-elevated);
+  border: 1px solid var(--cp-border);
+  border-radius: 0.625rem;
+  padding: 16px;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--cp-accent-soft);
+}
+.stat-card .num {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--cp-accent);
+}
+.stat-card .label {
+  font-size: 0.8rem;
+  color: var(--cp-text-muted);
+  margin-top: 4px;
+}
 
-.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:50px;padding-top:24px;border-top:1px solid var(--border)}
+/* Publisher Table */
+.pub-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  margin-top: 12px;
+}
+.pub-table th {
+  background: var(--cp-surface-soft);
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--cp-border);
+  font-weight: 600;
+  color: var(--cp-text-muted);
+}
+.pub-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--cp-border);
+}
+.pub-table tr:hover td { background: var(--cp-accent-soft); }
+.work-tag {
+  display: inline-block;
+  background: var(--cp-highlight);
+  color: var(--cp-accent);
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  margin: 2px 4px 2px 0;
+  font-family: Consolas, "Courier New", monospace;
+}
+
+/* Speaker Schedule */
+.speaker-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--cp-border);
+  border-radius: 0.625rem;
+  margin-bottom: 12px;
+  background: var(--cp-panel-strong);
+  backdrop-filter: blur(8px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.speaker-item:hover {
+  transform: translateX(4px);
+  box-shadow: 0 2px 12px var(--cp-accent-soft);
+}
+.speaker-item.completed {
+  opacity: 0.6;
+  background: var(--cp-surface-soft);
+  border-left: 4px solid var(--cp-success);
+}
+.speaker-item.active {
+  border-left: 4px solid var(--cp-accent);
+  background: var(--cp-accent-soft);
+  box-shadow: 0 0 16px var(--cp-accent-soft), 0 2px 8px rgba(177,31,75,0.1);
+  animation: glowPulse 2s ease-in-out infinite;
+}
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 8px var(--cp-accent-soft), 0 2px 8px rgba(177,31,75,0.1); }
+  50% { box-shadow: 0 0 20px var(--cp-accent-soft), 0 2px 12px rgba(177,31,75,0.2); }
+}
+.speaker-item.pending {
+  border-left: 4px solid var(--cp-border-strong);
+}
+.speaker-order {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.speaker-item.completed .speaker-order { background: var(--cp-success); color: #fff; }
+.speaker-item.active .speaker-order { background: var(--cp-accent); color: var(--cp-accent-fg); }
+.speaker-item.pending .speaker-order { background: var(--cp-surface-soft); color: var(--cp-text-muted); border: 1px solid var(--cp-border); }
+.speaker-info { flex: 1; }
+.speaker-name { font-weight: 600; font-size: 1rem; }
+.speaker-topic { color: var(--cp-text-muted); font-size: 0.85rem; font-family: Consolas, monospace; margin-top: 2px; }
+.speaker-time { color: var(--cp-text-soft); font-size: 0.8rem; margin-top: 2px; }
+.speaker-status {
+  font-size: 0.75rem;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+.speaker-item.completed .speaker-status { background: var(--cp-success); color: #fff; }
+.speaker-item.active .speaker-status { background: var(--cp-accent); color: var(--cp-accent-fg); }
+.speaker-item.pending .speaker-status { background: var(--cp-surface-soft); color: var(--cp-text-muted); border: 1px solid var(--cp-border); }
+
+/* Timer Section */
+.timer-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.timer-card {
+  background: var(--cp-bg-elevated);
+  border: 1px solid var(--cp-border);
+  border-radius: 0.625rem;
+  padding: 12px 8px;
+  text-align: center;
+  transition: border-color 0.3s;
+}
+.timer-card:hover { border-color: var(--cp-accent); }
+.timer-card h3 { margin-bottom: 4px; font-size: 0.85rem; }
+.timer-display {
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: Consolas, monospace;
+  color: var(--cp-text);
+  margin: 4px 0;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px var(--cp-accent-soft);
+}
+.timer-display.warning { color: var(--cp-warning); }
+.timer-display.danger { color: var(--cp-danger); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+
+.timer-controls { display: flex; gap: 6px; justify-content: center; margin-top: 6px; }
+.timer-btn {
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--cp-border);
+  background: var(--cp-surface-soft);
+  color: var(--cp-text);
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.timer-btn:hover { background: var(--cp-accent-soft); border-color: var(--cp-accent); }
+.timer-btn.primary { background: var(--cp-accent); color: var(--cp-accent-fg); border-color: var(--cp-accent); }
+.timer-btn.primary:hover { background: var(--cp-accent-hover); }
+
+.timer-adjust {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 6px;
+}
+.timer-adjust input {
+  width: 44px;
+  padding: 2px 4px;
+  border: 1px solid var(--cp-border);
+  border-radius: 4px;
+  text-align: center;
+  font-size: 0.75rem;
+  background: var(--cp-surface-soft);
+  color: var(--cp-text);
+}
+.timer-adjust label { font-size: 0.7rem; color: var(--cp-text-muted); }
+
+/* Already Shared */
+.shared-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+.shared-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--cp-surface-soft);
+  border: 1px solid var(--cp-border);
+  border-radius: 0.625rem;
+  padding: 8px 16px;
+}
+.shared-badge .check { color: var(--cp-success); font-weight: 700; }
+
+/* Purpose Section */
+.purpose-text {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--cp-text-soft);
+}
+.purpose-text strong { color: var(--cp-link); }
+
+/* Footer */
+.app-footer {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 24px 32px;
+  color: var(--cp-text-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+  border-top: 1px solid var(--cp-border);
+  background: var(--cp-surface);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page { padding: 16px; }
+  .timer-display { font-size: 3rem; }
+  .speaker-item { flex-wrap: wrap; }
+}
 </style>
 </head>
 <body>
 
-<nav class="nav">
-  <div class="nav-inner">
-    <div class="brand">
-      <span class="brand-dot"></span>
-      <span class="brand-text">"AI in Action"<span class="brand-sub">Windows Commercial China</span></span>
-    </div>
-    <div class="nav-tabs" id="navTabs">
-      <button data-page="overview" class="active">📋 Overview</button>
-      <button data-page="day1"><span class="dot"></span>Day 1 · 6/24</button>
-      <button data-page="day2"><span class="dot"></span>Day 2 · 6/25</button>
-      <button data-page="live">⚡ Live Now</button>
-    </div>
-  </div>
-</nav>
+<div class="app-header">
+  <div class="header-top">FY26 WinComm China</div>
+  <h1>🚀 "AI in Action" Campaign</h1>
+  <div class="slogan">Build + Share + Boost!</div>
+  <div class="subtitle">Roadshow · June 24–25, 2026 · 11:30 AM – 2:30 PM</div>
+  <div class="ai-badge">⚡ Unleash your creativity with unlimited token</div>
+</div>
 
-<!-- ========== OVERVIEW ========== -->
-<section class="page active" id="page-overview">
-  <div class="hero-grid-bg"></div>
-  <div class="hero hero-inner">
-    <span class="section-tag">Campaign · 2026</span>
-    <h1><span class="grad">"AI in Action"</span><br>Campaign</h1>
-    <p class="lead">拥抱 AI · 用 AI 为自己所用 —— 让每个人都能把 AI 变成自己的工具。</p>
-    <div class="hero-meta">
-      <div class="chip"><span class="ico">📅</span> 6/24 – 6/25</div>
-      <div class="chip"><span class="ico">🕐</span> 11:30 – 14:30</div>
-      <div class="chip"><span class="ico">👥</span> Windows Commercial China Team</div>
-      <div class="chip"><span class="ico">🎤</span> <span id="totalSpeakers">12</span> Speakers</div>
-    </div>
+<div class="nav-tabs">
+  <div class="nav-tab active" onclick="showPage('overview')">📋 Overview</div>
+  <div class="nav-tab" onclick="showPage('publishers')">📊 CNWIN Projects</div>
+  <div class="nav-tab" onclick="showPage('day1')">📅 Day 1 (6/24)</div>
+  <div class="nav-tab" onclick="showPage('day2')">📅 Day 2 (6/25)</div>
+
+  <div class="nav-tab" onclick="showPage('shared')">✅ Already Shared</div>
+</div>
+
+<!-- OVERVIEW PAGE -->
+<div class="page active" id="page-overview">
+  <div class="card">
+    <h2>🎯 Purpose</h2>
+    <p class="purpose-text">
+      We want everyone to <strong>embrace AI</strong> and make it work for you.<br><br>
+      Each speaker gets <strong>12 min</strong> to demo how they integrate AI into daily work, plus <strong>5 min</strong> for Q&A. Let's inspire each other and explore the endless possibilities of AI!
+    </p>
   </div>
 
-  <div class="live-banner" id="liveBanner">
-    <span class="live-status" id="liveStatus">STANDBY</span>
-    <div class="live-info">
-      <div class="who" id="liveWho">Session 尚未开始</div>
-      <div class="what" id="liveWhat">第一位 speaker 即将上场</div>
+  <div class="card">
+    <h2>📌 Session Info</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="num">2</div>
+        <div class="label">Days</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">12</div>
+        <div class="label">Speakers</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">17</div>
+        <div class="label">min / Speaker</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">3h</div>
+        <div class="label">Per Day</div>
+      </div>
     </div>
-    <div class="live-timer" id="liveTimer">--:--</div>
+    <table class="pub-table" style="margin-top:16px">
+      <tr><td style="font-weight:600;width:140px">📅 Date</td><td>June 24 (Wed) – June 25 (Thu), 2026</td></tr>
+      <tr><td style="font-weight:600">🕛 Time</td><td>11:30 AM – 2:30 PM</td></tr>
+      <tr><td style="font-weight:600">👥 Team</td><td>WinComm China AI Learning Community</td></tr>
+      <tr><td style="font-weight:600">⏱️ Format</td><td>12 min Presentation + 5 min Q&A + 10 min Break</td></tr>
+      <tr><td style="font-weight:600">📍 Location</td><td>Shanghai: SHZZ B01 2F Game Room<br>Wuxi: IFS/43.1A Mercury</td></tr>
+    </table>
   </div>
+</div>
 
-  <div class="progress-wrap">
-    <div class="label"><span>Session 进度</span><span id="progressPct">0%</span></div>
-    <div class="progress"><div id="progressBar" style="width:0%"></div></div>
+<!-- PUBLISHERS PAGE -->
+<div class="page" id="page-publishers">
+  <div class="card">
+    <h2>📊 CNWIN Published Projects</h2>
+    <p style="color:var(--cp-text-muted);font-size:0.9rem;margin-bottom:16px;">
+      Source: <a href="https://github.com/gim-home/cnwin/tree/main/plugins" style="color:var(--cp-link)">github.com/gim-home/cnwin</a> — Agents & Skills published by our team
+    </p>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="num">18</div>
+        <div class="label">Publishers</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">30</div>
+        <div class="label">Unique Works</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">31</div>
+        <div class="label">Total Contributions</div>
+      </div>
+    </div>
+    <table class="pub-table">
+      <thead><tr><th>#</th><th>Publisher</th><th>Works</th><th>Count</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td style="font-weight:600">Bin Hua</td><td><span class="work-tag">case-plan</span><span class="work-tag">pcap-analysis</span></td><td style="text-align:center;font-weight:600;color:var(--cp-accent)">2</td></tr>
+        <tr><td>2</td><td style="font-weight:600">Charis Ji</td><td><span class="work-tag">sba-ops</span></td><td style="text-align:center;font-weight:600;color:var(--cp-accent)">1</td></tr>
+        <tr><td>3</td><td style="font-weight:600">Eric Chen</td><td><span class="work-tag">azure-local-mooncake-assistant</span></td><td style="text-align:center;font-weight:600;color:var(--cp-accent)">1</td></tr>
+        <tr><td>4</td><td style="font-weight:600">James Li</td><td><span class="work-tag">pml-analyzer</span></td><td style="text-align:center;font-weight:600;color:var(--cp-accent)">1</td></tr>
+        <tr><td>5</td><td style="font-weight:600">Jay Wang</td><td><span class="work-tag">mbr-prep</span></td><td style="text-align:center;font-weight:600;color:var(--cp-accent)">1</td></tr>
+        <tr><td>6</td><td style="font-weight:600">Karis (kepxiang)</td><td><span class="work-tag">business-impact-collector</span><span class="work-tag">tcp-syn-drop-analyzer</span><span class="work-tag">tech-sharing</span></td><td style="text-align:center;font-weight:600;color:var(--cp-accent)">3</td></tr>
+        <tr><td>7</td><td style="font-weight:600">Kevin Zheng</td><td><span class="work-tag">case-to-playbook</span></td><td style="text-align:center;font-weight:600;color:var(--cp-accent)">1</td></tr>
+        <tr><td>8</td><td style="font-weight:600">Luyao Feng</td><td><span class="work-tag">d365-case-ops</span><span class="work-tag">pcap-analysis</span><span class="work-tag">osgwiki-search</span><span class="work-tag">ts</span><span class="work-tag">wiresharkanalyzer</span></td><td style="text-align:center;font-weight:600;color:var(--cp-accent)">5</td></tr>
+        <tr><td>9</td><td style="font-weight:600">Min He</td><td><span class="work-tag">casenote</span><span class="work-tag">troubleshoot-buddy</span></td><td style="text-align:center;font-weight:600;color:var(--cp-accent)">2</td></tr>
+        <tr><td>10</td><td style="font-weight:600">Nicole Huang</td><td><span class="work-tag">dtmviewer</span></td><td style="text-align:center;font-weight:600;color:var(--cp-accent)">1</td></tr>
+        <tr><td>11</td><td style="font-weight:600">Penny Ma</td><td><span class="work-tag">css-tools</span><span class="work-tag">hyperv-cluster</span><span class="work-tag">ThriveBot</span></td><td style="text-align:center;font-weight:600;color:var(--cp-accent)">3</td></tr>
+        <tr><td>12</td><td style="font-weight:600">Stella Sun</td><td><span class="work-tag">dfm-case-triage</span></td><td style="text-align:center;font-weight:600;color:var(--cp-accent)">1</td></tr>
+        <tr><td>13</td><td style="font-weight:600">Victor Mei</td><td><span class="work-tag">ts-safe</span><span class="work-tag">technical-writer</span></td><td style="text-align:center;font-weight:600;color:var(--cp-accent)">2</td></tr>
+        <tr><td>14</td><td style="font-weight:600">Xavier Zhang</td><td><span class="work-tag">uwp-deployment-log-analyzer</span></td><td style="text-align:center;font-weight:600;color:var(--cp-accent)">1</td></tr>
+        <tr><td>15</td><td style="font-weight:600">Yali Wang</td><td><span class="work-tag">build-voice-model</span></td><td style="text-align:center;font-weight:600;color:var(--cp-accent)">1</td></tr>
+        <tr><td>16</td><td style="font-weight:600">Yang Hong</td><td><span class="work-tag">case-risk-check</span><span class="work-tag">CaseAnalyzer</span></td><td style="text-align:center;font-weight:600;color:var(--cp-accent)">2</td></tr>
+        <tr><td>17</td><td style="font-weight:600">Yao Yao (CSS)</td><td><span class="work-tag">internal-kb</span><span class="work-tag">publish-skill-to-cnwin</span></td><td style="text-align:center;font-weight:600;color:var(--cp-accent)">2</td></tr>
+        <tr><td>18</td><td style="font-weight:600">Yihuang Qu</td><td><span class="work-tag">case-email</span></td><td style="text-align:center;font-weight:600;color:var(--cp-accent)">1</td></tr>
+      </tbody>
+    </table>
   </div>
+</div>
 
-  <div class="stats">
-    <div class="stat-card"><div class="num" id="stDone">0</div><div class="label">Completed</div></div>
-    <div class="stat-card"><div class="num" id="stLive">0</div><div class="label">Live Now</div></div>
-    <div class="stat-card"><div class="num" id="stPending">12</div><div class="label">Upcoming</div></div>
-    <div class="stat-card"><div class="num">2</div><div class="label">Days</div></div>
-  </div>
+<!-- DAY 1 PAGE -->
+<div class="page" id="page-day1">
+  <div class="card">
+    <h2>📅 Day 1 — June 24 (Wed)</h2>
+    <p style="color:var(--cp-text-muted);font-size:0.85rem;margin-bottom:16px;">11:30 AM – 2:30 PM · Click status to toggle progress</p>
 
-  <div class="scene-box" style="margin-top:36px">
-    <div class="label">为什么办这场</div>
-    <div class="scene-text">希望大家更多地<span class="hi">拥抱 AI</span>，把 AI 当成<span class="hi">自己手里的工具</span> —— 不只是听别人讲，而是动手做、解决自己手边的问题。每一位 speaker 用 12 分钟讲清楚一个项目，再留 5 分钟给大家 QA 和讨论，节奏紧凑、彼此启发。</div>
-  </div>
-
-  <div class="cards">
-    <div class="info-card">
-      <div class="icon">⏱️</div>
-      <h3>每位 12 + 5</h3>
-      <p>每位 speaker 12 分钟讲清楚自己的项目，5 分钟留给 QA 与讨论 —— 既保证节奏，也让大家学到东西。</p>
-    </div>
-    <div class="info-card">
-      <div class="icon">☕</div>
-      <h3>10 min 休息</h3>
-      <p>每天中段安排一次 10 分钟休息，让大家放松、补充水分、互相聊一聊。</p>
-    </div>
-    <div class="info-card">
-      <div class="icon">🎯</div>
-      <h3>动态时间表</h3>
-      <p>页面会根据当前时间自动判断哪位在讲、谁讲完了、谁是下一位 —— 现场参与的同学一眼就能看清楚流程。</p>
-    </div>
-    <div class="info-card">
-      <div class="icon">📈</div>
-      <h3>持续欢迎新提交</h3>
-      <p>如果两天内还有人提交项目，我们会随时把新的 speaker 加进来。让分享成为持续的事，而不是只发生在这两天。</p>
-    </div>
-  </div>
-
-  <div class="past-block">
-    <h3>往期分享 · Hall of Fame</h3>
-    <div class="chips">
-      <span class="chip">Min He</span>
-      <span class="chip">Nicole Huang</span>
-      <span class="chip">YangHong</span>
-    </div>
-  </div>
-
-  <details class="config-box">
-    <summary>时间配置（可调整）</summary>
-    <div class="config-grid">
-      <div><label>Talk 时长 (分钟)</label><input type="number" id="cfgTalk" value="12"></div>
-      <div><label>QA 时长 (分钟)</label><input type="number" id="cfgQA" value="5"></div>
-      <div><label>休息时长 (分钟)</label><input type="number" id="cfgBreak" value="10"></div>
-      <div><label>休息插入位置</label><input type="number" id="cfgBreakAfter" value="3"></div>
-      <div><label>每天起始时间</label><input type="text" id="cfgStart" value="11:30"></div>
-    </div>
-    <button onclick="rebuild()">应用配置</button>
-  </details>
-
-  <div class="footer">Auto-refresh · 当前时间 <span id="nowText"></span></div>
-</section>
-
-<!-- ========== DAY 1 ========== -->
-<section class="page" id="page-day1">
-  <span class="section-tag">Day One</span>
-  <div class="day-header">
-    <div>
-      <div class="date">2026 · 6 月 24 日 · 周三</div>
-      <h2>Day 1</h2>
-    </div>
-    <div class="meta" id="day1Meta">6 speakers · 11:30 起</div>
-  </div>
-  <div class="timeline" id="day1List"></div>
-</section>
-
-<!-- ========== DAY 2 ========== -->
-<section class="page" id="page-day2">
-  <span class="section-tag">Day Two</span>
-  <div class="day-header">
-    <div>
-      <div class="date">2026 · 6 月 25 日 · 周四</div>
-      <h2>Day 2</h2>
-    </div>
-    <div class="meta" id="day2Meta">6 speakers · 11:30 起</div>
-  </div>
-  <div class="timeline" id="day2List"></div>
-</section>
-
-<!-- ========== LIVE NOW ========== -->
-<section class="page" id="page-live">
-  <span class="section-tag">Real-time</span>
-  <h2>Live Now</h2>
-  <p class="sub">实时监控当前正在进行的 session — 自动刷新每秒一次。</p>
-
-  <div class="live-banner" id="liveBannerBig" style="padding:36px 40px;margin-bottom:24px">
-    <span class="live-status" id="liveStatusBig" style="font-size:13px;padding:10px 18px">STANDBY</span>
-    <div class="live-info">
-      <div class="who" id="liveWhoBig" style="font-size:32px">Session 尚未开始</div>
-      <div class="what" id="liveWhatBig" style="font-size:15px;margin-top:6px">第一位 speaker 即将上场</div>
-    </div>
-    <div class="live-timer" id="liveTimerBig" style="font-size:56px;min-width:200px">--:--</div>
-  </div>
-
-  <div class="progress-wrap"><div class="label"><span>Session 进度</span><span id="progressPctBig">0%</span></div><div class="progress"><div id="progressBarBig" style="width:0%"></div></div></div>
-
-  <div class="cards" style="margin-top:30px">
-    <div class="info-card" id="liveNextCard">
-      <div class="icon">⏭️</div>
-      <h3>下一位 Speaker</h3>
-      <p id="nextInfo">—</p>
-    </div>
-    <div class="info-card">
-      <div class="icon">📊</div>
-      <h3>进展概览</h3>
-      <p>已完成 <b id="liveDone" style="color:var(--done)">0</b> 位 · 进行中 <b id="liveLive" style="color:var(--danger)">0</b> 位 · 剩余 <b id="livePending" style="color:var(--accent)">12</b> 位</p>
-    </div>
-  </div>
-</section>
-
-<script>
-const SPEAKERS = {
-  day1: [
-    { name:"Eric Chen",        topic:"azure-local-mooncake-assistant" },
-    { name:"Bin Hua",          topic:"case-plan, pcap-analysis, wiresharkanalyzer" },
-    { name:"Yali Wang",        topic:"build-voice-model" },
-    { name:"Kevin Zheng",      topic:"case-to-playbook" },
-    { name:"Penny Ma",         topic:"css-tools / hyperv-cluster" },
-    { name:"James Li",         topic:"pml-analyzer" },
-  ],
-  day2: [
-    { name:"Yihuang Qu",       topic:"case-email" },
-    { name:"Charis Ji",        topic:"sba-ops" },
-    { name:"Karis (kepxiang)", topic:"business-impact-collector / tcp-syn-drop-analyzer / tech-sharing" },
-    { name:"Stella Sun",       topic:"dfm-case-triage" },
-    { name:"Jay Wang",         topic:"mbr-prep" },
-    { name:"Victor Mei / Clover Fan", topic:"general troubleshooting agent" },
-  ],
-};
-const DAY_DATES = { day1:"2026-06-24", day2:"2026-06-25" };
-
-let SCHEDULE = [];
-
-function buildSchedule(){
-  const talk    = +document.getElementById('cfgTalk').value || 12;
-  const qa      = +document.getElementById('cfgQA').value || 5;
-  const brk     = +document.getElementById('cfgBreak').value || 10;
-  const brkAfter= +document.getElementById('cfgBreakAfter').value || 3;
-  const startStr= document.getElementById('cfgStart').value || "11:30";
-  SCHEDULE = [];
-  for (const dayKey of ['day1','day2']) {
-    const date = DAY_DATES[dayKey];
-    let cur = parseTime(date, startStr);
-    SPEAKERS[dayKey].forEach((sp, idx) => {
-      const tStart = new Date(cur);
-      const tEnd   = addMin(tStart, talk);
-      SCHEDULE.push({day:dayKey,date,type:'talk',name:sp.name,topic:sp.topic,idx:idx+1,start:tStart,end:tEnd});
-      const qEnd = addMin(tEnd, qa);
-      SCHEDULE.push({day:dayKey,date,type:'qa',  name:sp.name,topic:sp.topic,idx:idx+1,start:tEnd,end:qEnd});
-      cur = qEnd;
-      if (idx+1 === brkAfter && idx+1 < SPEAKERS[dayKey].length) {
-        const bEnd = addMin(cur, brk);
-        SCHEDULE.push({day:dayKey,date,type:'break',start:cur,end:bEnd});
-        cur = bEnd;
-      }
-    });
-  }
-}
-function parseTime(date,hhmm){const [h,m]=hhmm.split(':').map(Number);return new Date(`${date}T${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:00+08:00`);}
-function addMin(d,m){return new Date(d.getTime()+m*60000);}
-function fmtTime(d){return d.toTimeString().slice(0,5);}
-function fmtDur(ms){const s=Math.max(0,Math.floor(ms/1000));return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
-
-function renderDay(dayKey){
-  const root = document.getElementById(dayKey+'List');
-  const now = new Date();
-  const items = SCHEDULE.filter(s=>s.day===dayKey);
-  const rows = [];
-  for (let i=0;i<items.length;i++){
-    const it = items[i];
-    if (it.type==='break'){ rows.push({kind:'break',start:it.start,end:it.end}); }
-    else if (it.type==='talk'){
-      const qa = items[i+1];
-      rows.push({kind:'speaker',idx:it.idx,name:it.name,topic:it.topic,talkStart:it.start,talkEnd:it.end,qaEnd:qa.end});
-      i++;
-    }
-  }
-  let html='';
-  let nextMarked=false;
-  rows.forEach(r=>{
-    if (r.kind==='break'){
-      html += `<div class="slot break-slot"><div class="slot-time"><div class="start">${fmtTime(r.start)}</div><div class="end">→ ${fmtTime(r.end)}</div></div><div class="slot-main">☕ Break · ${Math.round((r.end-r.start)/60000)} min · 休息一下</div></div>`;
-      return;
-    }
-    let status, badge;
-    if (now >= r.qaEnd){ status='done'; badge='<div class="slot-badge done">✓ DONE</div>'; }
-    else if (now >= r.talkStart){ status='live'; badge='<div class="slot-badge live">● LIVE</div>'; }
-    else if (!nextMarked){ status='next'; badge='<div class="slot-badge next">NEXT</div>'; nextMarked=true; }
-    else { status='pending'; badge='<div class="slot-badge pending">UPCOMING</div>'; }
-    html += `<div class="slot ${status}">
-      <div class="slot-time"><div class="start">${fmtTime(r.talkStart)}</div><div class="end"><span class="arrow">→</span>${fmtTime(r.qaEnd)}</div></div>
-      <div class="slot-main">
-        <div class="speaker"><span class="idx">#${r.idx}</span>${r.name}</div>
-        <div class="topic">${r.topic}</div>
-        <div class="segments">
-          <span class="seg talk">🎤 Talk · ${Math.round((r.talkEnd-r.talkStart)/60000)}m</span>
-          <span class="seg qa">💬 QA · ${Math.round((r.qaEnd-r.talkEnd)/60000)}m</span>
+    <!-- Timer inline for Day 1 -->
+    <div class="timer-container" style="margin-bottom:24px;">
+      <div class="timer-card">
+        <h3>🎤 Talk</h3>
+        <div class="timer-display" id="timer-speak-d1">12:00</div>
+        <div class="timer-controls">
+          <button class="timer-btn primary" onclick="toggleTimer('speak-d1')" id="btn-speak-d1">▶ Start</button>
+          <button class="timer-btn" onclick="resetTimer('speak-d1')">↺ Reset</button>
+        </div>
+        <div class="timer-adjust">
+          <input type="number" id="input-speak-d1" value="12" min="1" max="60"><label>min</label>
+          <button class="timer-btn" onclick="setTimer('speak-d1')" style="padding:4px 12px">✓</button>
         </div>
       </div>
-      ${badge}
-    </div>`;
-  });
-  root.innerHTML = html;
+      <div class="timer-card">
+        <h3>❓ Q&A</h3>
+        <div class="timer-display" id="timer-qa-d1">05:00</div>
+        <div class="timer-controls">
+          <button class="timer-btn primary" onclick="toggleTimer('qa-d1')" id="btn-qa-d1">▶ Start</button>
+          <button class="timer-btn" onclick="resetTimer('qa-d1')">↺ Reset</button>
+        </div>
+        <div class="timer-adjust">
+          <input type="number" id="input-qa-d1" value="5" min="1" max="30"><label>min</label>
+          <button class="timer-btn" onclick="setTimer('qa-d1')" style="padding:4px 12px">✓</button>
+        </div>
+      </div>
+      <div class="timer-card">
+        <h3>☕ Break</h3>
+        <div class="timer-display" id="timer-break-d1">10:00</div>
+        <div class="timer-controls">
+          <button class="timer-btn primary" onclick="toggleTimer('break-d1')" id="btn-break-d1">▶ Start</button>
+          <button class="timer-btn" onclick="resetTimer('break-d1')">↺ Reset</button>
+        </div>
+        <div class="timer-adjust">
+          <input type="number" id="input-break-d1" value="10" min="1" max="30"><label>min</label>
+          <button class="timer-btn" onclick="setTimer('break-d1')" style="padding:4px 12px">✓</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="day1-speakers"></div>
+  </div>
+</div>
+
+<!-- DAY 2 PAGE -->
+<div class="page" id="page-day2">
+  <div class="card">
+    <h2>📅 Day 2 — June 25 (Thu)</h2>
+    <p style="color:var(--cp-text-muted);font-size:0.85rem;margin-bottom:16px;">11:30 AM – 2:30 PM · Click status to toggle progress</p>
+
+    <!-- Timer inline for Day 2 -->
+    <div class="timer-container" style="margin-bottom:24px;">
+      <div class="timer-card">
+        <h3>🎤 Talk</h3>
+        <div class="timer-display" id="timer-speak-d2">12:00</div>
+        <div class="timer-controls">
+          <button class="timer-btn primary" onclick="toggleTimer('speak-d2')" id="btn-speak-d2">▶ Start</button>
+          <button class="timer-btn" onclick="resetTimer('speak-d2')">↺ Reset</button>
+        </div>
+        <div class="timer-adjust">
+          <input type="number" id="input-speak-d2" value="12" min="1" max="60"><label>min</label>
+          <button class="timer-btn" onclick="setTimer('speak-d2')" style="padding:4px 12px">✓</button>
+        </div>
+      </div>
+      <div class="timer-card">
+        <h3>❓ Q&A</h3>
+        <div class="timer-display" id="timer-qa-d2">05:00</div>
+        <div class="timer-controls">
+          <button class="timer-btn primary" onclick="toggleTimer('qa-d2')" id="btn-qa-d2">▶ Start</button>
+          <button class="timer-btn" onclick="resetTimer('qa-d2')">↺ Reset</button>
+        </div>
+        <div class="timer-adjust">
+          <input type="number" id="input-qa-d2" value="5" min="1" max="30"><label>min</label>
+          <button class="timer-btn" onclick="setTimer('qa-d2')" style="padding:4px 12px">✓</button>
+        </div>
+      </div>
+      <div class="timer-card">
+        <h3>☕ Break</h3>
+        <div class="timer-display" id="timer-break-d2">10:00</div>
+        <div class="timer-controls">
+          <button class="timer-btn primary" onclick="toggleTimer('break-d2')" id="btn-break-d2">▶ Start</button>
+          <button class="timer-btn" onclick="resetTimer('break-d2')">↺ Reset</button>
+        </div>
+        <div class="timer-adjust">
+          <input type="number" id="input-break-d2" value="10" min="1" max="30"><label>min</label>
+          <button class="timer-btn" onclick="setTimer('break-d2')" style="padding:4px 12px">✓</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="day2-speakers"></div>
+  </div>
+</div>
+
+
+<!-- ALREADY SHARED PAGE -->
+<div class="page" id="page-shared">
+  <div class="card">
+    <h2>✅ Previously Shared</h2>
+    <p style="color:var(--cp-text-muted);font-size:0.85rem;margin-bottom:16px;">These colleagues have shared in previous sessions.</p>
+    <div class="shared-list">
+      <div class="shared-badge"><span class="check">✓</span> Min He</div>
+      <div class="shared-badge"><span class="check">✓</span> Nicole Huang</div>
+      <div class="shared-badge"><span class="check">✓</span> Yang Hong</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// === PAGE NAVIGATION ===
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + pageId).classList.add('active');
+  event.currentTarget.classList.add('active');
 }
 
-function render(){
-  const now = new Date();
-  document.getElementById('nowText').textContent = now.toLocaleString('zh-CN',{hour12:false});
-  renderDay('day1'); renderDay('day2');
+// === SPEAKER DATA ===
+const day1Speakers = [
+  { name: "Eric Chen", topic: "azure-local-mooncake-assistant", status: "pending" },
+  { name: "Bin Hua", topic: "case-plan, pcap-analysis, wiresharkanalyzer", status: "pending" },
+  { name: "Yali Wang", topic: "build-voice-model", status: "pending" },
+  { name: "Kevin Zheng", topic: "case-to-playbook", status: "pending" },
+  { name: "Penny Ma", topic: "css-tools / hyperv-cluster", status: "pending" },
+  { name: "James Li", topic: "pml-analyzer", status: "pending" }
+];
 
-  const total = SPEAKERS.day1.length + SPEAKERS.day2.length;
-  document.getElementById('totalSpeakers').textContent = total;
-  let done=0, live=0;
-  SCHEDULE.forEach(s=>{ if (s.type==='qa' && now>=s.end) done++; });
-  const current = SCHEDULE.find(s=>now>=s.start && now<s.end);
-  if (current && (current.type==='talk' || current.type==='qa')) live=1;
-  document.getElementById('stDone').textContent = done;
-  document.getElementById('stLive').textContent = live;
-  document.getElementById('stPending').textContent = total - done - live;
-  document.getElementById('liveDone').textContent = done;
-  document.getElementById('liveLive').textContent = live;
-  document.getElementById('livePending').textContent = total - done - live;
+const day2Speakers = [
+  { name: "Yihuang Qu", topic: "case-email", status: "pending" },
+  { name: "Charis Ji", topic: "sba-ops", status: "pending" },
+  { name: "Karis (kepxiang)", topic: "business-impact-collector / tcp-syn-drop-analyzer / tech-sharing", status: "pending" },
+  { name: "Stella Sun", topic: "dfm-case-triage", status: "pending" },
+  { name: "Jay Wang", topic: "mbr-prep", status: "pending" },
+  { name: "Victor Mei / Clover Fan", topic: "general troubleshooting agent", status: "pending" }
+];
 
-  // tab live-dot
-  document.querySelectorAll('.nav-tabs button').forEach(b=>b.classList.remove('has-live'));
-  if (current && (current.type==='talk' || current.type==='qa')){
-    const btn = document.querySelector(`.nav-tabs button[data-page="${current.day}"]`);
-    if (btn) btn.classList.add('has-live');
-    document.querySelector('.nav-tabs button[data-page="live"]').classList.add('has-live');
-  }
-
-  // live banners (overview + live page)
-  setLiveBanners(now, current);
-
-  // progress
-  const first = SCHEDULE[0].start, last = SCHEDULE[SCHEDULE.length-1].end;
-  const pct = Math.max(0, Math.min(100, (now-first)/(last-first)*100));
-  document.getElementById('progressBar').style.width = pct+'%';
-  document.getElementById('progressBarBig').style.width = pct+'%';
-  document.getElementById('progressPct').textContent = pct.toFixed(1)+'%';
-  document.getElementById('progressPctBig').textContent = pct.toFixed(1)+'%';
-
-  // next card on live page
-  const next = SCHEDULE.find(s => s.start>now && (s.type==='talk'));
-  document.getElementById('nextInfo').innerHTML = next
-    ? `<b>${next.name}</b> · <span style="color:var(--accent);font-family:monospace">${next.topic}</span><br><span style="color:var(--muted)">${fmtTime(next.start)} 开始 · ${next.day==='day1'?'Day 1 · 6/24':'Day 2 · 6/25'}</span>`
-    : '已经是最后一位 / 全部结束 🎉';
-}
-
-function setLiveBanners(now, current){
-  const sets = [
-    { wrap:'liveBanner', st:'liveStatus', who:'liveWho', what:'liveWhat', timer:'liveTimer' },
-    { wrap:'liveBannerBig', st:'liveStatusBig', who:'liveWhoBig', what:'liveWhatBig', timer:'liveTimerBig' },
-  ];
-  let cls='', stTxt='', whoTxt='', whatTxt='', tTxt='--:--';
-  if (current){
-    if (current.type==='break'){
-      cls='break'; stTxt='BREAK'; whoTxt='☕ 休息时间';
-      whatTxt = `休息到 ${fmtTime(current.end)}`;
-      tTxt = fmtDur(current.end-now);
-    } else {
-      cls='live';
-      stTxt = current.type==='qa' ? 'Q & A' : 'LIVE';
-      whoTxt = current.name;
-      whatTxt = `${current.topic} · ${current.type==='qa'?'QA / 讨论中':'Talking now'} · ${fmtTime(current.start)}–${fmtTime(current.end)}`;
-      tTxt = fmtDur(current.end-now);
+function calcTimeSlots(speakers, startHour, startMin) {
+  const slots = [];
+  let h = startHour, m = startMin;
+  speakers.forEach((s, i) => {
+    const startStr = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    // 12 min speak + 5 min QA = 17 min
+    m += 17;
+    if (m >= 60) { h += Math.floor(m/60); m = m % 60; }
+    const endStr = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    slots.push({ ...s, timeSlot: `${startStr} – ${endStr}` });
+    // 10 min break (except last)
+    if (i < speakers.length - 1) {
+      m += 10;
+      if (m >= 60) { h += Math.floor(m/60); m = m % 60; }
     }
+  });
+  return slots;
+}
+
+function getStatusLabel(status) {
+  if (status === 'completed') return '✅ Done';
+  if (status === 'active') return '🎤 Live';
+  return '⏳ Next';
+}
+
+function cycleStatus(day, index) {
+  const speakers = day === 1 ? day1Speakers : day2Speakers;
+  const current = speakers[index].status;
+  if (current === 'pending') speakers[index].status = 'active';
+  else if (current === 'active') speakers[index].status = 'completed';
+  else speakers[index].status = 'pending';
+  renderSpeakers();
+  saveState();
+}
+
+function renderSpeakers() {
+  const day1Slots = calcTimeSlots(day1Speakers, 11, 30);
+  const day2Slots = calcTimeSlots(day2Speakers, 11, 30);
+
+  document.getElementById('day1-speakers').innerHTML = day1Slots.map((s, i) => `
+    <div class="speaker-item ${s.status}">
+      <div class="speaker-order">${s.status === 'completed' ? '✓' : i+1}</div>
+      <div class="speaker-info">
+        <div class="speaker-name">${s.name}</div>
+        <div class="speaker-topic">${s.topic}</div>
+        <div class="speaker-time">🕐 ${s.timeSlot} (12min + 5min QA)</div>
+      </div>
+      <div class="speaker-status" onclick="cycleStatus(1,${i})">${getStatusLabel(s.status)}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('day2-speakers').innerHTML = day2Slots.map((s, i) => `
+    <div class="speaker-item ${s.status}">
+      <div class="speaker-order">${s.status === 'completed' ? '✓' : i+1}</div>
+      <div class="speaker-info">
+        <div class="speaker-name">${s.name}</div>
+        <div class="speaker-topic">${s.topic}</div>
+        <div class="speaker-time">🕐 ${s.timeSlot} (12min + 5min QA)</div>
+      </div>
+      <div class="speaker-status" onclick="cycleStatus(2,${i})">${getStatusLabel(s.status)}</div>
+    </div>
+  `).join('');
+}
+
+// === TIMER LOGIC ===
+const timers = {
+  'speak-d1': { total: 12*60, remaining: 12*60, interval: null, running: false },
+  'qa-d1':    { total: 5*60,  remaining: 5*60,  interval: null, running: false },
+  'break-d1': { total: 10*60, remaining: 10*60, interval: null, running: false },
+  'speak-d2': { total: 12*60, remaining: 12*60, interval: null, running: false },
+  'qa-d2':    { total: 5*60,  remaining: 5*60,  interval: null, running: false },
+  'break-d2': { total: 10*60, remaining: 10*60, interval: null, running: false }
+};
+
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function updateTimerDisplay(type) {
+  const el = document.getElementById('timer-' + type);
+  const t = timers[type];
+  el.textContent = formatTime(t.remaining);
+  el.classList.remove('warning', 'danger');
+  if (t.remaining <= 0) { el.classList.add('danger'); }
+  else if (t.remaining <= 60) { el.classList.add('warning'); }
+}
+
+function toggleTimer(type) {
+  const t = timers[type];
+  const btn = document.getElementById('btn-' + type);
+  if (t.running) {
+    clearInterval(t.interval);
+    t.running = false;
+    btn.textContent = '⏸ Pause';
   } else {
-    const next = SCHEDULE.find(s => s.start>now && s.type!=='break');
-    if (next){
-      cls='upcoming'; stTxt='UP NEXT'; whoTxt = next.name;
-      whatTxt = `${next.topic} · ${fmtTime(next.start)} 开始 · ${next.day==='day1'?'Day 1':'Day 2'}`;
-      tTxt = fmtDur(next.start-now);
-    } else if (SCHEDULE.length && now >= SCHEDULE[SCHEDULE.length-1].end){
-      cls='done'; stTxt='WRAPPED'; whoTxt='🎉 Session 已圆满结束'; whatTxt='感谢所有 speakers 与现场参与者'; tTxt='--:--';
-    }
+    t.running = true;
+    btn.textContent = '⏸ Pause';
+    t.interval = setInterval(() => {
+      t.remaining--;
+      updateTimerDisplay(type);
+      if (t.remaining <= 0) {
+        clearInterval(t.interval);
+        t.running = false;
+        btn.textContent = '▶ Start';
+        playAlert();
+      }
+    }, 1000);
   }
-  sets.forEach(s=>{
-    const el = document.getElementById(s.wrap);
-    el.className = 'live-banner ' + cls;
-    document.getElementById(s.st).textContent = stTxt || 'STANDBY';
-    document.getElementById(s.who).textContent = whoTxt || 'Session 尚未开始';
-    document.getElementById(s.what).textContent = whatTxt || '第一位 speaker 即将上场';
-    document.getElementById(s.timer).textContent = tTxt;
-  });
 }
 
-// Tab nav
-document.querySelectorAll('.nav-tabs button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.nav-tabs button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    const target = btn.dataset.page;
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    document.getElementById('page-'+target).classList.add('active');
-    window.scrollTo({top:0, behavior:'smooth'});
-  });
-});
+function resetTimer(type) {
+  const t = timers[type];
+  clearInterval(t.interval);
+  t.running = false;
+  t.remaining = t.total;
+  document.getElementById('btn-' + type).textContent = '▶ Start';
+  updateTimerDisplay(type);
+}
 
-function rebuild(){ buildSchedule(); render(); }
-buildSchedule(); render();
-setInterval(render, 1000);
+function setTimer(type) {
+  const val = parseInt(document.getElementById('input-' + type).value) || 1;
+  timers[type].total = val * 60;
+  timers[type].remaining = val * 60;
+  timers[type].running = false;
+  clearInterval(timers[type].interval);
+  document.getElementById('btn-' + type).textContent = '▶ Start';
+  updateTimerDisplay(type);
+}
+
+function playAlert() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 880;
+    osc.type = 'sine';
+    gain.gain.value = 0.3;
+    osc.start();
+    setTimeout(() => { osc.stop(); ctx.close(); }, 500);
+  } catch(e) {}
+}
+
+// === STATE PERSISTENCE (localStorage) ===
+function saveState() {
+  const state = {
+    day1: day1Speakers.map(s => s.status),
+    day2: day2Speakers.map(s => s.status)
+  };
+  localStorage.setItem('ai-in-action-state', JSON.stringify(state));
+}
+
+function loadState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('ai-in-action-state'));
+    if (saved) {
+      saved.day1.forEach((st, i) => { if (day1Speakers[i]) day1Speakers[i].status = st; });
+      saved.day2.forEach((st, i) => { if (day2Speakers[i]) day2Speakers[i].status = st; });
+    }
+  } catch(e) {}
+}
+
+// === INIT ===
+loadState();
+renderSpeakers();
+['speak-d1','qa-d1','break-d1','speak-d2','qa-d2','break-d2'].forEach(updateTimerDisplay);
 </script>
+
+<div class="app-footer">
+  WinComm China AI Learning Community · 2026.6 · We look forward to your participation!
+</div>
 </body>
 </html>
