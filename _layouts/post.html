@@ -5,7 +5,9 @@ layout: default
   <a href="javascript:history.back()" class="back-link back-top">&larr; Back to previous page</a>
   <nav class="breadcrumb">
     <a href="{{ '/' | relative_url }}">Home</a>
-    {% if page.path contains "case-summaries/" %}
+    {% if page.type == "parenting-podcast" %}
+      <span class="breadcrumb-sep">/</span><a href="{{ '/ai-podcast/' | relative_url }}#parenting">育儿栏目</a>
+    {% elsif page.path contains "case-summaries/" %}
       <span class="breadcrumb-sep">/</span><a href="{{ '/case-summaries/' | relative_url }}">Case Studies</a>
     {% elsif page.path contains "deep-dive/" %}
       <span class="breadcrumb-sep">/</span><a href="{{ '/deep-dive/' | relative_url }}">Deep Dive</a>
