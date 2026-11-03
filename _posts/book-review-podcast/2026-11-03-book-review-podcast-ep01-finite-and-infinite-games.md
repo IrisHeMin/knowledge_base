@@ -23,7 +23,7 @@ permalink: /book-review-podcast/ep01-finite-and-infinite-games/
 
 **［约3分钟］**
 
-大家好。
+大家好，我是小敏，欢迎来到我的书评播客。
 
 今天想跟大家聊一本书，叫《有限与无限的游戏》。
 
@@ -779,7 +779,9 @@ permalink: /book-review-podcast/ep01-finite-and-infinite-games/
 
 但这一局之外，还有生活。
 
-谢谢大家。
+如果今天这期有一句话让你有共鸣，欢迎关注我。以后我们继续一起读书，聊聊书里的观点，也聊聊自己的生活。
+
+我是小敏，谢谢你的收听，我们下次见。
 
 ## 参考资料（不用口播）
 
