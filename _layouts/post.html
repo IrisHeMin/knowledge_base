@@ -7,6 +7,8 @@ layout: default
     <a href="{{ '/' | relative_url }}">Home</a>
     {% if page.type == "parenting-podcast" %}
       <span class="breadcrumb-sep">/</span><a href="{{ '/ai-podcast/' | relative_url }}#parenting">育儿栏目</a>
+    {% elsif page.type == "book-review-podcast" %}
+      <span class="breadcrumb-sep">/</span><a href="{{ '/ai-podcast/' | relative_url }}#book-reviews">书评</a>
     {% elsif page.path contains "case-summaries/" %}
       <span class="breadcrumb-sep">/</span><a href="{{ '/case-summaries/' | relative_url }}">Case Studies</a>
     {% elsif page.path contains "deep-dive/" %}
