@@ -463,15 +463,15 @@ permalink: /book-review-podcast/ep02-sapiens/
 
 以下材料用于核实书目与作者观点；生活假设、评价和行动建议为本期原创。没有使用未经授权的整本电子书，没有编造原书引文、章节情节或页码。
 
-1. **赫拉利官网：《Sapiens》书籍介绍**。用于核实本书主题及作者对共同想象、合作和进步的概括；其中鲜明判断按作者观点理解，不直接视为学界共识。  
+1. **赫拉利官网：《Sapiens》书籍介绍**。用于核实本书主题及作者对共同想象、合作和进步的概括；其中鲜明判断按作者观点理解，不直接视为学界共识。<br>
    [https://www.ynharari.com/book/sapiens/](https://www.ynharari.com/book/sapiens/)
-2. **赫拉利署名文章：Why humans run the world，TED Ideas，2015年6月16日**。用于核实作者关于灵活、大规模合作的解释。该文为作者公开阐述，不冒充原书逐字节选。  
+2. **赫拉利署名文章：Why humans run the world，TED Ideas，2015年6月16日**。用于核实作者关于灵活、大规模合作的解释。该文为作者公开阐述，不冒充原书逐字节选。<br>
    [https://ideas.ted.com/why-humans-run-the-world/](https://ideas.ted.com/why-humans-run-the-world/)
-3. **中信出版社官方店铺：《人类简史：从动物到上帝》精装版介绍**。用于核实中文书名、作者及文字著作身份；本期不作特定印次的页码或逐章评注。  
+3. **中信出版社官方店铺：《人类简史：从动物到上帝》精装版介绍**。用于核实中文书名、作者及文字著作身份；本期不作特定印次的页码或逐章评注。<br>
    [https://detail.youzan.com/show/goods?alias=366jvi7pt0vqn](https://detail.youzan.com/show/goods?alias=366jvi7pt0vqn)
-4. **赫拉利官网：Money and Politics，第10章等公开节选**。用于核实作者将金钱理解为跨群体信任机制的观点。  
+4. **赫拉利官网：Money and Politics，第10章等公开节选**。用于核实作者将金钱理解为跨群体信任机制的观点。<br>
    [https://www.ynharari.com/topic/money-and-politics/](https://www.ynharari.com/topic/money-and-politics/)
-5. **赫拉利官网：Ecology，第5章等公开节选**。用于核实作者从小麦角度反转驯化叙事的论述；本期没有将拟人比喻当作植物具备主观意图的事实。  
+5. **赫拉利官网：Ecology，第5章等公开节选**。用于核实作者从小麦角度反转驯化叙事的论述；本期没有将拟人比喻当作植物具备主观意图的事实。<br>
    [https://www.ynharari.com/topic/ecology/](https://www.ynharari.com/topic/ecology/)
-6. **原始研究：Long-term trends in human body size track regional variation in subsistence transitions and growth acceleration linked to dairying，PNAS，2023，120(4)，e2209482119**。用于说明农业转型前后人体尺寸变化的时序和区域差异，不用于直接推断古人的主观幸福。  
+6. **原始研究：Long-term trends in human body size track regional variation in subsistence transitions and growth acceleration linked to dairying，PNAS，2023，120(4)，e2209482119**。用于说明农业转型前后人体尺寸变化的时序和区域差异，不用于直接推断古人的主观幸福。<br>
    [https://pmc.ncbi.nlm.nih.gov/articles/PMC9942808/](https://pmc.ncbi.nlm.nih.gov/articles/PMC9942808/)
